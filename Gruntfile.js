@@ -1,9 +1,12 @@
 module.exports = function (grunt) {
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify-es');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.initConfig({
+		/* CLEAN */
+		clean: ['dist/'],
 		/* CONCAT */
 		concat: {
 			options: {
@@ -55,6 +58,7 @@ module.exports = function (grunt) {
 	});
 
 	grunt.registerTask("debug", [
+		"clean",
 		"concat",
 		"uglify:prod",
 		"copy:prod"

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/sebferrer/jays#readme",
   "devDependencies": {
     "grunt": "^1.0.3",
+    "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony"
