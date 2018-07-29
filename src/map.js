@@ -16,10 +16,11 @@ class Map {
 
     static getTile(id) {
         switch(id) {
-            case 1: return TILE_FLOOR; break;
+            case 1: return TILE_EARTH; break;
             case 2: return TILE_ROCK; break;
             case 3: return TILE_WATER; break;
             case 4: return TILE_GRASS; break;
+            case 12: return TILE_IRON; break;
         }
     }
 }
@@ -36,7 +37,8 @@ class Tile {
     }
 }
 
-const TILE_FLOOR = new Tile(1, "Floor", 0, 0, false);
-const TILE_ROCK = new Tile(2, "Rock", 2, 1, false);
+const TILE_EARTH = new Tile(1, "Earth", 0, 0, false);
+const TILE_ROCK = new Tile(2, "Rock", 0, 1, false);
 const TILE_WATER = new Tile(3, "Water", 0, 2, false);
-const TILE_GRASS = new Tile(4, "Grass", 0, 4, false);
+const TILE_GRASS = new Tile(4, "Grass", 0, 3, false);
+const TILE_IRON = new Tile(12, "Iron", 2, 1, false);

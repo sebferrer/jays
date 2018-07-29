@@ -11,8 +11,19 @@ window.onload = function() {
 }
 
 function main() {
-    //let jays = new Jays(50, 100);
+    let jays = new Jays(20, 40, canvas_W/2-10, canvas_H/2-20);
+    gameState.jays = jays;
     //let blob = new Blob(50, 50);
-    bank.preload(renderer);
-    renderer.update();
+    bank.preload(gameState);
+    gameState.update();
 }
+
+document.addEventListener('keydown', (event) => {
+    const keyName = event.key;
+    gameState.key_down(keyName);
+  }, false);
+  
+  document.addEventListener('keyup', (event) => {
+    const keyName = event.key;
+    gameState.key_up(keyName);
+  }, false);

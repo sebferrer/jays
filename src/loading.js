@@ -6,10 +6,10 @@ class ImgBank {
         this.unload = 0;
         this.loaded = 0;
         this.nextLoad = 0;
-        this.list = ["assets/img/tiles.png"];
+        this.list = ["assets/img/tiles.png", "assets/img/jays.png"];
     }
 
-    preload(renderer) {
+    preload(gameState) {
         this.unload = this.list.length;
         this.error = 0;
         this.loaded = 0;
@@ -19,7 +19,7 @@ class ImgBank {
         var self = this;
         var timer = function() {
             if(self.loaded == self.unload) {	
-                renderer.update();
+                gameState.update();
             }
             else if(self.loaded > self.nextLoad) {	
                 self.nextLoad++;

@@ -6,25 +6,19 @@ class Renderer {
             for(let j = 0; j < map.width; j++) {
                 let tile = map.tiles[i][j];
                 ctx.drawImage(bank.pic["assets/img/tiles.png"],
-                              tile.coord_y*tile.height, tile.coord_x*tile.width, tile.height, tile.width,
+                              tile.coord_y*tile.height, tile.coord_x*tile.width, tile.width, tile.height,
                               j*tile.width, i*tile.height, tile.width, tile.height);
             }
         }
     }
-    
-    update() {
-        ctx.save();
-        ctx.clearRect(0, 0, canvas_W, canvas_H);
-    
-        try {
-            this.render_map(gameState.current_map);
-        } catch (err) {}
-        
-        ctx.restore();
-        
-        var self = this;
-        window.requestAnimationFrame(function() { self.update() });
+
+    render_jays() {
+        let jays = gameState.jays;
+        ctx.drawImage(bank.pic[gameState.jays.sprite_filename],
+                      0, 0, jays.width, jays.height,
+                      jays.pos_x, jays.pos_y, jays.width, jays.height);
     }
+    
 }
 
 window.requestAnimationFrame = (function() {
