@@ -40,7 +40,7 @@ class Entity {
                 let tile = gameState.current_map.tiles[i][j];
                 if(tile.has_collision) {
                     let is_collision = Collision.is_collision(position.pos_x, position.pos_y, position.pos_x+this.width, position.pos_y+this.height,
-                                        tile.coord_x*tile.width, tile.coord_y*tile.height, tile.coord_x*tile.width+tile.width, tile.coord_y*tile.height+tile.height)
+                                                              tile.pos_x, tile.pos_y, tile.pos_x+tile.width, tile.pos_y+tile.height)
                     if(is_collision) {
                         switch(direction) {
                             case Direction.UP: return { "is_collision": true, "x": 0, "y": (tile.pos_y+tile.height-this.pos_y)}; break;
