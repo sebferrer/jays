@@ -32,7 +32,6 @@ class GameState {
         gameState.timers.forEach(function(timer) {
             timer.run();
         });
-
         //console.log(gameState.get_timer('test').tick);
         
         try {

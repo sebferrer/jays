@@ -21,7 +21,7 @@ class Timer {
         if(this.enabled) {
             this.elapsed = new Date().getTime() - this.start;
             if(this.elapsed > this.interval) {
-                this.tick += 1;
+                this.tick++;
                 this.start = new Date().getTime();
             }
         }
