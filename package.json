@@ -1,0 +1,31 @@
+{
+  "name": "jays",
+  "version": "0.0.1",
+  "description": "bunder of isuuc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebferrer/jays.git"
+  },
+  "keywords": [
+    "JS",
+    "Isaac"
+  ],
+  "author": "sebferrer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sebferrer/jays/issues"
+  },
+  "homepage": "https://github.com/sebferrer/jays#readme",
+  "devDependencies": {
+    "grunt": "^1.0.3",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify-es": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony"
+  }
+}
