@@ -30,7 +30,7 @@ class GameState {
         ctx.clearRect(0, 0, canvas_W, canvas_H);
 
         gameState.timers.forEach(function(timer) {
-            timer.timer.run();
+            timer.run();
         });
 
         //console.log(gameState.get_timer('test').tick);
@@ -55,7 +55,7 @@ class GameState {
     }
 
     get_timer(id) {
-        return gameState.timers.find(item => item.id === id).timer;
+        return gameState.timers.find(item => item.id === id);
     }
 }
 

@@ -1,5 +1,6 @@
 class Timer {
-    constructor(interval) {
+    constructor(id, interval) {
+        this.id = id;
         this.interval = interval;
         this.elapsed = 0;
         this.tick = 0;
