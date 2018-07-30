@@ -49,8 +49,16 @@ class Tile {
         this.pos_x;
         this.pos_y;
         this.has_collision = has_collision;
+        this.type; // ENUM TileType
+        this.collec = Array(); // If primary, contains all the animated tiles
     }
 }
+
+const TileType = Object.freeze({
+    STATIC: Symbol("Static"),
+    PRIMARY: Symbol("Primary"),
+    ANIMATED: Symbol("Animated")
+});
 
 const TILE_EARTH = new Tile(1, "Earth", 0, 0, false);
 const TILE_ROCK = new Tile(2, "Rock", 0, 1, true);

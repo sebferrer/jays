@@ -13,7 +13,11 @@ window.onload = function() {
 function main() {
     let jays = new Jays(20, 40, canvas_W/2-10, canvas_H/2-20);
     gameState.jays = jays;
-    //let blob = new Blob(50, 50);
+
+    let timerTest = new Timer(1000); // Tick every 1 second
+    gameState.timers.push({'id': 'test', 'timer': timerTest});
+    gameState.get_timer('test').enable(); // Launch timer, we can now count his ticks in the gameState.update function
+    
     bank.preload(gameState);
     gameState.update();
 }

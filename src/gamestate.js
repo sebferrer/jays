@@ -4,6 +4,7 @@ class GameState {
         this.jays; 
         this.direction_event = new DirectionEvent();
         this.attack_direction_event;
+        this.timers = Array();
     }
 
     key_down(keyName) {
@@ -27,6 +28,12 @@ class GameState {
     update() {
         ctx.save();
         ctx.clearRect(0, 0, canvas_W, canvas_H);
+
+        gameState.timers.forEach(function(timer) {
+            timer.timer.run();
+        });
+
+        //console.log(gameState.get_timer('test').tick);
         
         try {
             renderer.render_map(gameState.current_map);
@@ -45,6 +52,10 @@ class GameState {
         
         var self = this;
         window.requestAnimationFrame(function() { self.update() });
+    }
+
+    get_timer(id) {
+        return gameState.timers.find(item => item.id === id).timer;
     }
 }
 
