@@ -31,6 +31,7 @@ class Entity {
         else {
             if(collision.x != 0) { this.pos_x += collision.x };
             if(collision.y != 0) { this.pos_y += collision.y };
+            this.has_collision_map();
         }
     }
 
@@ -54,6 +55,8 @@ class Entity {
         }
         return { "is_collision": false, "x": 0, "y": 0 };
     }
+
+    has_collision_map() {}
 }
 
 class Jays extends Entity {

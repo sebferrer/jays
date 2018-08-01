@@ -12,6 +12,8 @@ class Renderer {
         }
     }
 
+    // Too repetitive. We probably won't continue this way...
+
     render_jays() {
         let jays = gameState.jays;
         ctx.drawImage(bank.pic[jays.sprite_filename],

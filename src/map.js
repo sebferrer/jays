@@ -50,7 +50,7 @@ class Tile {
         this.pos_y;
         this.has_collision = has_collision;
         this.type; // ENUM TileType
-        this.collec = Array(); // If primary, contains all the animated tiles
+        this.anim = Array(); // If primary, contains all the animated tiles IDs
     }
 }
 

@@ -12,4 +12,10 @@ class TearBasic extends Tear {
         this.sprite_filename = "assets/img/tear.png";
         this.speed = 3;
     }
+
+    has_collision_map() {
+        ArrayUtil.removeFromArray(gameState.tears, this);
+    }
 }
+
+const TEAR_BASIC = new TearBasic(10, 10, 0, 0, null);

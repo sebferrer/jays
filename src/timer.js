@@ -21,6 +21,7 @@ class Timer {
     }
     
     // When started, add 1 tick each X interval
+    // To use to an update function
     run() {
         if(this.enabled) {
             this.elapsed = new Date().getTime() - this.start;
@@ -31,6 +32,7 @@ class Timer {
         }
     }
 
+    // To use to an update function
     next_tick() {
         return this.elapsed > this.interval;
     }

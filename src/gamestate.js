@@ -3,7 +3,7 @@ class GameState {
         this.current_map = map;
         this.jays; 
         this.direction_event = new DirectionEvent();
-        this.attack_direction_event = new AttackDirectionEvent();;
+        this.attack_direction_event = new AttackDirectionEvent();
         this.timers = Array();
         this.tears = Array();
     }
@@ -16,20 +16,16 @@ class GameState {
             case 'd': this.direction_event.move_right = true; break;
             
             case 'ArrowUp':
-                this.attack_direction_event.last_direction = this.attack_direction_event.direction;
-                this.attack_direction_event.direction = Direction.UP;
+                this.attack_direction_event.add(Direction.UP);
                 break;
             case 'ArrowDown':
-                this.attack_direction_event.last_direction = this.attack_direction_event.direction;
-                this.attack_direction_event.direction = Direction.DOWN;
+                this.attack_direction_event.add(Direction.DOWN);
                 break;
             case 'ArrowLeft':
-                this.attack_direction_event.last_direction = this.attack_direction_event.direction;
-                this.attack_direction_event.direction = Direction.LEFT;
+                this.attack_direction_event.add(Direction.LEFT);
                 break;
             case 'ArrowRight':
-                this.attack_direction_event.last_direction = this.attack_direction_event.direction;
-                this.attack_direction_event.direction = Direction.RIGHT;
+                this.attack_direction_event.add(Direction.RIGHT);
                 break;
         }
     }
@@ -41,10 +37,18 @@ class GameState {
             case 'q': this.direction_event.move_left = false; break;
             case 'd': this.direction_event.move_right = false; break;
 
-            case 'ArrowUp': this.attack_direction_event.direction = null; break;
-            case 'ArrowDown': this.attack_direction_event.direction = null; break;
-            case 'ArrowLeft': this.attack_direction_event.direction = null; break;
-            case 'ArrowRight': this.attack_direction_event.direction = null; break;
+            case 'ArrowUp':
+                this.attack_direction_event.remove(Direction.UP);
+                break;
+            case 'ArrowDown':
+                this.attack_direction_event.remove(Direction.DOWN);
+                break;
+            case 'ArrowLeft':
+                this.attack_direction_event.remove(Direction.LEFT);
+                break;
+            case 'ArrowRight':
+                this.attack_direction_event.remove(Direction.RIGHT);
+                break;
         }
     }
 
@@ -55,7 +59,7 @@ class GameState {
         gameState.timers.forEach(function(timer) {
             timer.run();
         });
-        //console.log(gameState.get_timer('test').tick);
+        //console.log(gameState.get_timer('test').tick); // 1 tick every second
         
         try {
             renderer.render_map(gameState.current_map);
@@ -65,17 +69,34 @@ class GameState {
             renderer.render_tear(tear);
         });
 
+        this.jays_update();        
+        this.tears_update();
+
+        try {
+            renderer.render_jays();
+        } catch (err) {}
+
+        ctx.restore();
+        
+        var self = this;
+        window.requestAnimationFrame(function() { self.update() });
+    }
+
+    jays_update() {
         if (this.direction_event.move_up) { this.jays.move_direction(Direction.UP); }
         if (this.direction_event.move_down) { this.jays.move_direction(Direction.DOWN); }
         if (this.direction_event.move_left) { this.jays.move_direction(Direction.LEFT); }
         if (this.direction_event.move_right) { this.jays.move_direction(Direction.RIGHT); }
+    }
 
-        /**** TEARS ****/
+    tears_update() {
         let timer_tear = gameState.get_timer('tear');
-        if([Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT].indexOf(this.attack_direction_event.direction) >= 0) {
+        if(this.attack_direction_event.directions.length > 0) {
             timer_tear.enable();
             if(timer_tear.next_tick()) {
-                gameState.tears.push(new TearBasic(10, 10, gameState.jays.pos_x+gameState.jays.width/2,  gameState.jays.pos_y+gameState.jays.height/2, this.attack_direction_event.direction));
+                gameState.tears.push(new TearBasic(TEAR_BASIC.width, TEAR_BASIC.height,
+                                                   gameState.jays.pos_x+gameState.jays.width/2,  gameState.jays.pos_y+gameState.jays.height/2,
+                                                   this.attack_direction_event.directions[0]));
             }
         }
         else {
@@ -90,16 +111,6 @@ class GameState {
                 case Direction.RIGHT: tear.move_direction(Direction.RIGHT); break;
             }
         });
-        /***************/
-
-        try {
-            renderer.render_jays();
-        } catch (err) {}
-
-        ctx.restore();
-        
-        var self = this;
-        window.requestAnimationFrame(function() { self.update() });
     }
 
     get_timer(id) {
@@ -124,11 +135,19 @@ class DirectionEvent {
 }
 
 class AttackDirectionEvent {
-    constructor(direction) {
-        this.direction = direction;
-        this.up_pressed = false;
-        this.down_pressed = false; 
-        this.left_pressed = false;
-        this.right_pressed = false;
+    constructor() {
+        // To manage the multi-key press
+        // Taking always the first Direction of this array,
+        // even though the user presses many attack keys in same time
+        // and then releases them, only the last pressed will be taken into account
+        this.directions = Array();
+    }
+
+    add(direction) {
+        ArrayUtil.addFirstNoDuplicate(this.directions, direction);
+    }
+
+    remove(direction) {
+        ArrayUtil.removeFromArray(this.directions, direction);
     }
 }
