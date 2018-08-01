@@ -6,7 +6,7 @@ class ImgBank {
         this.unload = 0;
         this.loaded = 0;
         this.nextLoad = 0;
-        this.list = ["assets/img/tiles.png", "assets/img/jays.png"];
+        this.list = ["assets/img/tiles.png", "assets/img/jays.png", "assets/img/tear.png"];
     }
 
     preload(gameState) {

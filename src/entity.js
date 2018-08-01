@@ -61,6 +61,7 @@ class Jays extends Entity {
         super(width, height, pos_x, pos_y);
         this.sprite_filename = "assets/img/jays.png";
         this.speed = 2;
+        this.tear_delay = 250;
     }
 }
 

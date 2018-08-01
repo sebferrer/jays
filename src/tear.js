@@ -1,0 +1,15 @@
+class Tear extends Entity {
+    constructor(width, height, pos_x, pos_y) {
+        super(width, height, pos_x, pos_y);
+        this.direction;
+    }
+}
+
+class TearBasic extends Tear {
+    constructor(width, height, pos_x, pos_y, direction) {
+        super(width, height, pos_x, pos_y);
+        this.direction = direction;
+        this.sprite_filename = "assets/img/tear.png";
+        this.speed = 3;
+    }
+}

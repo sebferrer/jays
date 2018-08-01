@@ -9,11 +9,15 @@ class Timer {
     }
 
     enable() {
-        this.enabled = true;
+        if(!this.enabled) {
+            this.enabled = true;
+        }
     }
 
     disable() {
-        this.enabled = false;
+        if(this.enabled) {
+            this.enabled = false;
+        }
     }
     
     // When started, add 1 tick each X interval
@@ -27,10 +31,13 @@ class Timer {
         }
     }
 
+    next_tick() {
+        return this.elapsed > this.interval;
+    }
+
     reset() {
-        this.elapsed = false;
-        this.tick = false;
-        this.interval = false;
+        this.elapsed = 0;
+        this.tick = 0;
         this.enabled = false;
     }
 }

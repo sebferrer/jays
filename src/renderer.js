@@ -14,9 +14,15 @@ class Renderer {
 
     render_jays() {
         let jays = gameState.jays;
-        ctx.drawImage(bank.pic[gameState.jays.sprite_filename],
+        ctx.drawImage(bank.pic[jays.sprite_filename],
                       0, 0, jays.width, jays.height,
                       jays.pos_x, jays.pos_y, jays.width, jays.height);
+    }
+
+    render_tear(tear) {
+        ctx.drawImage(bank.pic[tear.sprite_filename],
+                      0, 0, tear.width, tear.height,
+                      tear.pos_x, tear.pos_y, tear.width, tear.height);
     }
     
 }
