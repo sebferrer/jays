@@ -16,6 +16,10 @@ class TearBasic extends Tear {
     has_collision_map() {
         ArrayUtil.removeFromArray(gameState.tears, this);
     }
+
+    has_collision_warp() {
+        ArrayUtil.removeFromArray(gameState.tears, this);
+    }
 }
 
 const TEAR_BASIC = new TearBasic(10, 10, 0, 0, null);

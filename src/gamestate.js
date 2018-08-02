@@ -15,18 +15,10 @@ class GameState {
             case 'q': this.direction_event.move_left = true; break;
             case 'd': this.direction_event.move_right = true; break;
             
-            case 'ArrowUp':
-                this.attack_direction_event.add(Direction.UP);
-                break;
-            case 'ArrowDown':
-                this.attack_direction_event.add(Direction.DOWN);
-                break;
-            case 'ArrowLeft':
-                this.attack_direction_event.add(Direction.LEFT);
-                break;
-            case 'ArrowRight':
-                this.attack_direction_event.add(Direction.RIGHT);
-                break;
+            case 'ArrowUp': this.attack_direction_event.add(Direction.UP); break;
+            case 'ArrowDown': this.attack_direction_event.add(Direction.DOWN); break;
+            case 'ArrowLeft': this.attack_direction_event.add(Direction.LEFT); break;
+            case 'ArrowRight': this.attack_direction_event.add(Direction.RIGHT); break;
         }
     }
 
@@ -37,18 +29,10 @@ class GameState {
             case 'q': this.direction_event.move_left = false; break;
             case 'd': this.direction_event.move_right = false; break;
 
-            case 'ArrowUp':
-                this.attack_direction_event.remove(Direction.UP);
-                break;
-            case 'ArrowDown':
-                this.attack_direction_event.remove(Direction.DOWN);
-                break;
-            case 'ArrowLeft':
-                this.attack_direction_event.remove(Direction.LEFT);
-                break;
-            case 'ArrowRight':
-                this.attack_direction_event.remove(Direction.RIGHT);
-                break;
+            case 'ArrowUp': this.attack_direction_event.remove(Direction.UP); break;
+            case 'ArrowDown': this.attack_direction_event.remove(Direction.DOWN); break;
+            case 'ArrowLeft': this.attack_direction_event.remove(Direction.LEFT); break;
+            case 'ArrowRight': this.attack_direction_event.remove(Direction.RIGHT); break;
         }
     }
 

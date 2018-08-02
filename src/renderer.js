@@ -6,7 +6,7 @@ class Renderer {
             for(let j = 0; j < map.width; j++) {
                 let tile = map.tiles[i][j];
                 ctx.drawImage(bank.pic["assets/img/tiles.png"],
-                              tile.src_y*tile.height, tile.src_x*tile.width, tile.width, tile.height,
+                              tile.src_x*tile.height, tile.src_y*tile.width, tile.width, tile.height,
                               tile.pos_x, tile.pos_y, tile.width, tile.height);
             }
         }

@@ -10,6 +10,10 @@ window.onload = function() {
     main();
 }
 
+/**
+ * TODO: See warp.js, collision.js
+ */
+
 function main() {
     let jays = new Jays(20, 40, canvas_W/2-10, canvas_H/2-20);
     gameState.jays = jays;

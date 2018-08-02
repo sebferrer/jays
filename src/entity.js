@@ -23,15 +23,19 @@ class Entity {
 
     move_direction(direction) {
         let next_position = this.next_position(direction);
-        let collision = this.collision_map(direction, next_position);
-        if(!collision.is_collision) {
+        let collision_map = this.collision_map(direction, next_position);
+        if(!collision_map.is_collision) {
             this.pos_x = next_position.pos_x;
             this.pos_y = next_position.pos_y;
         }
         else {
-            if(collision.x != 0) { this.pos_x += collision.x };
-            if(collision.y != 0) { this.pos_y += collision.y };
+            if(collision_map.x != 0) { this.pos_x += collision_map.x };
+            if(collision_map.y != 0) { this.pos_y += collision_map.y };
             this.has_collision_map();
+        }
+        let collision_warp = this.collision_warp(next_position);
+        if(collision_warp.is_collision) {
+            this.has_collision_warp();
         }
     }
 
@@ -56,7 +60,27 @@ class Entity {
         return { "is_collision": false, "x": 0, "y": 0 };
     }
 
+    collision_warp(position) {
+        for(let i = 0; i < gameState.current_map.height; i++) {
+            for(let j = 0; j < gameState.current_map.width; j++) {
+                let tile = gameState.current_map.tiles[i][j];
+                let is_warp = tile.is_warp(0);
+                if(is_warp.bool) {
+                    let is_collision = Collision.is_collision(/*gameState.direction_event, tile,*/
+                                                                   position.pos_x, position.pos_y, position.pos_x+this.width, position.pos_y+this.height,
+                                                                   tile.pos_x, tile.pos_y, tile.pos_x+tile.width, tile.pos_y+tile.height)
+                    if(is_collision) {
+                        return { "is_collision": true, "is_warp": is_warp.bool, "destination": is_warp.destination };
+                    }
+                }
+            }
+        }
+        return { "is_collision": false, "is_warp": false, "destination": -1};
+    }
+
     has_collision_map() {}
+
+    has_collision_warp() {}
 }
 
 class Jays extends Entity {
@@ -64,7 +88,26 @@ class Jays extends Entity {
         super(width, height, pos_x, pos_y);
         this.sprite_filename = "assets/img/jays.png";
         this.speed = 2;
-        this.tear_delay = 250;
+        this.tear_delay = 20;
+    }
+
+    
+
+    move_direction(direction) {
+        super.move_direction(direction);
+        let next_position = super.next_position(direction);
+        let collision_warp = this.collision_warp(next_position);
+        if(collision_warp.is_collision) {
+            gameState.current_map = new Map(collision_warp.destination);
+            // To change after warps improvement, see warp.js
+            switch(direction) {
+                case Direction.UP: this.pos_y = canvas_H-this.height-TILE_REF.height; break;
+                case Direction.DOWN: this.pos_y = 0+TILE_REF.height; break;
+                case Direction.LEFT: this.pos_x = canvas_W-this.width-TILE_REF.height; break;
+                case Direction.RIGHT: this.pos_x = 0+TILE_REF.width; break;
+            }
+            gameState.tears = Array();
+        }
     }
 }
 
