@@ -44,8 +44,7 @@ class Entity {
             for(let j = 0; j < gameState.current_map.width; j++) {
                 let tile = gameState.current_map.tiles[i][j];
                 if(tile.has_collision) {
-                    let is_collision = Collision.is_collision(position.pos_x, position.pos_y, position.pos_x+this.width, position.pos_y+this.height,
-                                                              tile.pos_x, tile.pos_y, tile.pos_x+tile.width, tile.pos_y+tile.height)
+                    let is_collision = Collision.is_collision_nextpos_entity_tile(position, this, tile);
                     if(is_collision) {
                         switch(direction) {
                             case Direction.UP: return { "is_collision": true, "x": 0, "y": (tile.pos_y+tile.height-this.pos_y)}; break;
@@ -60,15 +59,13 @@ class Entity {
         return { "is_collision": false, "x": 0, "y": 0 };
     }
 
-    collision_warp(position) {
+    collision_warp() {
         for(let i = 0; i < gameState.current_map.height; i++) {
             for(let j = 0; j < gameState.current_map.width; j++) {
                 let tile = gameState.current_map.tiles[i][j];
                 let is_warp = tile.is_warp(0);
                 if(is_warp.bool) {
-                    let is_collision = Collision.is_collision(/*gameState.direction_event, tile,*/
-                                                                   position.pos_x, position.pos_y, position.pos_x+this.width, position.pos_y+this.height,
-                                                                   tile.pos_x, tile.pos_y, tile.pos_x+tile.width, tile.pos_y+tile.height)
+                    let is_collision = Collision.is_collision_entity_tile(this, tile);
                     if(is_collision) {
                         return { "is_collision": true, "is_warp": is_warp.bool, "destination": is_warp.destination };
                     }
@@ -88,7 +85,7 @@ class Jays extends Entity {
         super(width, height, pos_x, pos_y);
         this.sprite_filename = "assets/img/jays.png";
         this.speed = 2;
-        this.tear_delay = 20;
+        this.tear_delay = 250;
     }
 
     
@@ -96,7 +93,7 @@ class Jays extends Entity {
     move_direction(direction) {
         super.move_direction(direction);
         let next_position = super.next_position(direction);
-        let collision_warp = this.collision_warp(next_position);
+        let collision_warp = this.collision_warp();
         if(collision_warp.is_collision) {
             gameState.current_map = new Map(collision_warp.destination);
             // To change after warps improvement, see warp.js

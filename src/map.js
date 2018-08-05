@@ -36,6 +36,7 @@ class Map {
                 return WARPS[d];
             }
         }
+        return null;
     }
 
     static getTile(id) {
@@ -44,7 +45,9 @@ class Map {
             case 2: return TILE_ROCK; break;
             case 3: return TILE_WATER; break;
             case 4: return TILE_GRASS; break;
+            case 5: return TILE_GRASS_TEXTURED_LIGHT; break;
             case 9: return TILE_GRASS_LIGHT; break;
+            case 10: return TILE_GRASS_TEXTURED; break;
             case 12: return TILE_IRON; break;
         }
     }
@@ -78,11 +81,13 @@ class Tile {
 
     is_warp() {
         let warp = gameState.current_map.get_warp();
-        let tile = this;
-        for(let i = 0; i < warp.zones.length; i++) {
-            for(let j = 0; j < warp.zones[i].tiles.length; j++) {
-                if(tile.same_coords_array(warp.zones[i].tiles[j])) {
-                    return {"bool": true, "destination": warp.zones[i].destination};
+        if(warp !== null) {
+            let tile = this;
+            for(let i = 0; i < warp.zones.length; i++) {
+                for(let j = 0; j < warp.zones[i].tiles.length; j++) {
+                    if(tile.same_coords_array(warp.zones[i].tiles[j])) {
+                        return {"bool": true, "destination": warp.zones[i].destination};
+                    }
                 }
             }
         }
@@ -102,5 +107,7 @@ const TILE_EARTH = new Tile(1, "Earth", 0, 0, false);
 const TILE_ROCK = new Tile(2, "Rock", 1, 0, true);
 const TILE_WATER = new Tile(3, "Water", 2, 0, true);
 const TILE_GRASS = new Tile(4, "Grass", 3, 0, false);
+const TILE_GRASS_TEXTURED_LIGHT = new Tile(5, "Grass textured light", 4, 0, false);
 const TILE_GRASS_LIGHT = new Tile(9, "Grass light", 3, 1, false);
+const TILE_GRASS_TEXTURED = new Tile(10, "Grass textured", 4, 1, false);
 const TILE_IRON = new Tile(12, "Iron", 1, 2, true);
