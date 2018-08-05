@@ -1,4 +1,4 @@
-class Warp {
+export class Warp {
     public map_id: any;
     public direction: any;
     public zones: any;
@@ -13,7 +13,7 @@ class Warp {
  * Make warps types: the "zones" warps teleport Jays to the opposite of the map,
  * and the "specifics" warps teleport Jays at a specific point of destination
  */
-const WARPS = [
+export const WARPS = [
     {"map_id": 0,
      "zones": [
         {"destination": 1, "tiles": [[13, 0],[14, 0],[15, 0],[16, 0],[17, 0],[18, 0]]},

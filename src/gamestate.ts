@@ -1,4 +1,8 @@
-class GameState {
+import { gameState, canvas_W, canvas_H, ctx, renderer } from "./main";
+import { TearBasic, TEAR_BASIC } from "./tear";
+import { ArrayUtil } from "./util";
+
+export class GameState {
 
     public current_map: any;
     public jays: any;
@@ -109,14 +113,14 @@ class GameState {
     }
 }
 
-enum Direction {
+export enum Direction {
     UP = "Up",
     DOWN = "Down",
     LEFT = "Left",
     RIGHT = "Right"
 };
 
-class DirectionEvent {
+export class DirectionEvent {
     public move_up: any;
     public move_down: any;
     public move_left: any;
@@ -130,7 +134,7 @@ class DirectionEvent {
     }
 }
 
-class AttackDirectionEvent {
+export class AttackDirectionEvent {
     public directions: any;
 
     constructor() {

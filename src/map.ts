@@ -1,4 +1,8 @@
-class Map {
+import { WARPS } from "./warp";
+import { gameState } from "./main";
+import { MAPS } from "./maps";
+
+export class Map {
 
     public id: any;
     public width: any;
@@ -60,7 +64,7 @@ class Map {
     }
 }
 
-class Tile {
+export class Tile {
 
     public width: any;
     public height: any;
@@ -123,7 +127,7 @@ enum TileType {
     ANIMATED = "Animated"
 };
 
-const TILE_REF = new Tile(0, "", -1, -1, false);
+export const TILE_REF = new Tile(0, "", -1, -1, false);
 
 const TILE_EARTH = new Tile(1, "Earth", 0, 0, false);
 const TILE_ROCK = new Tile(2, "Rock", 1, 0, true);

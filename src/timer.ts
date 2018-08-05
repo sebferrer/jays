@@ -1,4 +1,4 @@
-class Timer {
+export class Timer {
     public id: any;
     public interval: any;
     public elapsed: any;

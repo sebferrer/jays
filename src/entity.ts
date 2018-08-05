@@ -1,4 +1,9 @@
-class Entity {
+import { Collision } from "./collision";
+import { gameState, canvas_H, canvas_W } from "./main";
+import { Direction } from "./gamestate";
+import { TILE_REF, Map } from "./map";
+
+export class Entity {
 
     public facing_direction: any;
     public sprite_filename: any;
@@ -86,7 +91,7 @@ class Entity {
     has_collision_warp() { }
 }
 
-class Jays extends Entity {
+export class Jays extends Entity {
 
     public tear_delay: any;
 
@@ -120,13 +125,13 @@ class Jays extends Entity {
     }
 }
 
-class Enemy extends Entity {
+export class Enemy extends Entity {
     constructor(width, height) {
         super(width, height, undefined, undefined);
     }
 }
 
-class BlobMob extends Enemy {
+export class BlobMob extends Enemy {
     constructor(width, height) {
         super(width, height);
     }

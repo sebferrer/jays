@@ -1,10 +1,17 @@
-var canvas = document.querySelector('#canvas') as HTMLCanvasElement;
-var canvas_W = 640;
-var canvas_H = 480;
-var ctx = canvas.getContext('2d');
-var bank = new ImgBank();
-var renderer = new Renderer();
-var gameState = new GameState(new Map(0));
+import { ImgBank } from "./loading";
+import { Renderer } from "./renderer";
+import { GameState } from "./gamestate";
+import { Map } from "./map";
+import { Jays } from "./entity";
+import { Timer } from "./timer";
+
+export var canvas = document.querySelector('#canvas') as HTMLCanvasElement;
+export var canvas_W = 640;
+export var canvas_H = 480;
+export var ctx = canvas.getContext('2d');
+export var bank = new ImgBank();
+export var renderer = new Renderer();
+export var gameState = new GameState(new Map(0));
 
 window.onload = function () {
     main();

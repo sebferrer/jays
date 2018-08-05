@@ -1,11 +1,16 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     grunt.initConfig({
         ts: {
+            options: {
+                sourceMap: true,
+                module: "system"
+            },
             default: {
                 src: [
-                    "src/**/*.ts",
+                    "src/main.ts",
                     "!node_modules/**/*.ts"
                 ],
+                dest: "dist/main.js"
             }
         }
     });

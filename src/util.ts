@@ -1,4 +1,4 @@
-class ArrayUtil {
+export class ArrayUtil {
     
     static getIndex(array, obj) {
         let index = -1;

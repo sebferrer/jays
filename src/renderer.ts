@@ -1,4 +1,6 @@
-class Renderer {
+import { gameState, ctx, bank } from "./main";
+
+export class Renderer {
     constructor() { }
 
     render_map(map) {

@@ -1,4 +1,4 @@
-class ImgBank {
+export class ImgBank {
 
     public buffer: any;
     public pic: any;
