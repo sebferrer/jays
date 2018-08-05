@@ -1,7 +1,7 @@
 class Tear extends Entity {
+    public direction: any;
     constructor(width, height, pos_x, pos_y) {
         super(width, height, pos_x, pos_y);
-        this.direction;
     }
 }
 

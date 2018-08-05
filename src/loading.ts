@@ -1,4 +1,13 @@
 class ImgBank {
+
+    public buffer: any;
+    public pic: any;
+    public error: any;
+    public unload: any;
+    public loaded: any;
+    public nextLoad: any;
+    public list: any;
+
     constructor() {
         this.buffer = new Array();
         this.pic = new Object();
@@ -15,13 +24,13 @@ class ImgBank {
         this.loaded = 0;
         this.nextLoad = 0;
         this.buffer = this.list;
-                    
+
         var self = this;
-        var timer = function() {
-            if(self.loaded == self.unload) {	
+        var timer = function () {
+            if (self.loaded == self.unload) {
                 gameState.update();
             }
-            else if(self.loaded > self.nextLoad) {	
+            else if (self.loaded > self.nextLoad) {
                 self.nextLoad++;
                 self.loadimg();
                 setTimeout(timer, 10);
@@ -32,30 +41,30 @@ class ImgBank {
         }
         this.loadimg();
         setTimeout(timer, 10);
-    
+
     }
 
-    loadimg() {	
+    loadimg() {
         var ref = this.buffer[this.nextLoad];
         var img = new Image();
         img.src = ref;
         var self = this;
-        
-        img.onload = function() {
+
+        img.onload = function () {
             var canvas = document.createElement("canvas");
             canvas.height = img.height;
             canvas.width = img.width;
             var ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0);
-                
+
             self.pic[ref] = canvas;
             self.loaded++;
         };
-        
-        img.onerror = function() {
+
+        img.onerror = function () {
             self.loaded++;
-            self.error++;			
+            self.error++;
         };
-        
+
     }
 }

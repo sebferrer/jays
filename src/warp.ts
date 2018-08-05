@@ -1,4 +1,7 @@
 class Warp {
+    public map_id: any;
+    public direction: any;
+    public zones: any;
     constructor() {
         this.map_id;
         this.direction;
