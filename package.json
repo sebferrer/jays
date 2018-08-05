@@ -1,0 +1,27 @@
+{
+	"name": "jays",
+	"version": "1.0.0",
+	"description": "http://sebferrer.fr/jays/",
+	"main": "main.js",
+	"scripts": {
+		"build": "grunt"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sebferrer/jays.git"
+	},
+	"keywords": [
+		"javascript"
+	],
+	"author": "sebferrer; bastienguillon",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/sebferrer/jays/issues"
+	},
+	"homepage": "https://github.com/sebferrer/jays#readme",
+	"devDependencies": {
+		"grunt": "^1.0.3",
+		"grunt-ts": "^6.0.0-beta.21",
+		"typescript": "3.0.1"
+	}
+}
