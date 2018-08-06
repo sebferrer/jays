@@ -1,7 +1,18 @@
-class GameState {
+import { gameState, canvas_W, canvas_H, ctx, renderer } from "./main";
+import { TearBasic, TEAR_BASIC } from "./tear";
+import { ArrayUtil } from "./util";
+
+export class GameState {
+
+    public current_map: any;
+    public jays: any;
+    public direction_event: any;
+    public attack_direction_event: any;
+    public timers: any;
+    public tears: any;
+
     constructor(map) {
         this.current_map = map;
-        this.jays; 
         this.direction_event = new DirectionEvent();
         this.attack_direction_event = new AttackDirectionEvent();
         this.timers = Array();
@@ -9,12 +20,12 @@ class GameState {
     }
 
     key_down(keyName) {
-        switch(keyName) {
+        switch (keyName) {
             case 'z': this.direction_event.move_up = true; break;
             case 's': this.direction_event.move_down = true; break;
             case 'q': this.direction_event.move_left = true; break;
             case 'd': this.direction_event.move_right = true; break;
-            
+
             case 'ArrowUp': this.attack_direction_event.add(Direction.UP); break;
             case 'ArrowDown': this.attack_direction_event.add(Direction.DOWN); break;
             case 'ArrowLeft': this.attack_direction_event.add(Direction.LEFT); break;
@@ -23,7 +34,7 @@ class GameState {
     }
 
     key_up(keyName) {
-        switch(keyName) {
+        switch (keyName) {
             case 'z': this.direction_event.move_up = false; break;
             case 's': this.direction_event.move_down = false; break;
             case 'q': this.direction_event.move_left = false; break;
@@ -40,30 +51,30 @@ class GameState {
         ctx.save();
         ctx.clearRect(0, 0, canvas_W, canvas_H);
 
-        gameState.timers.forEach(function(timer) {
+        gameState.timers.forEach(function (timer) {
             timer.run();
         });
         //console.log(gameState.get_timer('test').tick); // 1 tick every second
-        
+
         try {
             renderer.render_map(gameState.current_map);
-        } catch (err) {}
+        } catch (err) { }
 
-        gameState.tears.forEach(function(tear) {
+        gameState.tears.forEach(function (tear) {
             renderer.render_tear(tear);
         });
 
-        this.jays_update();        
+        this.jays_update();
         this.tears_update();
 
         try {
             renderer.render_jays();
-        } catch (err) {}
+        } catch (err) { }
 
         ctx.restore();
-        
+
         var self = this;
-        window.requestAnimationFrame(function() { self.update() });
+        window.requestAnimationFrame(function () { self.update() });
     }
 
     jays_update() {
@@ -75,20 +86,20 @@ class GameState {
 
     tears_update() {
         let timer_tear = gameState.get_timer('tear');
-        if(this.attack_direction_event.directions.length > 0) {
+        if (this.attack_direction_event.directions.length > 0) {
             timer_tear.enable();
-            if(timer_tear.next_tick()) {
+            if (timer_tear.next_tick()) {
                 gameState.tears.push(new TearBasic(TEAR_BASIC.width, TEAR_BASIC.height,
-                                                   gameState.jays.pos_x+gameState.jays.width/2,  gameState.jays.pos_y+gameState.jays.height/2,
-                                                   this.attack_direction_event.directions[0]));
+                    gameState.jays.pos_x + gameState.jays.width / 2, gameState.jays.pos_y + gameState.jays.height / 2,
+                    this.attack_direction_event.directions[0]));
             }
         }
         else {
             timer_tear.reset();
         }
 
-        gameState.tears.forEach(function(tear) {
-            switch(tear.direction) {
+        gameState.tears.forEach(function (tear) {
+            switch (tear.direction) {
                 case Direction.UP: tear.move_direction(Direction.UP); break;
                 case Direction.DOWN: tear.move_direction(Direction.DOWN); break;
                 case Direction.LEFT: tear.move_direction(Direction.LEFT); break;
@@ -102,23 +113,30 @@ class GameState {
     }
 }
 
-const Direction = Object.freeze({
-    UP: Symbol("Up"),
-    DOWN: Symbol("Down"),
-    LEFT: Symbol("Left"),
-    RIGHT: Symbol("Right")
-});
+export enum Direction {
+    UP = "Up",
+    DOWN = "Down",
+    LEFT = "Left",
+    RIGHT = "Right"
+};
 
-class DirectionEvent {
+export class DirectionEvent {
+    public move_up: any;
+    public move_down: any;
+    public move_left: any;
+    public move_right: any;
+
     constructor() {
         this.move_up = false;
-        this.move_down = false; 
+        this.move_down = false;
         this.move_left = false;
         this.move_right = false;
     }
 }
 
-class AttackDirectionEvent {
+export class AttackDirectionEvent {
+    public directions: any;
+
     constructor() {
         // To manage the multi-key press
         // Taking always the first Direction of this array,

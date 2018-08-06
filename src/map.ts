@@ -1,4 +1,15 @@
-class Map {
+import { WARPS } from "./warp";
+import { gameState } from "./main";
+import { MAPS } from "./maps";
+
+export class Map {
+
+    public id: any;
+    public width: any;
+    public height: any;
+    public tiles: any;
+    public warps: any;
+
     constructor(id) {
         this.id = id;
         this.width = MAPS[id].width;
@@ -9,19 +20,19 @@ class Map {
         let line = Array();
         let tile_coord_x = 0
         let tile_coord_y = 0;
-        for(let i = 0; i < MAPS[id].tiles.length; i++) {
+        for (let i = 0; i < MAPS[id].tiles.length; i++) {
             let tile_ref = Map.getTile(MAPS[id].tiles[i]);
-            let tile = new Tile(tile_ref.id, tile_ref.decs, tile_ref.src_x, tile_ref.src_y, tile_ref.has_collision);
+            let tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src_x, tile_ref.src_y, tile_ref.has_collision);
             tile.coord_x = tile_coord_x;
             tile.coord_y = tile_coord_y;
-            tile.pos_x = tile.coord_x*tile.width;
-            tile.pos_y = tile.coord_y*tile.height;
+            tile.pos_x = tile.coord_x * tile.width;
+            tile.pos_y = tile.coord_y * tile.height;
             tile_coord_x++;
             //let is_warp = tile.is_warp(this.id);
             //this.is_warp = {"bool": is_warp.bool, "destination": is_warp.destination};
 
             line.push(tile);
-            if(i > 0 && (i+1)%this.width == 0) {
+            if (i > 0 && (i + 1) % this.width == 0) {
                 this.tiles.push(line);
                 line = Array();
                 tile_coord_x = 0;
@@ -31,8 +42,8 @@ class Map {
     }
 
     get_warp() {
-        for(var d = 0, len = WARPS.length; d < len; d++) {
-            if(WARPS[d].map_id === this.id) {
+        for (var d = 0, len = WARPS.length; d < len; d++) {
+            if (WARPS[d].map_id === this.id) {
                 return WARPS[d];
             }
         }
@@ -40,7 +51,7 @@ class Map {
     }
 
     static getTile(id) {
-        switch(id) {
+        switch (id) {
             case 1: return TILE_EARTH; break;
             case 2: return TILE_ROCK; break;
             case 3: return TILE_WATER; break;
@@ -53,7 +64,22 @@ class Map {
     }
 }
 
-class Tile {
+export class Tile {
+
+    public width: any;
+    public height: any;
+    public id: any;
+    public desc: any;
+    public src_x: any;
+    public src_y: any;
+    public coord_x: any;
+    public coord_y: any;
+    public pos_x: any;
+    public pos_y: any;
+    public has_collision: any;
+    public type: any;
+    public anim: any;
+
     constructor(id, desc, src_x, src_y, has_collision) {
         this.width = 20;
         this.height = 20;
@@ -81,27 +107,27 @@ class Tile {
 
     is_warp() {
         let warp = gameState.current_map.get_warp();
-        if(warp !== null) {
+        if (warp !== null) {
             let tile = this;
-            for(let i = 0; i < warp.zones.length; i++) {
-                for(let j = 0; j < warp.zones[i].tiles.length; j++) {
-                    if(tile.same_coords_array(warp.zones[i].tiles[j])) {
-                        return {"bool": true, "destination": warp.zones[i].destination};
+            for (let i = 0; i < warp.zones.length; i++) {
+                for (let j = 0; j < warp.zones[i].tiles.length; j++) {
+                    if (tile.same_coords_array(warp.zones[i].tiles[j])) {
+                        return { "bool": true, "destination": warp.zones[i].destination };
                     }
                 }
             }
         }
-        return {"bool": false, "destination": -1};
+        return { "bool": false, "destination": -1 };
     }
 }
 
-const TileType = Object.freeze({
-    STATIC: Symbol("Static"),
-    PRIMARY: Symbol("Primary"),
-    ANIMATED: Symbol("Animated")
-});
+enum TileType {
+    STATIC = "Static",
+    PRIMARY = "Primary",
+    ANIMATED = "Animated"
+};
 
-const TILE_REF = new Tile(0, "", -1, -1, false);
+export const TILE_REF = new Tile(0, "", -1, -1, false);
 
 const TILE_EARTH = new Tile(1, "Earth", 0, 0, false);
 const TILE_ROCK = new Tile(2, "Rock", 1, 0, true);
