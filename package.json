@@ -4,7 +4,7 @@
 	"description": "http://sebferrer.fr/jays/",
 	"main": "main.js",
 	"scripts": {
-		"build": "grunt"
+		"start": "gulp"
 	},
 	"repository": {
 		"type": "git",
@@ -20,13 +20,12 @@
 	},
 	"homepage": "https://github.com/sebferrer/jays#readme",
 	"devDependencies": {
-		"grunt": "^1.0.3",
-		"grunt-contrib-clean": "^1.1.0",
-		"grunt-contrib-copy": "^1.0.0",
-		"grunt-ts": "^6.0.0-beta.21",
-		"typescript": "3.0.1"
+		"browserify": "^16.2.2",
+		"gulp": "^3.9.1",
+		"gulp-typescript": "^5.0.0-alpha.3",
+		"tsify": "^4.0.0",
+		"typescript": "^3.0.1",
+		"vinyl-source-stream": "^2.0.0"
 	},
-	"dependencies": {
-		"requirejs": "^2.3.5"
-	}
+	"dependencies": {}
 }

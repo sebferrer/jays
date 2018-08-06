@@ -1,17 +1,11 @@
 {
-	"compileOnSave": true,
-	"compilerOptions": {
-		"removeComments": true,
-		"module": "system",
-		"sourceMap": true,
-		"rootDir": ".",
-		"outFile": "dist/main.js"
-	},
-	"files": [],
-	"include": [
-		"src/main.ts"
+	"files": [
+		"src/**/*.ts"
 	],
-	"exclude": [
-		"node_modules"
-	]
+	"compilerOptions": {
+		"noImplicitAny": false,
+		"target": "es5",
+		"rootDir": ".",
+		"outDir": "dist"
+	}
 }
