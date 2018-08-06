@@ -2,7 +2,7 @@ import { ImgBank } from "./loading";
 import { Renderer } from "./renderer";
 import { GameState } from "./gamestate";
 import { Map } from "./map";
-import { Jays } from "./entity";
+import { Jays } from "./jays";
 import { Timer } from "./timer";
 
 export var canvas = document.querySelector('#canvas') as HTMLCanvasElement;

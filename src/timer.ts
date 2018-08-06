@@ -1,12 +1,12 @@
 export class Timer {
-    public id: any;
-    public interval: any;
-    public elapsed: any;
-    public tick: any;
-    public enabled: any;
-    public start: any;
+    public id: string;
+    public interval: number;
+    public elapsed: number;
+    public tick: number;
+    public enabled: boolean;
+    public start: number;
 
-    constructor(id, interval) {
+    constructor(id: string, interval: number) {
         this.id = id;
         this.interval = interval;
         this.elapsed = 0;
@@ -15,13 +15,13 @@ export class Timer {
         this.start = 0
     }
 
-    enable() {
+    public enable(): void {
         if (!this.enabled) {
             this.enabled = true;
         }
     }
 
-    disable() {
+    public disable(): void {
         if (this.enabled) {
             this.enabled = false;
         }
@@ -29,7 +29,7 @@ export class Timer {
 
     // When started, add 1 tick each X interval
     // To use to an update function
-    run() {
+    public run(): void {
         if (this.enabled) {
             this.elapsed = new Date().getTime() - this.start;
             if (this.elapsed > this.interval) {
@@ -40,11 +40,11 @@ export class Timer {
     }
 
     // To use to an update function
-    next_tick() {
+    public next_tick(): boolean {
         return this.elapsed > this.interval;
     }
 
-    reset() {
+    public reset(): void {
         this.elapsed = 0;
         this.tick = 0;
         this.enabled = false;

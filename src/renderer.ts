@@ -1,9 +1,10 @@
 import { gameState, ctx, bank } from "./main";
+import { Map } from "./map";
 
 export class Renderer {
     constructor() { }
 
-    render_map(map) {
+    public render_map(map: Map): void {
         for (let i = 0; i < map.height; i++) {
             for (let j = 0; j < map.width; j++) {
                 let tile = map.tiles[i][j];
@@ -16,14 +17,14 @@ export class Renderer {
 
     // Too repetitive. We probably won't continue this way...
 
-    render_jays() {
+    public render_jays(): void {
         let jays = gameState.jays;
         ctx.drawImage(bank.pic[jays.sprite_filename],
             0, 0, jays.width, jays.height,
             jays.pos_x, jays.pos_y, jays.width, jays.height);
     }
 
-    render_tear(tear) {
+    public render_tear(tear): void {
         ctx.drawImage(bank.pic[tear.sprite_filename],
             0, 0, tear.width, tear.height,
             tear.pos_x, tear.pos_y, tear.width, tear.height);

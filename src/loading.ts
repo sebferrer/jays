@@ -1,12 +1,14 @@
+import { GameState } from "./gamestate";
+
 export class ImgBank {
 
     public buffer: any;
     public pic: any;
-    public error: any;
-    public unload: any;
-    public loaded: any;
-    public nextLoad: any;
-    public list: any;
+    public error: number;
+    public unload: number;
+    public loaded: number;
+    public nextLoad: number;
+    public list: Array<string>;
 
     constructor() {
         this.buffer = new Array();
@@ -18,7 +20,7 @@ export class ImgBank {
         this.list = ["assets/img/tiles.png", "assets/img/jays.png", "assets/img/tear.png"];
     }
 
-    preload(gameState) {
+    public preload(gameState: GameState): void {
         this.unload = this.list.length;
         this.error = 0;
         this.loaded = 0;
@@ -41,10 +43,9 @@ export class ImgBank {
         }
         this.loadimg();
         setTimeout(timer, 10);
-
     }
 
-    loadimg() {
+    public loadimg(): void {
         var ref = this.buffer[this.nextLoad];
         var img = new Image();
         img.src = ref;
@@ -65,6 +66,5 @@ export class ImgBank {
             self.loaded++;
             self.error++;
         };
-
     }
 }

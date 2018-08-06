@@ -1,23 +1,25 @@
-import { WARPS } from "./warp";
+import { WARPS, Warp } from "./warp";
 import { gameState } from "./main";
 import { MAPS } from "./maps";
+import { WarpMap } from "./warp_map";
+import { Tile } from "./tile";
 
 export class Map {
 
-    public id: any;
-    public width: any;
-    public height: any;
-    public tiles: any;
-    public warps: any;
+    public id: number;
+    public width: number;
+    public height: number;
+    public tiles: Tile[][];
+    public warps: Warp[];
 
-    constructor(id) {
+    constructor(id: number) {
         this.id = id;
         this.width = MAPS[id].width;
         this.height = MAPS[id].height;
-        this.tiles = Array();
-        this.warps = Array();
+        this.tiles = Array<Array<Tile>>();
+        this.warps = Array<Warp>();
 
-        let line = Array();
+        let line = Array<Tile>();
         let tile_coord_x = 0
         let tile_coord_y = 0;
         for (let i = 0; i < MAPS[id].tiles.length; i++) {
@@ -41,7 +43,11 @@ export class Map {
         }
     }
 
-    get_warp() {
+    /**
+     * TODO fix this shit
+     * Remove warpmap.ts & warpdesc.ts if necessary
+     */
+    public get_warp(): any { // I wanted to return a WarpMap using itself a WarpDesc...
         for (var d = 0, len = WARPS.length; d < len; d++) {
             if (WARPS[d].map_id === this.id) {
                 return WARPS[d];
@@ -50,7 +56,7 @@ export class Map {
         return null;
     }
 
-    static getTile(id) {
+    public static getTile(id): Tile {
         switch (id) {
             case 1: return TILE_EARTH; break;
             case 2: return TILE_ROCK; break;
@@ -63,69 +69,6 @@ export class Map {
         }
     }
 }
-
-export class Tile {
-
-    public width: any;
-    public height: any;
-    public id: any;
-    public desc: any;
-    public src_x: any;
-    public src_y: any;
-    public coord_x: any;
-    public coord_y: any;
-    public pos_x: any;
-    public pos_y: any;
-    public has_collision: any;
-    public type: any;
-    public anim: any;
-
-    constructor(id, desc, src_x, src_y, has_collision) {
-        this.width = 20;
-        this.height = 20;
-        this.id = id;
-        this.desc = desc;
-        this.src_x = src_x;
-        this.src_y = src_y;
-        this.coord_x;
-        this.coord_y;
-        this.pos_x;
-        this.pos_y;
-        this.has_collision = has_collision;
-        this.is_warp; // {true, destination} if it's a warp zone for the current map
-        this.type; // ENUM TileType
-        this.anim = Array(); // If primary, contains all the animated tiles IDs
-    }
-
-    same_coords(tile) {
-        return this.coord_x === tile.coord_x && this.coord_y === this.coord_y;
-    }
-
-    same_coords_array(array) {
-        return this.coord_x === array[0] && this.coord_y === array[1];
-    }
-
-    is_warp() {
-        let warp = gameState.current_map.get_warp();
-        if (warp !== null) {
-            let tile = this;
-            for (let i = 0; i < warp.zones.length; i++) {
-                for (let j = 0; j < warp.zones[i].tiles.length; j++) {
-                    if (tile.same_coords_array(warp.zones[i].tiles[j])) {
-                        return { "bool": true, "destination": warp.zones[i].destination };
-                    }
-                }
-            }
-        }
-        return { "bool": false, "destination": -1 };
-    }
-}
-
-enum TileType {
-    STATIC = "Static",
-    PRIMARY = "Primary",
-    ANIMATED = "Animated"
-};
 
 export const TILE_REF = new Tile(0, "", -1, -1, false);
 

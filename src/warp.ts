@@ -1,6 +1,11 @@
+import { Direction } from "./enum";
+
+/**
+ * TODO: I don't know how to deal with zoenes type
+ */
 export class Warp {
-    public map_id: any;
-    public direction: any;
+    public map_id: number;
+    public direction: Direction;
     public zones: any;
     constructor() {
         this.map_id;
