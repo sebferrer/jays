@@ -1,8 +1,17 @@
 {
-    "compilerOptions": {
-        "target": "ES5",
-        "module": "system",
-        "removeComments": true,
-        "sourceMap": true
-    }
+	"compileOnSave": true,
+	"compilerOptions": {
+		"removeComments": true,
+		"module": "system",
+		"sourceMap": true,
+		"rootDir": ".",
+		"outFile": "dist/main.js"
+	},
+	"files": [],
+	"include": [
+		"src/main.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
 }
