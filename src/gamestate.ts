@@ -1,25 +1,30 @@
 import { gameState, canvas_W, canvas_H, ctx, renderer } from "./main";
-import { TearBasic, TEAR_BASIC } from "./tear";
-import { ArrayUtil } from "./util";
+import { TearBasic, TEAR_BASIC, Tear } from "./tear";
+import { Map } from "./map";
+import { Jays } from "./jays";
+import { Timer } from "./timer";
+import { DirectionEvent } from "./direction_event";
+import { AttackDirectionEvent } from "./attack_direction_event";
+import { Direction } from "./enum";
 
 export class GameState {
 
-    public current_map: any;
-    public jays: any;
-    public direction_event: any;
-    public attack_direction_event: any;
-    public timers: any;
-    public tears: any;
+    public current_map: Map;
+    public jays: Jays;
+    public direction_event: DirectionEvent;
+    public attack_direction_event: AttackDirectionEvent;
+    public timers: Timer[];
+    public tears: Tear[];
 
-    constructor(map) {
+    constructor(map: Map) {
         this.current_map = map;
         this.direction_event = new DirectionEvent();
         this.attack_direction_event = new AttackDirectionEvent();
-        this.timers = Array();
-        this.tears = Array();
+        this.timers = new Array<Timer>();
+        this.tears = new Array<Tear>();
     }
 
-    key_down(keyName) {
+    public key_down(keyName: string): void {
         switch (keyName) {
             case 'z': this.direction_event.move_up = true; break;
             case 's': this.direction_event.move_down = true; break;
@@ -33,7 +38,7 @@ export class GameState {
         }
     }
 
-    key_up(keyName) {
+    public key_up(keyName: string): void {
         switch (keyName) {
             case 'z': this.direction_event.move_up = false; break;
             case 's': this.direction_event.move_down = false; break;
@@ -47,7 +52,7 @@ export class GameState {
         }
     }
 
-    update() {
+    public update(): void {
         ctx.save();
         ctx.clearRect(0, 0, canvas_W, canvas_H);
 
@@ -77,14 +82,14 @@ export class GameState {
         window.requestAnimationFrame(function () { self.update() });
     }
 
-    jays_update() {
+    public jays_update(): void {
         if (this.direction_event.move_up) { this.jays.move_direction(Direction.UP); }
         if (this.direction_event.move_down) { this.jays.move_direction(Direction.DOWN); }
         if (this.direction_event.move_left) { this.jays.move_direction(Direction.LEFT); }
         if (this.direction_event.move_right) { this.jays.move_direction(Direction.RIGHT); }
     }
 
-    tears_update() {
+    public tears_update(): void {
         let timer_tear = gameState.get_timer('tear');
         if (this.attack_direction_event.directions.length > 0) {
             timer_tear.enable();
@@ -108,48 +113,7 @@ export class GameState {
         });
     }
 
-    get_timer(id) {
+    public get_timer(id: string): Timer {
         return gameState.timers.find(item => item.id === id);
-    }
-}
-
-export enum Direction {
-    UP = "Up",
-    DOWN = "Down",
-    LEFT = "Left",
-    RIGHT = "Right"
-};
-
-export class DirectionEvent {
-    public move_up: any;
-    public move_down: any;
-    public move_left: any;
-    public move_right: any;
-
-    constructor() {
-        this.move_up = false;
-        this.move_down = false;
-        this.move_left = false;
-        this.move_right = false;
-    }
-}
-
-export class AttackDirectionEvent {
-    public directions: any;
-
-    constructor() {
-        // To manage the multi-key press
-        // Taking always the first Direction of this array,
-        // even though the user presses many attack keys in same time
-        // and then releases them, only the last pressed will be taken into account
-        this.directions = Array();
-    }
-
-    add(direction) {
-        ArrayUtil.addFirstNoDuplicate(this.directions, direction);
-    }
-
-    remove(direction) {
-        ArrayUtil.removeFromArray(this.directions, direction);
     }
 }

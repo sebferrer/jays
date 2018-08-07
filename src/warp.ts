@@ -1,11 +1,16 @@
+import { Direction } from "./enum";
+
+/**
+ * TODO: I don't know how to deal with zones type
+ */
 export class Warp {
-    public map_id: any;
-    public direction: any;
+    public map_id: number;
+    public direction: Direction;
     public zones: any;
     constructor() {
         this.map_id;
         this.direction;
-        this.zones = Array(); // Vec<Vec<Pair<int, int>>> Array of array of Tiles coords(x, y)
+        this.zones = Array<any>(); // Vec<Vec<Pair<int, int>>> Array of array of Tiles coords(x, y)
     }
 }
 /**

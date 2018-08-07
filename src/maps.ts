@@ -1,5 +1,3 @@
-
-
 export const MAPS = [
     {
         "id": 0, "width": 32, "height": 24, "tiles": [
