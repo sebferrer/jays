@@ -21,6 +21,7 @@
 	"homepage": "https://github.com/sebferrer/jays#readme",
 	"devDependencies": {
 		"browserify": "^16.2.2",
+		"del": "^3.0.0",
 		"gulp": "^3.9.1",
 		"gulp-typescript": "^5.0.0-alpha.3",
 		"tsify": "^4.0.0",
