@@ -1,7 +1,5 @@
 import { WARPS, Warp } from "./warp";
-import { gameState } from "./main";
 import { MAPS } from "./maps";
-import { WarpMap } from "./warp_map";
 import { Tile } from "./tile";
 
 export class Map {
@@ -16,10 +14,10 @@ export class Map {
         this.id = id;
         this.width = MAPS[id].width;
         this.height = MAPS[id].height;
-        this.tiles = Array<Array<Tile>>();
-        this.warps = Array<Warp>();
+        this.tiles = new Array<Array<Tile>>();
+        this.warps = new Array<Warp>();
 
-        let line = Array<Tile>();
+        let line = new Array<Tile>();
         let tile_coord_x = 0
         let tile_coord_y = 0;
         for (let i = 0; i < MAPS[id].tiles.length; i++) {
@@ -36,7 +34,7 @@ export class Map {
             line.push(tile);
             if (i > 0 && (i + 1) % this.width == 0) {
                 this.tiles.push(line);
-                line = Array();
+                line = new Array<Tile>();
                 tile_coord_x = 0;
                 tile_coord_y++;
             }

@@ -25,14 +25,10 @@ export class Tile {
         this.desc = desc;
         this.src_x = src_x;
         this.src_y = src_y;
-        this.coord_x;
-        this.coord_y;
-        this.pos_x;
-        this.pos_y;
         this.has_collision = has_collision;
         this.warp_destination; // {true, destination} if it's a warp zone for the current map
         this.type; // ENUM TileType
-        this.anim = Array(); // If primary, contains all the animated tiles IDs
+        this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
     }
 
     public same_coords(tile: Tile): boolean {
@@ -50,11 +46,11 @@ export class Tile {
             for (let i = 0; i < warp.zones.length; i++) {
                 for (let j = 0; j < warp.zones[i].tiles.length; j++) {
                     if (tile.same_coords_array(warp.zones[i].tiles[j])) {
-                        return { "is_warp": true, "destination": warp.zones[i].destination };
+                        return new WarpDestination(true, warp.zones[i].destination);
                     }
                 }
             }
         }
-        return { "is_warp": false, "destination": -1 };
+        return new WarpDestination(false, -1);
     }
 }

@@ -2,6 +2,7 @@ import { Entity } from "./entity";
 import { gameState, canvas_H, canvas_W } from "./main";
 import { Map, TILE_REF } from "./map";
 import { Direction } from "./enum";
+import { Tear } from "./tear";
 
 export class Jays extends Entity {
 
@@ -31,7 +32,7 @@ export class Jays extends Entity {
                 case Direction.LEFT: this.pos_x = canvas_W - this.width - TILE_REF.height; break;
                 case Direction.RIGHT: this.pos_x = 0 + TILE_REF.width; break;
             }
-            gameState.tears = Array();
+            gameState.tears = new Array<Tear>();
         }
     }
 }

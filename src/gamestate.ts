@@ -20,8 +20,8 @@ export class GameState {
         this.current_map = map;
         this.direction_event = new DirectionEvent();
         this.attack_direction_event = new AttackDirectionEvent();
-        this.timers = Array<Timer>();
-        this.tears = Array<Tear>();
+        this.timers = new Array<Timer>();
+        this.tears = new Array<Tear>();
     }
 
     public key_down(keyName: string): void {
