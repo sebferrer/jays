@@ -18,11 +18,11 @@ export class Map {
 		this.warps = new Array<Warp>();
 
 		let line = new Array<Tile>();
-		let tile_coord_x = 0
+		let tile_coord_x = 0;
 		let tile_coord_y = 0;
 		for (let i = 0; i < MAPS[id].tiles.length; i++) {
-			let tile_ref = Map.getTile(MAPS[id].tiles[i]);
-			let tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src_x, tile_ref.src_y, tile_ref.has_collision);
+			const tile_ref = Map.getTile(MAPS[id].tiles[i]);
+			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src_x, tile_ref.src_y, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
 			tile.pos_x = tile.coord_x * tile.width;
@@ -32,7 +32,7 @@ export class Map {
 			//this.is_warp = {"bool": is_warp.bool, "destination": is_warp.destination};
 
 			line.push(tile);
-			if (i > 0 && (i + 1) % this.width == 0) {
+			if (i > 0 && (i + 1) % this.width === 0) {
 				this.tiles.push(line);
 				line = new Array<Tile>();
 				tile_coord_x = 0;
@@ -41,10 +41,10 @@ export class Map {
 		}
 	}
 
-    /**
-     * TODO fix this shit
-     * Remove warpmap.ts & warpdesc.ts if necessary
-     */
+	/**
+	 * TODO fix this shit
+	 * Remove warpmap.ts & warpdesc.ts if necessary
+	 */
 	public get_warp(): any { // I wanted to return a WarpMap using itself a WarpDesc...
 		for (var d = 0, len = WARPS.length; d < len; d++) {
 			if (WARPS[d].map_id === this.id) {

@@ -22,7 +22,7 @@ export class Jays extends Entity {
 	public move_direction(direction) {
 		super.move_direction(direction);
 
-		let collision_warp = this.collision_warp();
+		const collision_warp = this.collision_warp();
 		if (collision_warp.is_collision) {
 			gameState.current_map = new Map(collision_warp.destination);
 			// To change after warps improvement, see warp.js

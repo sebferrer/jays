@@ -5,7 +5,8 @@
 	"main": "main.js",
 	"scripts": {
 		"start": "gulp",
-		"lint": "tslint --project tslint.json"
+		"lint": "tslint --project tslint.json",
+		"lint-quick-fix": "tslint --fix -c tslint.json 'src/**/*.ts'"
 	},
 	"repository": {
 		"type": "git",

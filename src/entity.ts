@@ -35,17 +35,17 @@ export class Entity { // Abstract, will never be instancied
 	}
 
 	public move_direction(direction: Direction): void {
-		let next_position = this.next_position(direction);
-		let collision_map = this.collision_map(direction, next_position);
+		const next_position = this.next_position(direction);
+		const collision_map = this.collision_map(direction, next_position);
 		if (!collision_map.is_collision) {
 			this.pos_x = next_position.pos_x;
 			this.pos_y = next_position.pos_y;
 		} else {
-			if (collision_map.delta_x != 0) { this.pos_x += collision_map.delta_x };
-			if (collision_map.delta_y != 0) { this.pos_y += collision_map.delta_y };
+			if (collision_map.delta_x !== 0) { this.pos_x += collision_map.delta_x; }
+			if (collision_map.delta_y !== 0) { this.pos_y += collision_map.delta_y; }
 			this.has_collision_map();
 		}
-		let collision_warp = this.collision_warp();
+		const collision_warp = this.collision_warp();
 		if (collision_warp.is_collision) {
 			this.has_collision_warp();
 		}
@@ -54,7 +54,7 @@ export class Entity { // Abstract, will never be instancied
 	public collision_map(direction: Direction, position: Position): CollisionDelta {
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
-				let tile = gameState.current_map.tiles[i][j];
+				const tile = gameState.current_map.tiles[i][j];
 				if (!tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, tile)) {
 					continue;
 				}
@@ -72,10 +72,10 @@ export class Entity { // Abstract, will never be instancied
 	public collision_warp(): CollisionWarp {
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
-				let tile = gameState.current_map.tiles[i][j];
-				let warp_destination = tile.warp_destination();
+				const tile = gameState.current_map.tiles[i][j];
+				const warp_destination = tile.warp_destination();
 				if (warp_destination.is_warp) {
-					let is_collision = Collision.is_collision_entity_tile(this, tile);
+					const is_collision = Collision.is_collision_entity_tile(this, tile);
 					if (is_collision) {
 						return new CollisionWarp(true, warp_destination.is_warp, warp_destination.destination);
 					}
@@ -85,7 +85,7 @@ export class Entity { // Abstract, will never be instancied
 		return new CollisionWarp(false, false, -1);
 	}
 
-	has_collision_map() { }
+	public has_collision_map() { }
 
-	has_collision_warp() { }
+	public has_collision_warp() { }
 }

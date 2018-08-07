@@ -78,8 +78,8 @@ export class GameState {
 
 		ctx.restore();
 
-		var self = this;
-		window.requestAnimationFrame(function () { self.update() });
+		const self = this;
+		window.requestAnimationFrame(function () { self.update(); });
 	}
 
 	public jays_update(): void {
@@ -90,7 +90,7 @@ export class GameState {
 	}
 
 	public tears_update(): void {
-		let timer_tear = gameState.get_timer("tear");
+		const timer_tear = gameState.get_timer("tear");
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {

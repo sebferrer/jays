@@ -7,7 +7,7 @@ export class Renderer {
 	public render_map(map: Map): void {
 		for (let i = 0; i < map.height; i++) {
 			for (let j = 0; j < map.width; j++) {
-				let tile = map.tiles[i][j];
+				const tile = map.tiles[i][j];
 				ctx.drawImage(bank.pic["assets/img/tiles.png"],
 					tile.src_x * tile.height, tile.src_y * tile.width, tile.width, tile.height,
 					tile.pos_x, tile.pos_y, tile.width, tile.height);
@@ -18,7 +18,7 @@ export class Renderer {
 	// Too repetitive. We probably won't continue this way...
 
 	public render_jays(): void {
-		let jays = gameState.jays;
+		const jays = gameState.jays;
 		ctx.drawImage(bank.pic[jays.sprite_filename],
 			0, 0, jays.width, jays.height,
 			jays.pos_x, jays.pos_y, jays.width, jays.height);

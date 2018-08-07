@@ -40,9 +40,9 @@ export class Tile {
 	}
 
 	public warp_destination(): WarpDestination {
-		let warp = gameState.current_map.get_warp();
+		const warp = gameState.current_map.get_warp();
 		if (warp !== null) {
-			let tile = this;
+			const tile = this;
 			for (let i = 0; i < warp.zones.length; i++) {
 				for (let j = 0; j < warp.zones[i].tiles.length; j++) {
 					if (tile.same_coords_array(warp.zones[i].tiles[j])) {

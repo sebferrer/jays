@@ -1,9 +1,9 @@
 export class ArrayUtil {
 
-    /**
-     * TODO: I'd like to type array as Array<any>, but I get the following error:
-     * Error TS2339: Property 'includes' does not exist on type 'any[]'.
-     */
+	/**
+	 * TODO: I'd like to type array as Array<any>, but I get the following error:
+	 * Error TS2339: Property 'includes' does not exist on type 'any[]'.
+	 */
 	public static getIndex(array: any, obj: any): number {
 		let index = -1;
 		let i = 0;

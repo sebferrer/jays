@@ -27,9 +27,9 @@ export class ImgBank {
 		this.nextLoad = 0;
 		this.buffer = this.list;
 
-		var self = this;
-		var timer = function () {
-			if (self.loaded == self.unload) {
+		const self = this;
+		const timer = function () {
+			if (self.loaded === self.unload) {
 				gameState.update();
 			}
 			else if (self.loaded > self.nextLoad) {
@@ -40,22 +40,22 @@ export class ImgBank {
 			else {
 				setTimeout(timer, 10);
 			}
-		}
+		};
 		this.loadimg();
 		setTimeout(timer, 10);
 	}
 
 	public loadimg(): void {
-		var ref = this.buffer[this.nextLoad];
-		var img = new Image();
+		const ref = this.buffer[this.nextLoad];
+		const img = new Image();
 		img.src = ref;
-		var self = this;
+		const self = this;
 
 		img.onload = function () {
-			var canvas = document.createElement("canvas");
+			const canvas = document.createElement("canvas");
 			canvas.height = img.height;
 			canvas.width = img.width;
-			var ctx = canvas.getContext("2d");
+			const ctx = canvas.getContext("2d");
 			ctx.drawImage(img, 0, 0);
 
 			self.pic[ref] = canvas;

@@ -21,7 +21,7 @@ export class Collision {
 			tile.pos_x, tile.pos_y, tile.pos_x + tile.width, tile.pos_y + tile.height);
 	}
 
-    /**
-     * TODO: I'd like to make Jays able to crossing most of the warp before changing map without writing ugly code...
-     */
+	/**
+	 * TODO: I'd like to make Jays able to crossing most of the warp before changing map without writing ugly code...
+	 */
 }

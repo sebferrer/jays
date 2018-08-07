@@ -15,21 +15,21 @@ export var gameState = new GameState(new Map(0));
 
 window.onload = function () {
 	main();
-}
+};
 
 /**
  * TODO: See warp.js, collision.js
  */
 
 function main() {
-	let jays = new Jays(20, 40, canvas_W / 2 - 10, canvas_H / 2 - 20);
+	const jays = new Jays(20, 40, canvas_W / 2 - 10, canvas_H / 2 - 20);
 	gameState.jays = jays;
 
 	//let timerTest = new Timer("test", 1000); // Tick every 1 second
 	//gameState.timers.push(timerTest);
 	//gameState.get_timer("test").enable(); // Launch the timer, we can now count his ticks in the gameState.update function
 
-	let timer_tear = new Timer("tear", gameState.jays.tear_delay);
+	const timer_tear = new Timer("tear", gameState.jays.tear_delay);
 	gameState.timers.push(timer_tear);
 
 	bank.preload(gameState);
