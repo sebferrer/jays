@@ -4,7 +4,9 @@
 	"description": "http://sebferrer.fr/jays/",
 	"main": "main.js",
 	"scripts": {
-		"start": "gulp"
+		"start": "gulp",
+		"lint": "tslint --project tslint.json",
+		"lint-quick-fix": "tslint --fix -c tslint.json 'src/**/*.ts'"
 	},
 	"repository": {
 		"type": "git",
@@ -21,9 +23,12 @@
 	"homepage": "https://github.com/sebferrer/jays#readme",
 	"devDependencies": {
 		"browserify": "^16.2.2",
+		"del": "^3.0.0",
 		"gulp": "^3.9.1",
 		"gulp-typescript": "^5.0.0-alpha.3",
+		"run-sequence": "^2.2.1",
 		"tsify": "^4.0.0",
+		"tslint": "^5.11.0",
 		"typescript": "^3.0.1",
 		"vinyl-source-stream": "^2.0.0"
 	},
