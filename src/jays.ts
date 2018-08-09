@@ -3,6 +3,7 @@ import { gameState, canvas_H, canvas_W } from "./main";
 import { Map, TILE_REF } from "./map";
 import { Direction } from "./enum";
 import { Tear } from "./tear";
+import { Sprite } from "./sprite";
 
 export class Jays extends Entity {
 
@@ -12,8 +13,8 @@ export class Jays extends Entity {
 	public pos_y: number;
 	public tear_delay: number;
 
-	constructor(width: number, height: number, pos_x: number, pos_y: number) {
-		super(width, height, pos_x, pos_y);
+	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+		super(current_sprite, width, height, pos_x, pos_y);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 2;
 		this.tear_delay = 250;

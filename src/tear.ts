@@ -2,19 +2,19 @@ import { ArrayUtil } from "./util";
 import { gameState } from "./main";
 import { Entity } from "./entity";
 import { Direction } from "./enum";
+import { Sprite } from "./sprite";
 
 export class Tear extends Entity {
 	public direction: Direction;
-	constructor(width: number, height: number, pos_x: number, pos_y: number) {
-		super(width, height, pos_x, pos_y);
+	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+		super(current_sprite, width, height, pos_x, pos_y);
 	}
 }
 
 export class TearBasic extends Tear {
-	public sprite_filename: string;
 	public speed: number;
-	constructor(width: number, height: number, pos_x: number, pos_y: number, direction: Direction) {
-		super(width, height, pos_x, pos_y);
+	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number, direction: Direction) {
+		super(current_sprite, width, height, pos_x, pos_y);
 		this.direction = direction;
 		this.sprite_filename = "assets/img/tear.png";
 		this.speed = 3;
@@ -29,4 +29,4 @@ export class TearBasic extends Tear {
 	}
 }
 
-export const TEAR_BASIC = new TearBasic(10, 10, 0, 0, null);
+export const TEAR_BASIC = new TearBasic(new Sprite(0, 0, 10, 10), 10, 10, 0, 0, null);

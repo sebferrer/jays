@@ -4,22 +4,26 @@ import { Direction } from "./enum";
 import { Position } from "./position";
 import { CollisionDelta } from "./collision_delta";
 import { CollisionWarp } from "./collision_warp";
+import { Sprite } from "./sprite";
 
 export class Entity { // Abstract, will never be instancied
-
 	public facing_direction: Direction;
 	public sprite_filename: string;
+	public current_sprite: Sprite;
+	public sprite_collecs: Map<string, Sprite[]>;
 	public speed: number;
 	public width: number;
 	public height: number;
 	public pos_x: number;
 	public pos_y: number;
 
-	constructor(width: number, height: number, pos_x: number, pos_y: number) {
+	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+		this.current_sprite = current_sprite;
 		this.width = width;
 		this.height = height;
 		this.pos_x = pos_x;
 		this.pos_y = pos_y;
+		this.sprite_collecs = new Map<string, Sprite[]>();
 	}
 
 	public next_position(direction: Direction): Position {

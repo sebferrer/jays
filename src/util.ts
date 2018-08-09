@@ -16,15 +16,19 @@ export class ArrayUtil {
 		return index;
 	}
 
-	public static removeFromArray(array: any, obj: any): void {
+	public static removeFromArray(array: any, obj: any): boolean {
 		if (array.includes(obj)) {
 			array.splice(this.getIndex(array, obj), 1);
+			return true;
 		}
+		return false;
 	}
 
-	public static addFirstNoDuplicate(array: any, obj: any): void {
+	public static addFirstNoDuplicate(array: any, obj: any): boolean {
 		if (!array.includes(obj)) {
 			array.unshift(obj);
+			return true;
 		}
+		return false;
 	}
 }

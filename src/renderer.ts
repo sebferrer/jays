@@ -20,13 +20,13 @@ export class Renderer {
 	public render_jays(): void {
 		const jays = gameState.jays;
 		ctx.drawImage(bank.pic[jays.sprite_filename],
-			0, 0, jays.width, jays.height,
+			jays.current_sprite.src_x, jays.current_sprite.src_y, jays.current_sprite.src_width, jays.current_sprite.src_height,
 			jays.pos_x, jays.pos_y, jays.width, jays.height);
 	}
 
 	public render_tear(tear): void {
 		ctx.drawImage(bank.pic[tear.sprite_filename],
-			0, 0, tear.width, tear.height,
+			tear.current_sprite.src_x, tear.current_sprite.src_y, tear.current_sprite.src_width, tear.current_sprite.src_height,
 			tear.pos_x, tear.pos_y, tear.width, tear.height);
 	}
 

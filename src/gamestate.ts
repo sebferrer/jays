@@ -6,12 +6,15 @@ import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction } from "./enum";
+import { Sprite } from "./sprite";
+import { ArrayUtil } from "./util";
 
 export class GameState {
 
 	public current_map: Map;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
+	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
 	public timers: Timer[];
 	public tears: Tear[];
@@ -19,6 +22,7 @@ export class GameState {
 	constructor(map: Map) {
 		this.current_map = map;
 		this.direction_event = new DirectionEvent();
+		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.timers = new Array<Timer>();
 		this.tears = new Array<Tear>();
@@ -26,29 +30,83 @@ export class GameState {
 
 	public key_down(keyName: string): void {
 		switch (keyName) {
-			case "z": this.direction_event.move_up = true; break;
-			case "s": this.direction_event.move_down = true; break;
-			case "q": this.direction_event.move_left = true; break;
-			case "d": this.direction_event.move_right = true; break;
+			case "z":
+				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.UP)) {
+					this.get_timer('jays_sprites').restart();
+				}
+				this.direction_event.move_up = true;
+				break;
+			case "s":
+				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.DOWN)) {
+					this.get_timer('jays_sprites').restart();
+				}
+				this.direction_event.move_down = true;
+				break;
+			case "q":
+				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.LEFT)) {
+					this.get_timer('jays_sprites').restart();
+				}
+				this.direction_event.move_left = true;
+				break;
+			case "d":
+				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.RIGHT)) {
+					this.get_timer('jays_sprites').restart();
+				}
+				this.direction_event.move_right = true;
+				break;
 
-			case "ArrowUp": this.attack_direction_event.add(Direction.UP); break;
-			case "ArrowDown": this.attack_direction_event.add(Direction.DOWN); break;
-			case "ArrowLeft": this.attack_direction_event.add(Direction.LEFT); break;
-			case "ArrowRight": this.attack_direction_event.add(Direction.RIGHT); break;
+			case "ArrowUp":
+				this.attack_direction_event.add(Direction.UP);
+				break;
+			case "ArrowDown":
+				this.attack_direction_event.add(Direction.DOWN);
+				break;
+			case "ArrowLeft":
+				this.attack_direction_event.add(Direction.LEFT);
+				break;
+			case "ArrowRight":
+				this.attack_direction_event.add(Direction.RIGHT);
+				break;
 		}
 	}
 
 	public key_up(keyName: string): void {
 		switch (keyName) {
-			case "z": this.direction_event.move_up = false; break;
-			case "s": this.direction_event.move_down = false; break;
-			case "q": this.direction_event.move_left = false; break;
-			case "d": this.direction_event.move_right = false; break;
+			case "z":
+				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.UP);
+				this.direction_event.move_up = false;
+				break;
+			case "s":
+				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.DOWN);
+				this.direction_event.move_down = false;
+				break;
+			case "q":
+				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.LEFT);
+				this.direction_event.move_left = false;
+				break;
+			case "d":
+				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.RIGHT);
+				this.direction_event.move_right = false;
+				break;
 
-			case "ArrowUp": this.attack_direction_event.remove(Direction.UP); break;
-			case "ArrowDown": this.attack_direction_event.remove(Direction.DOWN); break;
-			case "ArrowLeft": this.attack_direction_event.remove(Direction.LEFT); break;
-			case "ArrowRight": this.attack_direction_event.remove(Direction.RIGHT); break;
+			case "ArrowUp":
+				this.attack_direction_event.remove(Direction.UP);
+				break;
+			case "ArrowDown":
+				this.attack_direction_event.remove(Direction.DOWN);
+				break;
+			case "ArrowLeft":
+				this.attack_direction_event.remove(Direction.LEFT);
+				break;
+			case "ArrowRight":
+				this.attack_direction_event.remove(Direction.RIGHT);
+				break;
+		}
+
+		if (["z", "s", "q", "d"].includes(keyName)) {
+			if (this.directions_keyDown.length === 0) {
+				this.get_timer('jays_sprites').reset();
+			}
 		}
 	}
 
@@ -56,16 +114,15 @@ export class GameState {
 		ctx.save();
 		ctx.clearRect(0, 0, canvas_W, canvas_H);
 
-		gameState.timers.forEach(function (timer) {
+		this.timers.forEach(function (timer) {
 			timer.run();
 		});
-		//console.log(gameState.get_timer("test").tick); // 1 tick every second
 
 		try {
-			renderer.render_map(gameState.current_map);
+			renderer.render_map(this.current_map);
 		} catch (err) { }
 
-		gameState.tears.forEach(function (tear) {
+		this.tears.forEach(function (tear) {
 			renderer.render_tear(tear);
 		});
 
@@ -83,19 +140,39 @@ export class GameState {
 	}
 
 	public jays_update(): void {
-		if (this.direction_event.move_up) { this.jays.move_direction(Direction.UP); }
-		if (this.direction_event.move_down) { this.jays.move_direction(Direction.DOWN); }
-		if (this.direction_event.move_left) { this.jays.move_direction(Direction.LEFT); }
-		if (this.direction_event.move_right) { this.jays.move_direction(Direction.RIGHT); }
+		let timer_sprites = this.get_timer('jays_sprites');
+		if (this.jays.sprite_collecs.has(this.jays.current_sprite.collec_id)) {
+			if (timer_sprites.tick >= this.jays.sprite_collecs.get(this.jays.current_sprite.collec_id).length) {
+				timer_sprites.restart();
+			}
+		}
+
+		if (this.direction_event.move_up) {
+			this.jays.move_direction(Direction.UP);
+			this.jays.current_sprite = this.jays.sprite_collecs.get("UP")[timer_sprites.tick];
+		}
+		if (this.direction_event.move_down) {
+			this.jays.move_direction(Direction.DOWN);
+			this.jays.current_sprite = this.jays.sprite_collecs.get("DOWN")[timer_sprites.tick];
+		}
+		if (this.direction_event.move_left) {
+			this.jays.move_direction(Direction.LEFT);
+			this.jays.current_sprite = this.jays.sprite_collecs.get("LEFT")[timer_sprites.tick];
+		}
+		if (this.direction_event.move_right) {
+			this.jays.move_direction(Direction.RIGHT);
+			this.jays.current_sprite = this.jays.sprite_collecs.get("RIGHT")[timer_sprites.tick];
+		}
 	}
 
 	public tears_update(): void {
-		const timer_tear = gameState.get_timer("tear");
+		const timer_tear = this.get_timer("tear");
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				gameState.tears.push(new TearBasic(TEAR_BASIC.width, TEAR_BASIC.height,
-					gameState.jays.pos_x + gameState.jays.width / 2, gameState.jays.pos_y + gameState.jays.height / 2,
+				this.tears.push(new TearBasic(new Sprite(TEAR_BASIC.pos_x, TEAR_BASIC.pos_y, TEAR_BASIC.width, TEAR_BASIC.height),
+					TEAR_BASIC.width, TEAR_BASIC.height,
+					this.jays.pos_x + this.jays.width / 2 - TEAR_BASIC.width / 2, this.jays.pos_y + this.jays.height / 2 - TEAR_BASIC.height / 2,
 					this.attack_direction_event.directions[0]));
 			}
 		}
@@ -103,7 +180,7 @@ export class GameState {
 			timer_tear.reset();
 		}
 
-		gameState.tears.forEach(function (tear) {
+		this.tears.forEach(function (tear) {
 			switch (tear.direction) {
 				case Direction.UP: tear.move_direction(Direction.UP); break;
 				case Direction.DOWN: tear.move_direction(Direction.DOWN); break;
@@ -114,6 +191,6 @@ export class GameState {
 	}
 
 	public get_timer(id: string): Timer {
-		return gameState.timers.find(item => item.id === id);
+		return this.timers.find(item => item.id === id);
 	}
 }
