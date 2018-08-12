@@ -5,12 +5,12 @@ import { Jays } from "./jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { Direction } from "./enum";
+import { Direction, Key_Direction } from "./enum";
 import { Sprite } from "./sprite";
 import { ArrayUtil } from "./util";
+import { TIMERS } from "./timers";
 
 export class GameState {
-
 	public current_map: RoomMap;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
@@ -24,7 +24,7 @@ export class GameState {
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
-		this.timers = new Array<Timer>();
+		this.timers = this.get_timers();
 		this.tears = new Array<Tear>();
 	}
 
@@ -32,25 +32,25 @@ export class GameState {
 		switch (keyName) {
 			case "z":
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.UP)) {
-					this.get_timer('jays_sprites').restart();
+					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_up = true;
 				break;
 			case "s":
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.DOWN)) {
-					this.get_timer('jays_sprites').restart();
+					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_down = true;
 				break;
 			case "q":
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.LEFT)) {
-					this.get_timer('jays_sprites').restart();
+					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_left = true;
 				break;
 			case "d":
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.RIGHT)) {
-					this.get_timer('jays_sprites').restart();
+					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_right = true;
 				break;
@@ -72,23 +72,6 @@ export class GameState {
 
 	public key_up(keyName: string): void {
 		switch (keyName) {
-			case "z":
-				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.UP);
-				this.direction_event.move_up = false;
-				break;
-			case "s":
-				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.DOWN);
-				this.direction_event.move_down = false;
-				break;
-			case "q":
-				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.LEFT);
-				this.direction_event.move_left = false;
-				break;
-			case "d":
-				ArrayUtil.removeFromArray(this.directions_keyDown, Direction.RIGHT);
-				this.direction_event.move_right = false;
-				break;
-
 			case "ArrowUp":
 				this.attack_direction_event.remove(Direction.UP);
 				break;
@@ -104,9 +87,10 @@ export class GameState {
 		}
 
 		if (["z", "s", "q", "d"].includes(keyName)) {
-			if (this.directions_keyDown.length === 0) {
-				this.get_timer('jays_sprites').reset();
-			}
+			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(keyName));
+			this.direction_event.setDirection(Key_Direction.get(keyName), false);
+
+			this.jays.direction_key_up(Key_Direction.get(keyName));
 		}
 	}
 
@@ -144,7 +128,7 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				this.tears.push(new TearBasic(new Sprite(TEAR_BASIC.pos_x, TEAR_BASIC.pos_y, TEAR_BASIC.width, TEAR_BASIC.height),
+				this.tears.push(new TearBasic("tear_basic", new Sprite(TEAR_BASIC.pos_x, TEAR_BASIC.pos_y, TEAR_BASIC.width, TEAR_BASIC.height),
 					TEAR_BASIC.width, TEAR_BASIC.height,
 					this.jays.head.pos_x + this.jays.head.width / 2 - TEAR_BASIC.width / 2, this.jays.head.pos_y + this.jays.head.height / 2 - TEAR_BASIC.height / 2,
 					this.attack_direction_event.directions[0]));
@@ -166,5 +150,14 @@ export class GameState {
 
 	public get_timer(id: string): Timer {
 		return this.timers.find(item => item.id === id);
+	}
+
+	public get_timers(): Timer[] {
+		const timers = new Array<Timer>();
+		for (let i = 0; i < TIMERS.length; i++) {
+			const timer = new Timer(TIMERS[i].id, TIMERS[i].interval);
+			timers.push(timer);
+		}
+		return timers;
 	}
 }

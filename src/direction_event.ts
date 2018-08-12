@@ -13,8 +13,25 @@ export class DirectionEvent {
 		this.move_right = false;
 	}
 
-	getAllDirectionsValues() {
+	public getAllDirectionsValues() {
 		return [{ "direction": Direction.UP, "enabled": this.move_up }, { "direction": Direction.DOWN, "enabled": this.move_down },
 		{ "direction": Direction.LEFT, "enabled": this.move_left }, { "direction": Direction.RIGHT, "enabled": this.move_right }];
+	}
+
+	public setDirection(direction: Direction, bool: boolean): void {
+		switch (direction) {
+			case Direction.UP:
+				this.move_up = bool;
+				break;
+			case Direction.DOWN:
+				this.move_down = bool;
+				break;
+			case Direction.LEFT:
+				this.move_left = bool;
+				break;
+			case Direction.RIGHT:
+				this.move_right = bool;
+				break;
+		}
 	}
 }

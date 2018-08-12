@@ -16,12 +16,12 @@ export class Jays extends Entity {
 	public tear_delay: number;
 	public head: JaysHead;
 
-	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
-		super(current_sprite, width, height, pos_x, pos_y);
+	constructor(id: string, current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+		super(id, current_sprite, width, height, pos_x, pos_y);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 2;
 		this.tear_delay = 250;
-		this.head = new JaysHead(new Sprite(0, 0, 20, 20), 20, 20, this.pos_x, this.pos_y - 20);
+		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), 20, 20, this.pos_x, this.pos_y - 20);
 	}
 
 	public move_direction(direction: Direction) {
@@ -32,16 +32,16 @@ export class Jays extends Entity {
 	}
 
 	public collision_map(direction: Direction, position: Position): CollisionDelta {
-		let result = super.collision_map(direction, position);
-		if(!result.is_collision) {
-			return this.head.collision_map(direction, new Position(position.pos_x, position.pos_y-this.head.height));
+		const result = super.collision_map(direction, position);
+		if (!result.is_collision) {
+			return this.head.collision_map(direction, new Position(position.pos_x, position.pos_y - this.head.height));
 		}
 		return result;
 	}
 
 	public collision_warp(): CollisionWarp {
-		let result = super.collision_warp();
-		if(!result.is_collision) {
+		const result = super.collision_warp();
+		if (!result.is_collision) {
 			return this.head.collision_warp();
 		}
 		return result;
@@ -52,7 +52,7 @@ export class Jays extends Entity {
 		// To change after warps improvement, see warp.js
 		switch (direction) {
 			case Direction.UP: this.pos_y = canvas_H - this.height - TILE_REF.height; break;
-			case Direction.DOWN: this.pos_y = 0 + TILE_REF.height+this.head.height; break;
+			case Direction.DOWN: this.pos_y = 0 + TILE_REF.height + this.head.height; break;
 			case Direction.LEFT: this.pos_x = canvas_W - this.width - TILE_REF.height; break;
 			case Direction.RIGHT: this.pos_x = 0 + TILE_REF.width; break;
 		}
@@ -60,7 +60,7 @@ export class Jays extends Entity {
 	}
 
 	public update(): void {
-		let timer_sprites = gameState.get_timer('jays_sprites');
+		const timer_sprites = gameState.get_timer("jays_sprites");
 		if (this.sprite_collecs.has(this.current_sprite.collec_id)) {
 			if (timer_sprites.tick >= this.sprite_collecs.get(this.current_sprite.collec_id).length) {
 				timer_sprites.restart();
@@ -68,7 +68,7 @@ export class Jays extends Entity {
 		}
 
 		// DIRECTION EVENT
-		let self = this;
+		const self = this;
 		gameState.direction_event.getAllDirectionsValues().forEach(function (dir_event_move) {
 			if (dir_event_move.enabled) {
 				self.move_direction(dir_event_move.direction);
@@ -85,6 +85,13 @@ export class Jays extends Entity {
 			this.head.current_sprite = this.head.sprite_collecs.get("HEAD")[Direction_Int.get(gameState.attack_direction_event.directions[0])];
 		}
 	}
+
+	public direction_key_up(direction: Direction): void {
+		if (gameState.directions_keyDown.length === 0) {
+			gameState.get_timer("jays_sprites").reset();
+			this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
+		}
+	}
 }
 
 export class JaysHead extends Entity {
@@ -93,8 +100,8 @@ export class JaysHead extends Entity {
 	public pos_x: number;
 	public pos_y: number;
 
-	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
-		super(current_sprite, width, height, pos_x, pos_y);
+	constructor(id: string, current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+		super(id, current_sprite, width, height, pos_x, pos_y);
 		this.sprite_filename = "assets/img/jays.png";
 	}
 }

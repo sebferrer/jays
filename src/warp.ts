@@ -10,7 +10,7 @@ export class Warp {
 	constructor() {
 		this.map_id;
 		this.direction;
-		this.zones = Array<any>(); // Vec<Vec<Pair<int, int>>> Array of array of Tiles coords(x, y)
+		this.zones = new Array<any>(); // Vec<Vec<Pair<int, int>>> Array of array of Tiles coords(x, y)
 	}
 }
 /**

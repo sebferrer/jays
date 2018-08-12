@@ -7,15 +7,15 @@ import { CollisionWarp } from "./collision_warp";
 
 export class Tear extends Entity {
 	public direction: Direction;
-	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
-		super(current_sprite, width, height, pos_x, pos_y);
+	constructor(id: string, current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+		super(id, current_sprite, width, height, pos_x, pos_y);
 	}
 }
 
 export class TearBasic extends Tear {
 	public speed: number;
-	constructor(current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number, direction: Direction) {
-		super(current_sprite, width, height, pos_x, pos_y);
+	constructor(id: string, current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number, direction: Direction) {
+		super(id, current_sprite, width, height, pos_x, pos_y);
 		this.direction = direction;
 		this.sprite_filename = "assets/img/tear.png";
 		this.speed = 3;
@@ -30,4 +30,4 @@ export class TearBasic extends Tear {
 	}
 }
 
-export const TEAR_BASIC = new TearBasic(new Sprite(0, 0, 10, 10), 10, 10, 0, 0, null);
+export const TEAR_BASIC = new TearBasic("tear_basic_ref", new Sprite(0, 0, 10, 10), 10, 10, 0, 0, null);
