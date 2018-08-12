@@ -3,6 +3,7 @@ import { gameState } from "./main";
 import { Entity } from "./entity";
 import { Direction } from "./enum";
 import { Sprite } from "./sprite";
+import { CollisionWarp } from "./collision_warp";
 
 export class Tear extends Entity {
 	public direction: Direction;
@@ -24,7 +25,7 @@ export class TearBasic extends Tear {
 		ArrayUtil.removeFromArray(gameState.tears, this);
 	}
 
-	public has_collision_warp(): void {
+	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
 		ArrayUtil.removeFromArray(gameState.tears, this);
 	}
 }

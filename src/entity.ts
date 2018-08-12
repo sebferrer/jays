@@ -51,7 +51,7 @@ export class Entity { // Abstract, will never be instancied
 		}
 		const collision_warp = this.collision_warp();
 		if (collision_warp.is_collision) {
-			this.has_collision_warp();
+			this.has_collision_warp(direction, collision_warp);
 		}
 	}
 
@@ -91,5 +91,5 @@ export class Entity { // Abstract, will never be instancied
 
 	public has_collision_map() { }
 
-	public has_collision_warp() { }
+	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp) { }
 }

@@ -2,7 +2,7 @@ import { WARPS, Warp } from "./warp";
 import { MAPS } from "./maps";
 import { Tile } from "./tile";
 
-export class Map {
+export class RoomMap {
 
 	public id: number;
 	public width: number;
@@ -21,7 +21,7 @@ export class Map {
 		let tile_coord_x = 0;
 		let tile_coord_y = 0;
 		for (let i = 0; i < MAPS[id].tiles.length; i++) {
-			const tile_ref = Map.getTile(MAPS[id].tiles[i]);
+			const tile_ref = RoomMap.getTile(MAPS[id].tiles[i]);
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src_x, tile_ref.src_y, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;

@@ -1,6 +1,6 @@
 import { gameState, canvas_W, canvas_H, ctx, renderer } from "./main";
 import { TearBasic, TEAR_BASIC, Tear } from "./tear";
-import { Map } from "./map";
+import { RoomMap } from "./room_map";
 import { Jays } from "./jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
@@ -11,7 +11,7 @@ import { ArrayUtil } from "./util";
 
 export class GameState {
 
-	public current_map: Map;
+	public current_map: RoomMap;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
 	public directions_keyDown: Direction[];
@@ -19,7 +19,7 @@ export class GameState {
 	public timers: Timer[];
 	public tears: Tear[];
 
-	constructor(map: Map) {
+	constructor(map: RoomMap) {
 		this.current_map = map;
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
@@ -126,7 +126,7 @@ export class GameState {
 			renderer.render_tear(tear);
 		});
 
-		this.jays_update();
+		this.jays.update();
 		this.tears_update();
 
 		try {
@@ -139,32 +139,6 @@ export class GameState {
 		window.requestAnimationFrame(function () { self.update(); });
 	}
 
-	public jays_update(): void {
-		let timer_sprites = this.get_timer('jays_sprites');
-		if (this.jays.sprite_collecs.has(this.jays.current_sprite.collec_id)) {
-			if (timer_sprites.tick >= this.jays.sprite_collecs.get(this.jays.current_sprite.collec_id).length) {
-				timer_sprites.restart();
-			}
-		}
-
-		if (this.direction_event.move_up) {
-			this.jays.move_direction(Direction.UP);
-			this.jays.current_sprite = this.jays.sprite_collecs.get("UP")[timer_sprites.tick];
-		}
-		if (this.direction_event.move_down) {
-			this.jays.move_direction(Direction.DOWN);
-			this.jays.current_sprite = this.jays.sprite_collecs.get("DOWN")[timer_sprites.tick];
-		}
-		if (this.direction_event.move_left) {
-			this.jays.move_direction(Direction.LEFT);
-			this.jays.current_sprite = this.jays.sprite_collecs.get("LEFT")[timer_sprites.tick];
-		}
-		if (this.direction_event.move_right) {
-			this.jays.move_direction(Direction.RIGHT);
-			this.jays.current_sprite = this.jays.sprite_collecs.get("RIGHT")[timer_sprites.tick];
-		}
-	}
-
 	public tears_update(): void {
 		const timer_tear = this.get_timer("tear");
 		if (this.attack_direction_event.directions.length > 0) {
@@ -172,7 +146,7 @@ export class GameState {
 			if (timer_tear.next_tick()) {
 				this.tears.push(new TearBasic(new Sprite(TEAR_BASIC.pos_x, TEAR_BASIC.pos_y, TEAR_BASIC.width, TEAR_BASIC.height),
 					TEAR_BASIC.width, TEAR_BASIC.height,
-					this.jays.pos_x + this.jays.width / 2 - TEAR_BASIC.width / 2, this.jays.pos_y + this.jays.height / 2 - TEAR_BASIC.height / 2,
+					this.jays.head.pos_x + this.jays.head.width / 2 - TEAR_BASIC.width / 2, this.jays.head.pos_y + this.jays.head.height / 2 - TEAR_BASIC.height / 2,
 					this.attack_direction_event.directions[0]));
 			}
 		}
