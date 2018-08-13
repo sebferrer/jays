@@ -39,10 +39,10 @@ export class Jays extends Entity {
 		return result;
 	}
 
-	public collision_warp(): CollisionWarp {
-		const result = super.collision_warp();
+	public get_collision_warp(): CollisionWarp {
+		const result = super.get_collision_warp();
 		if (!result.is_collision) {
-			return this.head.collision_warp();
+			return this.head.get_collision_warp();
 		}
 		return result;
 	}

@@ -26,8 +26,6 @@ export class Tile {
 		this.src_x = src_x;
 		this.src_y = src_y;
 		this.has_collision = has_collision;
-		this.warp_destination; // {true, destination} if it's a warp zone for the current map
-		this.type; // ENUM TileType
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
 	}
 
@@ -39,7 +37,7 @@ export class Tile {
 		return this.coord_x === array[0] && this.coord_y === array[1];
 	}
 
-	public warp_destination(): WarpDestination {
+	public get_warp_destination(): WarpDestination {
 		const warp = gameState.current_map.get_warp();
 		if (warp !== null) {
 			const tile = this;
