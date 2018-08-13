@@ -1,9 +1,6 @@
-export const TIMERS = [
-	{
-		"id": "tear", "interval": 0
-	},
-	{
-		"id": "jays_sprites", "interval": 40
-	}
-];
+import { Timer } from "./timer";
 
+export const TIMERS: Timer[] = [
+	new Timer("tear", 0),
+	new Timer("jays_sprites", 40)
+];

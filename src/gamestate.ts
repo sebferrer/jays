@@ -16,7 +16,6 @@ export class GameState {
 	public direction_event: DirectionEvent;
 	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
-	public timers: Timer[];
 	public tears: Tear[];
 
 	constructor(map: RoomMap) {
@@ -24,7 +23,6 @@ export class GameState {
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
-		this.timers = this.get_timers();
 		this.tears = new Array<Tear>();
 	}
 
@@ -98,7 +96,7 @@ export class GameState {
 		ctx.save();
 		ctx.clearRect(0, 0, canvas_W, canvas_H);
 
-		this.timers.forEach(function (timer) {
+		TIMERS.forEach(function (timer) {
 			timer.run();
 		});
 
@@ -115,12 +113,14 @@ export class GameState {
 
 		try {
 			renderer.render_jays();
-		} catch (err) { }
+		} catch (err) {
+			console.error(err);
+		}
 
 		ctx.restore();
 
 		const self = this;
-		window.requestAnimationFrame(function () { self.update(); });
+		window.requestAnimationFrame(() => self.update());
 	}
 
 	public tears_update(): void {
@@ -133,12 +133,11 @@ export class GameState {
 					this.jays.head.pos_y + this.jays.head.height / 2,
 					this.attack_direction_event.directions[0]));
 			}
-		}
-		else {
+		} else {
 			timer_tear.reset();
 		}
 
-		this.tears.forEach(function (tear) {
+		this.tears.forEach(tear => {
 			switch (tear.direction) {
 				case Direction.UP: tear.move_direction(Direction.UP); break;
 				case Direction.DOWN: tear.move_direction(Direction.DOWN); break;
@@ -158,15 +157,6 @@ export class GameState {
 	}
 
 	public get_timer(id: string): Timer {
-		return this.timers.find(item => item.id === id);
-	}
-
-	public get_timers(): Timer[] {
-		const timers = new Array<Timer>();
-		for (let i = 0; i < TIMERS.length; i++) {
-			const timer = new Timer(TIMERS[i].id, TIMERS[i].interval);
-			timers.push(timer);
-		}
-		return timers;
+		return TIMERS.find(item => item.id === id);
 	}
 }
