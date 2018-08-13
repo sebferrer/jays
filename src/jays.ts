@@ -26,7 +26,6 @@ export class Jays extends Entity {
 
 	public move_direction(direction: Direction) {
 		super.move_direction(direction);
-
 		this.head.pos_x = this.pos_x;
 		this.head.pos_y = this.pos_y - this.head.height;
 	}
@@ -47,9 +46,7 @@ export class Jays extends Entity {
 		return result;
 	}
 
-	public on_collision_map(): boolean {
-		return false;
-	}
+	public on_collision_map(): void { }
 
 	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
 		gameState.current_map = new RoomMap(collision_warp.destination);
@@ -60,7 +57,7 @@ export class Jays extends Entity {
 			case Direction.LEFT: this.pos_x = canvas_W - this.width - TILE_REF.height; break;
 			case Direction.RIGHT: this.pos_x = 0 + TILE_REF.width; break;
 		}
-		gameState.tears = new Array<Tear>();
+		gameState.clear_tears();
 	}
 
 	public update(): void {
@@ -90,10 +87,11 @@ export class Jays extends Entity {
 	}
 
 	public direction_key_up(direction: Direction): void {
-		if (gameState.directions_keyDown.length === 0) {
-			gameState.get_timer("jays_sprites").reset();
-			this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
+		if (gameState.directions_keyDown.length > 0) {
+			return;
 		}
+		gameState.get_timer("jays_sprites").reset();
+		this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
 	}
 }
 
@@ -109,5 +107,6 @@ export class JaysHead extends Entity {
 	}
 
 	public on_collision_map(): void { }
+
 	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void { }
 }

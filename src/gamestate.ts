@@ -86,7 +86,7 @@ export class GameState {
 				break;
 		}
 
-		if(["z", "s", "q", "d"].find(s => s === keyName)) {
+		if (["z", "s", "q", "d"].find(s => s === keyName)) {
 			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(keyName));
 			this.direction_event.setDirection(Key_Direction.get(keyName), false);
 
@@ -146,6 +146,15 @@ export class GameState {
 				case Direction.RIGHT: tear.move_direction(Direction.RIGHT); break;
 			}
 		});
+	}
+
+	/** Removes all the tear which are currently displayed */
+	public clear_tears(): void {
+		if (this.tears != null) {
+			this.tears.splice(0, gameState.tears.length);
+		} else {
+			this.tears = new Array<Tear>();
+		}
 	}
 
 	public get_timer(id: string): Timer {
