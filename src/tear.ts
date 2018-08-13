@@ -10,6 +10,9 @@ export class Tear extends Entity {
 	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
 		super(id, current_sprite, width, height, pos_x, pos_y);
 	}
+
+	public on_collision_map(): void { }
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void { }
 }
 
 export class TearBasic extends Tear {
@@ -23,11 +26,11 @@ export class TearBasic extends Tear {
 		this.speed = 3;
 	}
 
-	public has_collision_map(): void {
+	public on_collision_map(): void {
 		ArrayUtil.removeFromArray(gameState.tears, this);
 	}
 
-	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
 		ArrayUtil.removeFromArray(gameState.tears, this);
 	}
 }

@@ -7,7 +7,7 @@ import { CollisionWarp } from "./collision_warp";
 import { Sprite } from "./sprite";
 import { SpriteHelper } from "./sprite_helper";
 
-export class Entity { // Abstract, will never be instancied
+export abstract class Entity { // Abstract, will never be instancied
 	public id: string;
 	public facing_direction: Direction;
 	public sprite_filename: string;
@@ -50,11 +50,11 @@ export class Entity { // Abstract, will never be instancied
 		} else {
 			if (collision_map.delta_x !== 0) { this.pos_x += collision_map.delta_x; }
 			if (collision_map.delta_y !== 0) { this.pos_y += collision_map.delta_y; }
-			this.has_collision_map();
+			this.on_collision_map();
 		}
 		const collision_warp = this.collision_warp();
 		if (collision_warp.is_collision) {
-			this.has_collision_warp(direction, collision_warp);
+			this.on_collision_warp(direction, collision_warp);
 		}
 	}
 
@@ -92,7 +92,7 @@ export class Entity { // Abstract, will never be instancied
 		return new CollisionWarp(false, false, -1);
 	}
 
-	public has_collision_map() { }
+	public abstract on_collision_map(): void;
 
-	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp) { }
+	public abstract on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void;
 }

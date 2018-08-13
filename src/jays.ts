@@ -47,7 +47,11 @@ export class Jays extends Entity {
 		return result;
 	}
 
-	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
+	public on_collision_map(): boolean {
+		return false;
+	}
+
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
 		gameState.current_map = new RoomMap(collision_warp.destination);
 		// To change after warps improvement, see warp.js
 		switch (direction) {
@@ -77,7 +81,7 @@ export class Jays extends Entity {
 					self.head.current_sprite = self.head.sprite_collecs.get("HEAD")[Direction_Int.get(dir_event_move.direction)];
 				}
 				self.current_sprite = self.sprite_collecs.get(Direction_String.get(dir_event_move.direction))[timer_sprites.tick];
-		});
+			});
 
 		// ATTACK DIRECTION EVENT
 		if (gameState.attack_direction_event.directions.length !== 0) {
@@ -100,7 +104,10 @@ export class JaysHead extends Entity {
 	public pos_y: number;
 
 	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
-		super(id, current_sprite, pos_x, pos_y, width, height,);
+		super(id, current_sprite, pos_x, pos_y, width, height, );
 		this.sprite_filename = "assets/img/jays.png";
 	}
+
+	public on_collision_map(): void { }
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void { }
 }
