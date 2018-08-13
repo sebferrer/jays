@@ -3,7 +3,6 @@ import { Renderer } from "./renderer";
 import { GameState } from "./gamestate";
 import { RoomMap } from "./room_map";
 import { Jays } from "./jays";
-import { Timer } from "./timer";
 import { Sprite } from "./sprite";
 
 export var canvas = document.querySelector("#canvas") as HTMLCanvasElement;
@@ -23,8 +22,7 @@ window.onload = function () {
  */
 
 function main() {
-	const jays = new Jays("jays", new Sprite(0, 20, 20, 20), 20, 20, canvas_W / 2 - 10, canvas_H / 2 - 20);
-	gameState.jays = jays;
+	gameState.jays = new Jays();
 
 	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 

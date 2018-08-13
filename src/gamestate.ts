@@ -1,5 +1,5 @@
 import { gameState, canvas_W, canvas_H, ctx, renderer } from "./main";
-import { TearBasic, TEAR_BASIC, Tear } from "./tear";
+import { TearBasic, Tear } from "./tear";
 import { RoomMap } from "./room_map";
 import { Jays } from "./jays";
 import { Timer } from "./timer";
@@ -86,7 +86,7 @@ export class GameState {
 				break;
 		}
 
-		if (["z", "s", "q", "d"].includes(keyName)) {
+		if(["z", "s", "q", "d"].find(s => s === keyName)) {
 			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(keyName));
 			this.direction_event.setDirection(Key_Direction.get(keyName), false);
 
@@ -128,9 +128,9 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				this.tears.push(new TearBasic("tear_basic", new Sprite(TEAR_BASIC.pos_x, TEAR_BASIC.pos_y, TEAR_BASIC.width, TEAR_BASIC.height),
-					TEAR_BASIC.width, TEAR_BASIC.height,
-					this.jays.head.pos_x + this.jays.head.width / 2 - TEAR_BASIC.width / 2, this.jays.head.pos_y + this.jays.head.height / 2 - TEAR_BASIC.height / 2,
+				this.tears.push(new TearBasic(
+					this.jays.head.pos_x + this.jays.head.width / 2,
+					this.jays.head.pos_y + this.jays.head.height / 2,
 					this.attack_direction_event.directions[0]));
 			}
 		}

@@ -5,7 +5,7 @@ import { Position } from "./position";
 import { CollisionDelta } from "./collision_delta";
 import { CollisionWarp } from "./collision_warp";
 import { Sprite } from "./sprite";
-import { SPRITES } from "./sprites";
+import { SpriteHelper } from "./sprite_helper";
 
 export class Entity { // Abstract, will never be instancied
 	public id: string;
@@ -19,14 +19,14 @@ export class Entity { // Abstract, will never be instancied
 	public pos_x: number;
 	public pos_y: number;
 
-	constructor(id: string, current_sprite: Sprite, width: number, height: number, pos_x: number, pos_y: number) {
+	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
 		this.id = id;
 		this.current_sprite = current_sprite;
-		this.width = width;
-		this.height = height;
 		this.pos_x = pos_x;
 		this.pos_y = pos_y;
-		this.sprite_collecs = this.get_sprite_collecs();
+		this.width = width;
+		this.height = height;
+		this.sprite_collecs = SpriteHelper.getCollecs(this.id);
 	}
 
 	public next_position(direction: Direction): Position {
@@ -90,21 +90,6 @@ export class Entity { // Abstract, will never be instancied
 			}
 		}
 		return new CollisionWarp(false, false, -1);
-	}
-
-	public get_sprite_collecs(): Map<string, Sprite[]> {
-		const sprite_collecs = new Map<string, Sprite[]>();
-		for (var d = 0, len = SPRITES.length; d < len; d++) {
-			if (SPRITES[d].sprite_id === this.id) {
-				const sprites = new Array<Sprite>();
-				for (let i = 0; i < SPRITES[d].collec_sprites.length; i++) {
-					sprites.push(new Sprite(SPRITES[d].collec_sprites[i][0], SPRITES[d].collec_sprites[i][1],
-						SPRITES[d].collec_sprites[i][2], SPRITES[d].collec_sprites[i][3], SPRITES[d].collec_id));
-				}
-				sprite_collecs.set(SPRITES[d].collec_id, sprites);
-			}
-		}
-		return sprite_collecs;
 	}
 
 	public has_collision_map() { }
