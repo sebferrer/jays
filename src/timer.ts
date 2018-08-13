@@ -49,4 +49,10 @@ export class Timer {
 		this.tick = 0;
 		this.enabled = false;
 	}
+
+	public restart(): void {
+		this.elapsed = 0;
+		this.tick = 0;
+		this.enabled = true;
+	}
 }

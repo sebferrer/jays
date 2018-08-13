@@ -1,9 +1,9 @@
 import { ImgBank } from "./loading";
 import { Renderer } from "./renderer";
 import { GameState } from "./gamestate";
-import { Map } from "./map";
+import { RoomMap } from "./room_map";
 import { Jays } from "./jays";
-import { Timer } from "./timer";
+import { Sprite } from "./sprite";
 
 export var canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 export var canvas_W = 640;
@@ -11,7 +11,7 @@ export var canvas_H = 480;
 export var ctx = canvas.getContext("2d");
 export var bank = new ImgBank();
 export var renderer = new Renderer();
-export var gameState = new GameState(new Map(0));
+export var gameState = new GameState(new RoomMap(0));
 
 window.onload = function () {
 	main();
@@ -22,15 +22,9 @@ window.onload = function () {
  */
 
 function main() {
-	const jays = new Jays(20, 40, canvas_W / 2 - 10, canvas_H / 2 - 20);
-	gameState.jays = jays;
+	gameState.jays = new Jays();
 
-	//let timerTest = new Timer("test", 1000); // Tick every 1 second
-	//gameState.timers.push(timerTest);
-	//gameState.get_timer("test").enable(); // Launch the timer, we can now count his ticks in the gameState.update function
-
-	const timer_tear = new Timer("tear", gameState.jays.tear_delay);
-	gameState.timers.push(timer_tear);
+	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 
 	bank.preload(gameState);
 	gameState.update();

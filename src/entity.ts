@@ -4,22 +4,29 @@ import { Direction } from "./enum";
 import { Position } from "./position";
 import { CollisionDelta } from "./collision_delta";
 import { CollisionWarp } from "./collision_warp";
+import { Sprite } from "./sprite";
+import { SpriteHelper } from "./sprite_helper";
 
 export class Entity { // Abstract, will never be instancied
-
+	public id: string;
 	public facing_direction: Direction;
 	public sprite_filename: string;
+	public current_sprite: Sprite;
+	public sprite_collecs: Map<string, Sprite[]>;
 	public speed: number;
 	public width: number;
 	public height: number;
 	public pos_x: number;
 	public pos_y: number;
 
-	constructor(width: number, height: number, pos_x: number, pos_y: number) {
-		this.width = width;
-		this.height = height;
+	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
+		this.id = id;
+		this.current_sprite = current_sprite;
 		this.pos_x = pos_x;
 		this.pos_y = pos_y;
+		this.width = width;
+		this.height = height;
+		this.sprite_collecs = SpriteHelper.getCollecs(this.id);
 	}
 
 	public next_position(direction: Direction): Position {
@@ -47,7 +54,7 @@ export class Entity { // Abstract, will never be instancied
 		}
 		const collision_warp = this.collision_warp();
 		if (collision_warp.is_collision) {
-			this.has_collision_warp();
+			this.has_collision_warp(direction, collision_warp);
 		}
 	}
 
@@ -87,5 +94,5 @@ export class Entity { // Abstract, will never be instancied
 
 	public has_collision_map() { }
 
-	public has_collision_warp() { }
+	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp) { }
 }
