@@ -53,7 +53,7 @@ export abstract class Entity { // Abstract, will never be instancied
 			this.pos_y = next_position.pos_y;
 		}
 		const collision_warp = this.get_collision_warp();
-		if (collision_warp.is_collision) {
+		if (collision_warp != null) {
 			this.on_collision_warp(direction, collision_warp);
 		}
 	}
@@ -76,17 +76,17 @@ export abstract class Entity { // Abstract, will never be instancied
 		return new CollisionDelta(false);
 	}
 
-	public get_collision_warp(): CollisionWarp {
+	public get_collision_warp(): CollisionWarp | null {
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
 				const tile = gameState.current_map.tiles[i][j];
 				const warp_destination = tile.get_warp_destination();
-				if (warp_destination.is_warp && Collision.is_collision_entity_tile(this, tile)) {
-					return new CollisionWarp(true, warp_destination.is_warp, warp_destination.destination);
+				if (warp_destination != null && Collision.is_collision_entity_tile(this, tile)) {
+					return new CollisionWarp(true, warp_destination);
 				}
 			}
 		}
-		return new CollisionWarp(false, false, -1);
+		return null;
 	}
 
 	public abstract on_collision_map(): void;

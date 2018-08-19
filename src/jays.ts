@@ -37,9 +37,9 @@ export class Jays extends Entity {
 		return result;
 	}
 
-	public get_collision_warp(): CollisionWarp {
+	public get_collision_warp(): CollisionWarp | null {
 		const result = super.get_collision_warp();
-		if (!result.is_collision) {
+		if (result != null && result.is_collision) {
 			return this.head.get_collision_warp();
 		}
 		return result;
@@ -101,7 +101,7 @@ export class JaysHead extends Entity {
 	public pos_y: number;
 
 	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
-		super(id, current_sprite, pos_x, pos_y, width, height, );
+		super(id, current_sprite, pos_x, pos_y, width, height);
 		this.sprite_filename = "assets/img/jays.png";
 	}
 
