@@ -34,24 +34,24 @@ export class ImgBank {
 			}
 			else if (self.loaded > self.nextLoad) {
 				self.nextLoad++;
-				self.loadimg();
+				self.load_img();
 				setTimeout(timer, 10);
 			}
 			else {
 				setTimeout(timer, 10);
 			}
 		};
-		this.loadimg();
+		this.load_img();
 		setTimeout(timer, 10);
 	}
 
-	public loadimg(): void {
+	public load_img(): void {
 		const ref = this.buffer[this.nextLoad];
 		const img = new Image();
 		img.src = ref;
 		const self = this;
 
-		img.onload = function () {
+		img.onload = () => {
 			const canvas = document.createElement("canvas");
 			canvas.height = img.height;
 			canvas.width = img.width;
@@ -62,7 +62,7 @@ export class ImgBank {
 			self.loaded++;
 		};
 
-		img.onerror = function () {
+		img.onerror = () => {
 			self.loaded++;
 			self.error++;
 		};

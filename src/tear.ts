@@ -19,6 +19,7 @@ export abstract class Tear extends Entity {
 export class TearBasic extends Tear {
 	public speed: number;
 	constructor(pos_x: number, pos_y: number, direction: Direction, id?: string, current_sprite?: Sprite, width?: number, height?: number) {
+		// TODO: something is not right here
 		super("tear_basic", new Sprite(0, 0, 10, 10), 10, 10, pos_x, pos_y);
 		this.pos_x -= this.width/2;
 		this.pos_y -= this.height/2;
