@@ -5,14 +5,15 @@ import { Direction } from "./enum";
 import { Sprite } from "./sprite";
 import { CollisionWarp } from "./collision_warp";
 
-export class Tear extends Entity {
+export abstract class Tear extends Entity {
 	public direction: Direction;
 	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
 		super(id, current_sprite, width, height, pos_x, pos_y);
 	}
 
-	public on_collision_map(): void { }
-	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void { }
+	public move(): void { 
+		this.move_direction(this.direction);
+	}
 }
 
 export class TearBasic extends Tear {

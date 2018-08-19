@@ -3,7 +3,6 @@ import { Renderer } from "./renderer";
 import { GameState } from "./gamestate";
 import { RoomMap } from "./room_map";
 import { Jays } from "./jays";
-import { Sprite } from "./sprite";
 
 export var canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 export var canvas_W = 640;

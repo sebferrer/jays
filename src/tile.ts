@@ -39,7 +39,7 @@ export class Tile {
 
 	public get_warp_destination(): WarpDestination {
 		const warp = gameState.current_map.get_warp();
-		if (warp !== null) {
+		if (warp != null) {
 			const tile = this;
 			for (let i = 0; i < warp.zones.length; i++) {
 				for (let j = 0; j < warp.zones[i].tiles.length; j++) {

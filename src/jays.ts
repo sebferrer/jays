@@ -2,7 +2,6 @@ import { Entity } from "./entity";
 import { gameState, canvas_H, canvas_W } from "./main";
 import { RoomMap, TILE_REF } from "./room_map";
 import { Direction, Direction_Int, Direction_String } from "./enum";
-import { Tear } from "./tear";
 import { Sprite } from "./sprite";
 import { Position } from "./position";
 import { CollisionWarp } from "./collision_warp";

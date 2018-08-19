@@ -96,9 +96,7 @@ export class GameState {
 		ctx.save();
 		ctx.clearRect(0, 0, canvas_W, canvas_H);
 
-		TIMERS.forEach(function (timer) {
-			timer.run();
-		});
+		TIMERS.forEach(timer => timer.run());
 
 		try {
 			renderer.render_map(this.current_map);
@@ -137,14 +135,7 @@ export class GameState {
 			timer_tear.reset();
 		}
 
-		this.tears.forEach(tear => {
-			switch (tear.direction) {
-				case Direction.UP: tear.move_direction(Direction.UP); break;
-				case Direction.DOWN: tear.move_direction(Direction.DOWN); break;
-				case Direction.LEFT: tear.move_direction(Direction.LEFT); break;
-				case Direction.RIGHT: tear.move_direction(Direction.RIGHT); break;
-			}
-		});
+		this.tears.forEach(tear => tear.move());
 	}
 
 	/** Removes all the tear which are currently displayed */
