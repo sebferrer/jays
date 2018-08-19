@@ -24,6 +24,10 @@ export class GameState {
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.tears = new Array<Tear>();
+
+		this.jays = new Jays();
+		document.onkeyup = event => gameState.key_up(event.key);
+		document.onkeydown = event => gameState.key_down(event.key);
 	}
 
 	public key_down(keyName: string): void {
