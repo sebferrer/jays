@@ -40,18 +40,18 @@ export class Tile {
 		return this.coord_x === array[0] && this.coord_y === array[1];
 	}
 
-	public get_warp_info(): WarpInfo {
+	public get_warp_info(): WarpInfo | null {
 		const warp = gameState.current_map.get_warp();
-		if (warp !== null) {
+		if (warp != null) {
 			const tile = this;
 			for (let i = 0; i < warp.zones.length; i++) {
 				for (let j = 0; j < warp.zones[i].tiles.length; j++) {
 					if (tile.same_coords_array(warp.zones[i].tiles[j])) {
-						return new WarpInfo(true, warp.zones[i].destination, warp.zones[i].type);
+						return new WarpInfo(warp.zones[i].destination, warp.zones[i].type);
 					}
 				}
 			}
 		}
-		return new WarpInfo(false);
+		return null;
 	}
 }
