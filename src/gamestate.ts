@@ -16,7 +16,6 @@ export class GameState {
 	public direction_event: DirectionEvent;
 	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
-	public timers: Timer[];
 	public tears: Tear[];
 
 	constructor(map: RoomMap) {
@@ -24,8 +23,11 @@ export class GameState {
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
-		this.timers = this.get_timers();
 		this.tears = new Array<Tear>();
+
+		this.jays = new Jays();
+		document.onkeyup = event => gameState.key_up(event.key);
+		document.onkeydown = event => gameState.key_down(event.key);
 	}
 
 	public key_down(keyName: string): void {
@@ -86,7 +88,7 @@ export class GameState {
 				break;
 		}
 
-		if(["z", "s", "q", "d"].find(s => s === keyName)) {
+		if (["z", "s", "q", "d"].find(s => s === keyName)) {
 			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(keyName));
 			this.direction_event.setDirection(Key_Direction.get(keyName), false);
 
@@ -98,9 +100,7 @@ export class GameState {
 		ctx.save();
 		ctx.clearRect(0, 0, canvas_W, canvas_H);
 
-		this.timers.forEach(function (timer) {
-			timer.run();
-		});
+		TIMERS.forEach(timer => timer.run());
 
 		try {
 			renderer.render_map(this.current_map);
@@ -115,12 +115,14 @@ export class GameState {
 
 		try {
 			renderer.render_jays();
-		} catch (err) { }
+		} catch (err) {
+			console.error(err);
+		}
 
 		ctx.restore();
 
 		const self = this;
-		window.requestAnimationFrame(function () { self.update(); });
+		window.requestAnimationFrame(() => self.update());
 	}
 
 	public tears_update(): void {
@@ -133,31 +135,23 @@ export class GameState {
 					this.jays.head.pos_y + this.jays.head.height / 2,
 					this.attack_direction_event.directions[0]));
 			}
-		}
-		else {
+		} else {
 			timer_tear.reset();
 		}
 
-		this.tears.forEach(function (tear) {
-			switch (tear.direction) {
-				case Direction.UP: tear.move_direction(Direction.UP); break;
-				case Direction.DOWN: tear.move_direction(Direction.DOWN); break;
-				case Direction.LEFT: tear.move_direction(Direction.LEFT); break;
-				case Direction.RIGHT: tear.move_direction(Direction.RIGHT); break;
-			}
-		});
+		this.tears.forEach(tear => tear.move());
+	}
+
+	/** Removes all the tear which are currently displayed */
+	public clear_tears(): void {
+		if (this.tears != null) {
+			this.tears.splice(0, gameState.tears.length);
+		} else {
+			this.tears = new Array<Tear>();
+		}
 	}
 
 	public get_timer(id: string): Timer {
-		return this.timers.find(item => item.id === id);
-	}
-
-	public get_timers(): Timer[] {
-		const timers = new Array<Timer>();
-		for (let i = 0; i < TIMERS.length; i++) {
-			const timer = new Timer(TIMERS[i].id, TIMERS[i].interval);
-			timers.push(timer);
-		}
-		return timers;
+		return TIMERS.find(item => item.id === id);
 	}
 }

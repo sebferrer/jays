@@ -1,6 +1,5 @@
 import { gameState } from "./main";
 import { TileType } from "./enum";
-import { WarpDestination } from "./warp_destination";
 
 export class Tile {
 
@@ -26,8 +25,6 @@ export class Tile {
 		this.src_x = src_x;
 		this.src_y = src_y;
 		this.has_collision = has_collision;
-		this.warp_destination; // {true, destination} if it's a warp zone for the current map
-		this.type; // ENUM TileType
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
 	}
 
@@ -39,18 +36,18 @@ export class Tile {
 		return this.coord_x === array[0] && this.coord_y === array[1];
 	}
 
-	public warp_destination(): WarpDestination {
+	public get_warp_destination(): number | null {
 		const warp = gameState.current_map.get_warp();
-		if (warp !== null) {
+		if (warp != null) {
 			const tile = this;
 			for (let i = 0; i < warp.zones.length; i++) {
 				for (let j = 0; j < warp.zones[i].tiles.length; j++) {
 					if (tile.same_coords_array(warp.zones[i].tiles[j])) {
-						return new WarpDestination(true, warp.zones[i].destination);
+						return warp.zones[i].destination;
 					}
 				}
 			}
 		}
-		return new WarpDestination(false, -1);
+		return null;
 	}
 }

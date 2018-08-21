@@ -2,7 +2,6 @@ import { Entity } from "./entity";
 import { gameState, canvas_H, canvas_W } from "./main";
 import { RoomMap, TILE_REF } from "./room_map";
 import { Direction, Direction_Int, Direction_String } from "./enum";
-import { Tear } from "./tear";
 import { Sprite } from "./sprite";
 import { Position } from "./position";
 import { CollisionWarp } from "./collision_warp";
@@ -26,7 +25,6 @@ export class Jays extends Entity {
 
 	public move_direction(direction: Direction) {
 		super.move_direction(direction);
-
 		this.head.pos_x = this.pos_x;
 		this.head.pos_y = this.pos_y - this.head.height;
 	}
@@ -39,15 +37,17 @@ export class Jays extends Entity {
 		return result;
 	}
 
-	public collision_warp(): CollisionWarp {
-		const result = super.collision_warp();
-		if (!result.is_collision) {
-			return this.head.collision_warp();
+	public get_collision_warp(): CollisionWarp | null {
+		const result = super.get_collision_warp();
+		if (result != null && result.is_collision) {
+			return this.head.get_collision_warp();
 		}
 		return result;
 	}
 
-	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
+	public on_collision_map(): void { }
+
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
 		gameState.current_map = new RoomMap(collision_warp.destination);
 		// To change after warps improvement, see warp.js
 		switch (direction) {
@@ -56,7 +56,7 @@ export class Jays extends Entity {
 			case Direction.LEFT: this.pos_x = canvas_W - this.width - TILE_REF.height; break;
 			case Direction.RIGHT: this.pos_x = 0 + TILE_REF.width; break;
 		}
-		gameState.tears = new Array<Tear>();
+		gameState.clear_tears();
 	}
 
 	public update(): void {
@@ -77,7 +77,7 @@ export class Jays extends Entity {
 					self.head.current_sprite = self.head.sprite_collecs.get("HEAD")[Direction_Int.get(dir_event_move.direction)];
 				}
 				self.current_sprite = self.sprite_collecs.get(Direction_String.get(dir_event_move.direction))[timer_sprites.tick];
-		});
+			});
 
 		// ATTACK DIRECTION EVENT
 		if (gameState.attack_direction_event.directions.length !== 0) {
@@ -86,10 +86,11 @@ export class Jays extends Entity {
 	}
 
 	public direction_key_up(direction: Direction): void {
-		if (gameState.directions_keyDown.length === 0) {
-			gameState.get_timer("jays_sprites").reset();
-			this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
+		if (gameState.directions_keyDown.length > 0) {
+			return;
 		}
+		gameState.get_timer("jays_sprites").reset();
+		this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
 	}
 }
 
@@ -100,7 +101,11 @@ export class JaysHead extends Entity {
 	public pos_y: number;
 
 	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
-		super(id, current_sprite, pos_x, pos_y, width, height,);
+		super(id, current_sprite, pos_x, pos_y, width, height);
 		this.sprite_filename = "assets/img/jays.png";
 	}
+
+	public on_collision_map(): void { }
+
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void { }
 }
