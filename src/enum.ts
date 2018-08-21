@@ -11,6 +11,12 @@ export enum TileType {
 	ANIMATED = "Animated"
 }
 
+export enum WarpType {
+	CLASSIC = "Classic",
+	LOCAL = "Local",
+	TP = "Tp"
+}
+
 /**
  * Not sure to keep these mappings here
  * Maybe Direction should be a class with getters instead of these shitty Maps...

@@ -3,8 +3,8 @@ import { MAPS } from "./maps";
 import { Tile } from "./tile";
 
 export class RoomMap {
-
 	public id: number;
+	public floor: number;
 	public width: number;
 	public height: number;
 	public tiles: Tile[][];
@@ -12,6 +12,7 @@ export class RoomMap {
 
 	constructor(id: number) {
 		this.id = id;
+		this.floor = MAPS[id].floor;
 		this.width = MAPS[id].width;
 		this.height = MAPS[id].height;
 		this.tiles = new Array<Array<Tile>>();

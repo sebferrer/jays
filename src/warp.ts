@@ -1,3 +1,5 @@
+import { Direction, WarpType } from "./enum";
+
 /**
  * TODO: I don't know how to deal with zones type
  */
@@ -18,32 +20,32 @@ export const WARPS = [
 	{
 		"map_id": 0,
 		"zones": [
-			{ "destination": 1, "tiles": [[13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0]] },
-			{ "destination": 3, "tiles": [[31, 9], [31, 10], [31, 11], [31, 12], [31, 13], [31, 14]] },
-			{ "destination": 4, "tiles": [[0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14]] }
+			{ "destination": 1, "type": WarpType.CLASSIC, "tiles": [[13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0]] },
+			{ "destination": 3, "type": WarpType.CLASSIC, "tiles": [[31, 9], [31, 10], [31, 11], [31, 12], [31, 13], [31, 14]] },
+			{ "destination": 4, "type": WarpType.CLASSIC, "tiles": [[0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14]] }
 		]
 	},
 	{
 		"map_id": 1,
 		"zones": [
-			{ "destination": 0, "tiles": [[13, 23], [14, 23], [14, 23], [15, 23], [16, 23], [17, 23]] },
-			{ "destination": 2, "tiles": [[31, 9], [31, 10], [31, 11], [31, 12], [31, 13], [31, 14]] }
+			{ "destination": 0, "type": WarpType.CLASSIC, "tiles": [[13, 23], [14, 23], [14, 23], [15, 23], [16, 23], [17, 23]] },
+			{ "destination": 2, "type": WarpType.CLASSIC, "tiles": [[31, 9], [31, 10], [31, 11], [31, 12], [31, 13], [31, 14]] }
 		]
 	},
 	{
 		"map_id": 2,
 		"zones": [
-			{ "destination": 1, "tiles": [[0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14]] }
+			{ "destination": 1, "type": WarpType.CLASSIC, "tiles": [[0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14]] }
 		]
 	},
 	{
 		"map_id": 3,
 		"zones": [
-			{ "destination": 0, "tiles": [[0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14]] }
+			{ "destination": 0, "type": WarpType.CLASSIC, "tiles": [[0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14]] }
 		]
 	}/*,
     {"map_id": 4,
      "zones": [
-        {"destination": 0, "tiles": [[31, 9],[31, 10],[31, 11],[31, 12],[31, 13],[31, 14]]}
+        {"destination": 0, "type": WarpType.CLASSIC, "tiles": [[31, 9],[31, 10],[31, 11],[31, 12],[31, 13],[31, 14]]}
     ]}*/
 ];

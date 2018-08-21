@@ -1,4 +1,4 @@
-import { gameState, canvas_W, canvas_H, ctx, renderer } from "./main";
+import { canvas_W, canvas_H, ctx, renderer } from "./main";
 import { TearBasic, Tear } from "./tear";
 import { RoomMap } from "./room_map";
 import { Jays } from "./jays";
@@ -6,12 +6,13 @@ import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction, Key_Direction } from "./enum";
-import { Sprite } from "./sprite";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
+import { MAPS } from "./maps";
 
 export class GameState {
 	public current_map: RoomMap;
+	public current_floor: number;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
 	public directions_keyDown: Direction[];
@@ -21,6 +22,7 @@ export class GameState {
 
 	constructor(map: RoomMap) {
 		this.current_map = map;
+		this.current_floor = MAPS[map.id].floor;
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();

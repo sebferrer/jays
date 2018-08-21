@@ -1,7 +1,7 @@
 import { Entity } from "./entity";
 import { gameState, canvas_H, canvas_W } from "./main";
 import { RoomMap, TILE_REF } from "./room_map";
-import { Direction, Direction_Int, Direction_String } from "./enum";
+import { Direction, Direction_Int, Direction_String, WarpType } from "./enum";
 import { Tear } from "./tear";
 import { Sprite } from "./sprite";
 import { Position } from "./position";
@@ -47,14 +47,23 @@ export class Jays extends Entity {
 		return result;
 	}
 
-	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
-		gameState.current_map = new RoomMap(collision_warp.destination);
-		// To change after warps improvement, see warp.js
-		switch (direction) {
-			case Direction.UP: this.pos_y = canvas_H - this.height - TILE_REF.height; break;
-			case Direction.DOWN: this.pos_y = 0 + TILE_REF.height + this.head.height; break;
-			case Direction.LEFT: this.pos_x = canvas_W - this.width - TILE_REF.height; break;
-			case Direction.RIGHT: this.pos_x = 0 + TILE_REF.width; break;
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
+		gameState.current_map = new RoomMap(collision_warp.warp_info.destination);
+		switch (collision_warp.warp_info.type) {
+			case WarpType.CLASSIC :
+				if (collision_warp.tile.coord_y === gameState.current_map.height - 1) {
+					this.pos_y = 0 + TILE_REF.height + this.head.height;
+				}
+				else if (collision_warp.tile.coord_y === 0) {
+					this.pos_y = canvas_H - this.height - TILE_REF.height;
+				}
+				else if (collision_warp.tile.coord_x === gameState.current_map.width - 1) {
+					this.pos_x = 0 + TILE_REF.width;
+				}
+				else if (collision_warp.tile.coord_x === 0) {
+					this.pos_x = canvas_W - this.width - TILE_REF.height;
+				}
+				break;
 		}
 		gameState.tears = new Array<Tear>();
 	}

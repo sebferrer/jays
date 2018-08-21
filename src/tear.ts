@@ -23,11 +23,11 @@ export class TearBasic extends Tear {
 		this.speed = 3;
 	}
 
-	public has_collision_map(): void {
+	public on_collision_map(): void {
 		ArrayUtil.removeFromArray(gameState.tears, this);
 	}
 
-	public has_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
+	public on_collision_warp(direction: Direction, collision_warp: CollisionWarp): void {
 		ArrayUtil.removeFromArray(gameState.tears, this);
 	}
 }
