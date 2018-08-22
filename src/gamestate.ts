@@ -8,11 +8,11 @@ import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction, Key_Direction } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
-import { MAPS } from "./maps";
+import { Floor } from "./floor";
 
 export class GameState {
 	public current_map: RoomMap;
-	public current_floor: number;
+	public current_floor: Floor;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
 	public directions_keyDown: Direction[];
@@ -21,7 +21,6 @@ export class GameState {
 
 	constructor(map: RoomMap) {
 		this.current_map = map;
-		this.current_floor = MAPS[map.id].floor;
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();

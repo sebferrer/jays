@@ -27,8 +27,6 @@ export class Tile {
 		this.src_x = src_x;
 		this.src_y = src_y;
 		this.has_collision = has_collision;
-		this.warp_info; // {true, destination, type} if it's a warp zone for the current map
-		this.type; // ENUM TileType
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
 	}
 
