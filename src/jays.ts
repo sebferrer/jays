@@ -96,6 +96,7 @@ export class Jays extends Entity {
 
 	public direction_key_up(direction: Direction): void {
 		if (gameState.directions_keyDown.length > 0) {
+			gameState.get_timer("jays_sprites").restart();
 			return;
 		}
 		gameState.get_timer("jays_sprites").reset();
