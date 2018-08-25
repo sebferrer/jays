@@ -70,6 +70,10 @@ export class GameState {
 			case "ArrowRight":
 				this.attack_direction_event.add(Direction.RIGHT);
 				break;
+
+			case "f":
+				renderer.scale();
+				break;
 		}
 	}
 

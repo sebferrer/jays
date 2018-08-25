@@ -16,6 +16,7 @@ window.onload = () => {
 };
 
 function main() {
+	renderer.scale(1.25);
 	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 	bank.preload(gameState);
 	gameState.update();

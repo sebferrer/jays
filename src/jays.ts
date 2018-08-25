@@ -61,7 +61,7 @@ export class Jays extends Entity {
 					this.pos_x = 0 + TILE_REF.width;
 				}
 				else if (collision_warp.tile.coord_x === 0) {
-					this.pos_x = canvas_W - this.width - TILE_REF.height;
+					this.pos_x = canvas_W - this.width - TILE_REF.width;
 				}
 				break;
 		}

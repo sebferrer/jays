@@ -1,8 +1,28 @@
-import { gameState, ctx, bank } from "./main";
+import { gameState, ctx, bank, canvas, canvas_W, canvas_H } from "./main";
 import { RoomMap } from "./room_map";
 
 export class Renderer {
-	constructor() { }
+	public zoomScale: number;
+	public zoomScaleNext: Map<number, number>;
+
+	constructor() {
+		this.zoomScale = 1;
+		this.zoomScaleNext = new Map<number, number>([[1, 1.25], [1.25, 1.5], [1.5, 1.75], [1.75, 2], [2, 1]]);
+	}
+
+	public disableSmoothing(): void {
+		ctx.webkitImageSmoothingEnabled = false;
+		ctx.mozImageSmoothingEnabled = false;
+		ctx.imageSmoothingEnabled = false;
+	}
+
+	public scale(zoomScale?: number): void {
+		this.zoomScale = zoomScale == null ? this.zoomScaleNext.get(this.zoomScale) : zoomScale;
+		canvas.width = canvas_W * this.zoomScale;
+		canvas.height = canvas_H * this.zoomScale;
+		ctx.scale(this.zoomScale, this.zoomScale);
+		this.disableSmoothing();
+	}
 
 	public render_map(map: RoomMap): void {
 		for (let i = 0; i < map.height; i++) {
