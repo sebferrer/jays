@@ -13,13 +13,15 @@ export class Jays extends Entity {
 	public pos_x: number;
 	public pos_y: number;
 	public tear_delay: number;
+	public range: number;
 	public head: JaysHead;
 
 	constructor() {
 		super("jays", new Sprite(0, 20, 20, 20), canvas_W / 2 - 10, canvas_H / 2 - 20, 20, 20);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 2;
-		this.tear_delay = 250;
+		this.tear_delay = 500;
+		this.range = 8;
 		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), this.pos_x, this.pos_y - 20, 20, 20);
 	}
 
@@ -101,6 +103,11 @@ export class Jays extends Entity {
 		}
 		gameState.get_timer("jays_sprites").reset();
 		this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
+	}
+
+	public set_tear_delay(new_tear_delay: number): void {
+		this.tear_delay = new_tear_delay;
+		gameState.get_timer("tear").interval = this.tear_delay;
 	}
 }
 
