@@ -15,9 +15,27 @@ window.onload = () => {
 	main();
 };
 
-function main() {
-	renderer.scale(1.25);
+function main(): void {
+	renderer.scale(1);
+
+	Settings.init();
+
 	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 	bank.preload(gameState);
 	gameState.update();
+}
+
+class Settings {
+
+	public static init(): void {
+		(window as any).settings = Settings;
+	}
+
+	public static autoscale(enableAutoScale: boolean): void {
+		if (enableAutoScale) {
+			renderer.autoScale();
+		} else {
+			renderer.scale(1);
+		}
+	}
 }

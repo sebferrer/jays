@@ -21,7 +21,15 @@ export class Renderer {
 		canvas.width = canvas_W * this.zoomScale;
 		canvas.height = canvas_H * this.zoomScale;
 		ctx.scale(this.zoomScale, this.zoomScale);
-		this.disableSmoothing();
+		// this.disableSmoothing();
+	}
+
+	public autoScale(): void {
+		const ratio = window.innerHeight / canvas_H;
+		canvas.width = canvas_W * ratio;
+		canvas.height = canvas_H * ratio;
+		ctx.scale(ratio, ratio);
+		// this.disableSmoothing();
 	}
 
 	public render_map(map: RoomMap): void {
