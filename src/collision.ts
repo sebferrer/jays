@@ -1,6 +1,6 @@
 import { Tile } from "./tile";
 import { Entity } from "./entity";
-import { Position } from "./position";
+import { Point } from "./point";
 
 export class Collision {
 	private constructor() { }
@@ -12,13 +12,13 @@ export class Collision {
 	}
 
 	public static is_collision_entity_tile(entity: Entity, tile: Tile): boolean {
-		return Collision.is_collision(entity.pos_x, entity.pos_y, entity.pos_x + entity.width, entity.pos_y + entity.height,
-			tile.pos_x, tile.pos_y, tile.pos_x + tile.width, tile.pos_y + tile.height);
+		return Collision.is_collision(entity.pos.x, entity.pos.y, entity.pos.x + entity.width, entity.pos.y + entity.height,
+			tile.pos.x, tile.pos.y, tile.pos.x + tile.width, tile.pos.y + tile.height);
 	}
 
-	public static is_collision_nextpos_entity_tile(next_position: Position, entity: Entity, tile: Tile): boolean {
-		return Collision.is_collision(next_position.pos_x, next_position.pos_y, next_position.pos_x + entity.width, next_position.pos_y + entity.height,
-			tile.pos_x, tile.pos_y, tile.pos_x + tile.width, tile.pos_y + tile.height);
+	public static is_collision_nextpos_entity_tile(next_position: Point, entity: Entity, tile: Tile): boolean {
+		return Collision.is_collision(next_position.x, next_position.y, next_position.x + entity.width, next_position.y + entity.height,
+			tile.pos.x, tile.pos.y, tile.pos.x + tile.width, tile.pos.y + tile.height);
 	}
 
 	/**

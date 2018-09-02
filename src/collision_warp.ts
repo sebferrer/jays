@@ -1,8 +1,11 @@
+import { Tile } from "./tile";
+import { WarpInfo } from "./warp_info";
+
 export class CollisionWarp {
-	public is_collision: boolean;
-	public destination: number;
-	constructor(is_collision?: boolean, destination?: number) {
-		this.is_collision = is_collision;
-		this.destination = destination;
+	public warp_info: WarpInfo;
+	public tile: Tile;
+	constructor(warp_info?: WarpInfo, tile?: Tile) {
+		this.warp_info = warp_info;
+		this.tile = tile;
 	}
 }

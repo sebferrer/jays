@@ -11,6 +11,17 @@ export enum TileType {
 	ANIMATED = "Animated"
 }
 
+export enum WarpType {
+	CLASSIC = "Classic",
+	LOCAL = "Local",
+	TP = "Tp"
+}
+
+export enum KeyboardType {
+	AZERTY = "AZERTY",
+	QWERTY = "QWERTY"
+}
+
 /**
  * Not sure to keep these mappings here
  * Maybe Direction should be a class with getters instead of these shitty Maps...
@@ -30,9 +41,16 @@ export const Direction_String = new Map<Direction, string>([
 	[Direction.RIGHT, "RIGHT"]
 ]);
 
-export const Key_Direction = new Map<string, Direction>([
-	["z", Direction.UP],
-	["s", Direction.DOWN],
-	["q", Direction.LEFT],
-	["d", Direction.RIGHT]
-]);
+export const Key_Direction = new Map<KeyboardType, Map<string, Direction>>();
+Key_Direction.set(KeyboardType.AZERTY, new Map<string, Direction>());
+Key_Direction.set(KeyboardType.QWERTY, new Map<string, Direction>());
+Key_Direction.get(KeyboardType.AZERTY)
+	.set("z", Direction.UP)
+	.set("q", Direction.LEFT)
+	.set("s", Direction.DOWN)
+	.set("d", Direction.RIGHT);
+Key_Direction.get(KeyboardType.QWERTY)
+	.set("w", Direction.UP)
+	.set("a", Direction.LEFT)
+	.set("s", Direction.DOWN)
+	.set("d", Direction.RIGHT);
