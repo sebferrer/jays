@@ -2,6 +2,7 @@ import { ImgBank } from "./loading";
 import { Renderer } from "./renderer";
 import { GameState } from "./gamestate";
 import { RoomMap } from "./room_map";
+import { Settings } from "./settings";
 
 export const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 export const canvas_W = 640;
@@ -23,19 +24,4 @@ function main(): void {
 	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 	bank.preload(gameState);
 	gameState.update();
-}
-
-class Settings {
-
-	public static init(): void {
-		(window as any).settings = Settings;
-	}
-
-	public static autoscale(enableAutoScale: boolean): void {
-		if (enableAutoScale) {
-			renderer.autoScale();
-		} else {
-			renderer.scale(1);
-		}
-	}
 }

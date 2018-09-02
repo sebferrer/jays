@@ -42,7 +42,6 @@ export class TearBasic extends Tear {
 		this.direction = direction;
 		this.sprite_filename = "assets/img/tear.png";
 		this.speed = 3;
-		this.range = 6;
 	}
 
 	public on_collision_map(): void {

@@ -5,11 +5,12 @@ import { Jays } from "./jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { Direction, Key_Direction } from "./enum";
+import { Direction, Key_Direction, KeyboardType } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./floor";
 import { Point } from "./point";
+import { Keyboard } from "./keyboard";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -19,6 +20,7 @@ export class GameState {
 	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
+	public keyboard: Keyboard;
 
 	constructor(map: RoomMap) {
 		this.current_map = map;
@@ -28,31 +30,32 @@ export class GameState {
 		this.tears = new Array<Tear>();
 
 		this.jays = new Jays();
+		this.keyboard = new Keyboard(KeyboardType.AZERTY);
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
 	}
 
 	public key_down(keyName: string): void {
 		switch (keyName) {
-			case "z":
+			case this.keyboard.get(Direction.UP):
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.UP)) {
 					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_up = true;
 				break;
-			case "s":
+			case this.keyboard.get(Direction.DOWN):
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.DOWN)) {
 					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_down = true;
 				break;
-			case "q":
+			case this.keyboard.get(Direction.LEFT):
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.LEFT)) {
 					this.get_timer("jays_sprites").restart();
 				}
 				this.direction_event.move_left = true;
 				break;
-			case "d":
+			case this.keyboard.get(Direction.RIGHT):
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.RIGHT)) {
 					this.get_timer("jays_sprites").restart();
 				}
@@ -94,11 +97,13 @@ export class GameState {
 				break;
 		}
 
-		if (["z", "s", "q", "d"].find(s => s === keyName)) {
-			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(keyName));
-			this.direction_event.setDirection(Key_Direction.get(keyName), false);
+		if ([this.keyboard.get(Direction.UP), this.keyboard.get(Direction.DOWN),
+		this.keyboard.get(Direction.LEFT), this.keyboard.get(Direction.RIGHT)]
+			.find(s => s === keyName)) {
+			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(this.keyboard.type).get(keyName));
+			this.direction_event.setDirection(Key_Direction.get(this.keyboard.type).get(keyName), false);
 
-			this.jays.direction_key_up(Key_Direction.get(keyName));
+			this.jays.direction_key_up(Key_Direction.get(this.keyboard.type).get(keyName));
 		}
 	}
 
@@ -139,8 +144,8 @@ export class GameState {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
 				this.tears.push(new TearBasic(
-					new Point(	this.jays.head.pos.x + this.jays.head.width / 2,
-								this.jays.head.pos.y + this.jays.head.height / 2),
+					new Point(this.jays.head.pos.x + this.jays.head.width / 2,
+						this.jays.head.pos.y + this.jays.head.height / 2),
 					this.attack_direction_event.directions[0]));
 			}
 		} else {

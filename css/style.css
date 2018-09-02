@@ -7,6 +7,8 @@ body {
 }
 
 #settings {
+    width: 15em;
+    text-align: left;
     font-family: 'Courier New', Courier, monospace;
     box-sizing: border-box;
     position: fixed;   
@@ -14,6 +16,19 @@ body {
     border-bottom: 1px solid #fff;
     padding: .25em;
     color: #fff;
+}
+
+.settings-line {
+    height: 1.5em;
+}
+
+.settings-label {
+    width: 15em;
+}
+
+.settings-input-text {
+    width: 3em;
+    float: right;
 }
 
 canvas {
