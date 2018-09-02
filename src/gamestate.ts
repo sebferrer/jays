@@ -9,6 +9,7 @@ import { Direction, Key_Direction } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./floor";
+import { Point } from "./point";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -138,8 +139,8 @@ export class GameState {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
 				this.tears.push(new TearBasic(
-					this.jays.head.pos_x + this.jays.head.width / 2,
-					this.jays.head.pos_y + this.jays.head.height / 2,
+					new Point(	this.jays.head.pos.x + this.jays.head.width / 2,
+								this.jays.head.pos.y + this.jays.head.height / 2),
 					this.attack_direction_event.directions[0]));
 			}
 		} else {

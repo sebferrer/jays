@@ -4,15 +4,14 @@ import { Entity } from "./entity";
 import { Direction } from "./enum";
 import { Sprite } from "./sprite";
 import { CollisionWarp } from "./collision_warp";
+import { Point } from "./point";
 
 export abstract class Tear extends Entity {
 	public direction: Direction;
-	public init_pos_x: number;
-	public init_pos_y: number;
-	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
-		super(id, current_sprite, pos_x, pos_y, width, height);
-		this.init_pos_x = pos_x;
-		this.init_pos_y = pos_y;
+	public init_pos: Point;
+	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
+		super(id, current_sprite, pos, width, height);
+		this.init_pos = new Point(pos.x, pos.y);
 	}
 
 	public move(): void {
@@ -25,7 +24,7 @@ export abstract class Tear extends Entity {
 	}
 
 	public out_of_range(): boolean {
-		return Math.sqrt(Math.pow(this.init_pos_x - this.pos_x, 2) + Math.pow(this.init_pos_y - this.pos_y, 2)) >= gameState.jays.range * 20;
+		return this.init_pos.distanceBetween(this.pos) >= gameState.jays.range * 20;
 	}
 
 	public on_out_of_range() {
@@ -36,10 +35,10 @@ export abstract class Tear extends Entity {
 export class TearBasic extends Tear {
 	public speed: number;
 	public range: number;
-	constructor(pos_x: number, pos_y: number, direction: Direction, id?: string, current_sprite?: Sprite, width?: number, height?: number) {
-		super("tear_basic", new Sprite(0, 0, 10, 10), pos_x, pos_y, 10, 10);
-		this.pos_x -= this.width / 2;
-		this.pos_y -= this.height / 2;
+	constructor(pos: Point, direction: Direction, id?: string, current_sprite?: Sprite, width?: number, height?: number) {
+		super("tear_basic", new Sprite(0, 0, 10, 10), new Point(pos.x, pos.y), 10, 10);
+		this.pos.x -= this.width / 2;
+		this.pos.y -= this.height / 2;
 		this.direction = direction;
 		this.sprite_filename = "assets/img/tear.png";
 		this.speed = 3;

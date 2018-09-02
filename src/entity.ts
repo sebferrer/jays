@@ -1,7 +1,7 @@
 import { Collision } from "./collision";
 import { gameState } from "./main";
 import { Direction } from "./enum";
-import { Position } from "./position";
+import { Point } from "./point";
 import { CollisionDelta } from "./collision_delta";
 import { CollisionWarp } from "./collision_warp";
 import { Sprite } from "./sprite";
@@ -16,41 +16,38 @@ export abstract class Entity { // Abstract, will never be instancied
 	public speed: number;
 	public width: number;
 	public height: number;
-	public pos_x: number;
-	public pos_y: number;
+	public pos: Point;
 
-	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
+	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
 		this.id = id;
 		this.current_sprite = current_sprite;
-		this.pos_x = pos_x;
-		this.pos_y = pos_y;
+		this.pos = new Point(pos.x, pos.y);
 		this.width = width;
 		this.height = height;
 		this.sprite_collecs = SpriteHelper.getCollecs(this.id);
 	}
 
-	public next_position(direction: Direction): Position {
-		let pos_x = this.pos_x;
-		let pos_y = this.pos_y;
+	public next_position(direction: Direction): Point {
+		const pos = new Point(this.pos.x, this.pos.y);
 		switch (direction) {
-			case Direction.UP: pos_y = this.pos_y - this.speed; break;
-			case Direction.DOWN: pos_y = this.pos_y + this.speed; break;
-			case Direction.LEFT: pos_x = this.pos_x - this.speed; break;
-			case Direction.RIGHT: pos_x = this.pos_x + this.speed; break;
+			case Direction.UP: pos.y = this.pos.y - this.speed; break;
+			case Direction.DOWN: pos.y = this.pos.y + this.speed; break;
+			case Direction.LEFT: pos.x = this.pos.x - this.speed; break;
+			case Direction.RIGHT: pos.x = this.pos.x + this.speed; break;
 		}
-		return new Position(pos_x, pos_y);
+		return new Point(pos.x, pos.y);
 	}
 
 	public move_direction(direction: Direction): void {
 		const next_position = this.next_position(direction);
 		const collision_map = this.collision_map(direction, next_position);
 		if (collision_map.is_collision) {
-			if (collision_map.delta_x !== 0) { this.pos_x += collision_map.delta_x; }
-			if (collision_map.delta_y !== 0) { this.pos_y += collision_map.delta_y; }
+			if (collision_map.delta_x !== 0) { this.pos.x += collision_map.delta_x; }
+			if (collision_map.delta_y !== 0) { this.pos.y += collision_map.delta_y; }
 			this.on_collision_map();
 		} else {
-			this.pos_x = next_position.pos_x;
-			this.pos_y = next_position.pos_y;
+			this.pos.x = next_position.x;
+			this.pos.y = next_position.y;
 		}
 		const collision_warp = this.get_collision_warp();
 		if (collision_warp != null) {
@@ -58,7 +55,7 @@ export abstract class Entity { // Abstract, will never be instancied
 		}
 	}
 
-	public collision_map(direction: Direction, position: Position): CollisionDelta {
+	public collision_map(direction: Direction, position: Point): CollisionDelta {
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
 				const current_tile = gameState.current_map.tiles[i][j];
@@ -66,10 +63,10 @@ export abstract class Entity { // Abstract, will never be instancied
 					continue;
 				}
 				switch (direction) {
-					case Direction.UP: return new CollisionDelta(true, 0, (current_tile.pos_y + current_tile.height - this.pos_y)); break;
-					case Direction.DOWN: return new CollisionDelta(true, 0, (this.pos_y + this.height - current_tile.pos_y) * -1); break;
-					case Direction.LEFT: return new CollisionDelta(true, (current_tile.pos_x + current_tile.width - this.pos_x), 0); break;
-					case Direction.RIGHT: return new CollisionDelta(true, (this.pos_x + this.width - current_tile.pos_x) * -1, 0); break;
+					case Direction.UP: return new CollisionDelta(true, 0, (current_tile.pos.y + current_tile.height - this.pos.y)); break;
+					case Direction.DOWN: return new CollisionDelta(true, 0, (this.pos.y + this.height - current_tile.pos.y) * -1); break;
+					case Direction.LEFT: return new CollisionDelta(true, (current_tile.pos.x + current_tile.width - this.pos.x), 0); break;
+					case Direction.RIGHT: return new CollisionDelta(true, (this.pos.x + this.width - current_tile.pos.x) * -1, 0); break;
 				}
 			}
 		}

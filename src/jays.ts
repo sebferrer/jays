@@ -3,38 +3,34 @@ import { gameState, canvas_H, canvas_W } from "./main";
 import { RoomMap, TILE_REF } from "./room_map";
 import { Direction, Direction_Int, Direction_String, WarpType } from "./enum";
 import { Sprite } from "./sprite";
-import { Position } from "./position";
+import { Point } from "./point";
 import { CollisionWarp } from "./collision_warp";
 import { CollisionDelta } from "./collision_delta";
 
 export class Jays extends Entity {
-	public width: number;
-	public height: number;
-	public pos_x: number;
-	public pos_y: number;
 	public tear_delay: number;
 	public range: number;
 	public head: JaysHead;
 
 	constructor() {
-		super("jays", new Sprite(0, 20, 20, 20), canvas_W / 2 - 10, canvas_H / 2 - 20, 20, 20);
+		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20), 20, 20);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 2;
 		this.tear_delay = 500;
 		this.range = 8;
-		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), this.pos_x, this.pos_y - 20, 20, 20);
+		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), 20, 20);
 	}
 
 	public move_direction(direction: Direction) {
 		super.move_direction(direction);
-		this.head.pos_x = this.pos_x;
-		this.head.pos_y = this.pos_y - this.head.height;
+		this.head.pos.x = this.pos.x;
+		this.head.pos.y = this.pos.y - this.head.height;
 	}
 
-	public collision_map(direction: Direction, position: Position): CollisionDelta {
+	public collision_map(direction: Direction, position: Point): CollisionDelta {
 		const result = super.collision_map(direction, position);
 		if (!result.is_collision) {
-			return this.head.collision_map(direction, new Position(position.pos_x, position.pos_y - this.head.height));
+			return this.head.collision_map(direction, new Point(position.x, position.y - this.head.height));
 		}
 		return result;
 	}
@@ -54,16 +50,16 @@ export class Jays extends Entity {
 		switch (collision_warp.warp_info.type) {
 			case WarpType.CLASSIC:
 				if (collision_warp.tile.coord_y === gameState.current_map.height - 1) {
-					this.pos_y = 0 + TILE_REF.height + this.head.height;
+					this.pos.y = 0 + TILE_REF.height + this.head.height;
 				}
 				else if (collision_warp.tile.coord_y === 0) {
-					this.pos_y = canvas_H - this.height - TILE_REF.height;
+					this.pos.y = canvas_H - this.height - TILE_REF.height;
 				}
 				else if (collision_warp.tile.coord_x === gameState.current_map.width - 1) {
-					this.pos_x = 0 + TILE_REF.width;
+					this.pos.x = 0 + TILE_REF.width;
 				}
 				else if (collision_warp.tile.coord_x === 0) {
-					this.pos_x = canvas_W - this.width - TILE_REF.width;
+					this.pos.x = canvas_W - this.width - TILE_REF.width;
 				}
 				break;
 		}
@@ -112,13 +108,8 @@ export class Jays extends Entity {
 }
 
 export class JaysHead extends Entity {
-	public width: number;
-	public height: number;
-	public pos_x: number;
-	public pos_y: number;
-
-	constructor(id: string, current_sprite: Sprite, pos_x: number, pos_y: number, width: number, height: number) {
-		super(id, current_sprite, pos_x, pos_y, width, height);
+	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
+		super(id, current_sprite, new Point(pos.x, pos.y), width, height);
 		this.sprite_filename = "assets/img/jays.png";
 	}
 
