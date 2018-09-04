@@ -10,7 +10,7 @@ import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./floor";
 import { Point } from "./point";
-import { Keyboard } from "./keyboard";
+import { key_mapper } from "./main";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -20,7 +20,6 @@ export class GameState {
 	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
-	public keyboard: Keyboard;
 
 	constructor(map: RoomMap) {
 		this.current_map = map;
@@ -30,12 +29,21 @@ export class GameState {
 		this.tears = new Array<Tear>();
 
 		this.jays = new Jays();
-		this.keyboard = new Keyboard(KeyboardType.AZERTY);
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
 	}
 
 	public key_down(keyName: string): void {
+
+		const direction = key_mapper.current_keyboard.get(keyName);
+
+		if(direction != null) {
+			if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, direction)) {
+				this.get_timer("jays_sprites").restart();
+			}
+			this.direction_event.move_up = true;
+		}
+
 		switch (keyName) {
 			case this.keyboard.get(Direction.UP):
 				if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, Direction.UP)) {
@@ -95,6 +103,15 @@ export class GameState {
 			case "ArrowRight":
 				this.attack_direction_event.remove(Direction.RIGHT);
 				break;
+		}
+
+		let a = new KeyMapper();
+
+		if(a.current_keyboard.get(keyName) != null) {
+			ArrayUtil.removeFromArray(this.directions_keyDown, Key_Direction.get(this.keyboard.type).get(keyName));
+			this.direction_event.setDirection(Key_Direction.get(this.keyboard.type).get(keyName), false);
+
+			this.jays.direction_key_up(Key_Direction.get(this.keyboard.type).get(keyName));
 		}
 
 		if ([this.keyboard.get(Direction.UP), this.keyboard.get(Direction.DOWN),

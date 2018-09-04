@@ -40,17 +40,3 @@ export const Direction_String = new Map<Direction, string>([
 	[Direction.LEFT, "LEFT"],
 	[Direction.RIGHT, "RIGHT"]
 ]);
-
-export const Key_Direction = new Map<KeyboardType, Map<string, Direction>>();
-Key_Direction.set(KeyboardType.AZERTY, new Map<string, Direction>());
-Key_Direction.set(KeyboardType.QWERTY, new Map<string, Direction>());
-Key_Direction.get(KeyboardType.AZERTY)
-	.set("z", Direction.UP)
-	.set("q", Direction.LEFT)
-	.set("s", Direction.DOWN)
-	.set("d", Direction.RIGHT);
-Key_Direction.get(KeyboardType.QWERTY)
-	.set("w", Direction.UP)
-	.set("a", Direction.LEFT)
-	.set("s", Direction.DOWN)
-	.set("d", Direction.RIGHT);
