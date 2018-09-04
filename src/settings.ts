@@ -1,4 +1,4 @@
-import { renderer, gameState } from "./main";
+import { renderer, gameState, key_mapper } from "./main";
 import { KeyboardType } from "./enum";
 
 export class Settings {
@@ -29,15 +29,10 @@ export class Settings {
 		}
 	}
 
-	public static set_keyboard(type) {
-		switch (type) {
-			case "azerty":
-				gameState.keyboard.set(KeyboardType.AZERTY);
-				break;
-			case "qwerty":
-				gameState.keyboard.set(KeyboardType.QWERTY);
-				break;
+	public static set_keyboard(type: string) {
+		if (type == null || KeyboardType[type.toUpperCase()] == null) {
+			throw new Error("type cannot be null and must exist");
 		}
+		key_mapper.current_keyboard_type = KeyboardType[type.toUpperCase()];
 	}
-
 }

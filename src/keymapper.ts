@@ -4,16 +4,23 @@ export class KeyMapper {
 
 	private static readonly DEFAULT_KEYBOARD_TYPE = KeyboardType.AZERTY;
 
-	private innerDictionary = new Map<KeyboardType, Map<string[1], Direction>>();
+	private _innerDictionary = new Map<KeyboardType, Map<string[1], Direction>>();
 
 	public get available_keyboard_types(): KeyboardType[] {
-		return Array.from(this.innerDictionary.keys());
+		return Array.from(this._innerDictionary.keys());
 	}
 
-	public current_keyboard_type: KeyboardType = null;
+	private _current_keyboard_type: KeyboardType = KeyMapper.DEFAULT_KEYBOARD_TYPE;
+	public get current_keyboard_type(): KeyboardType { return this._current_keyboard_type; }
+	public set current_keyboard_type(value: KeyboardType) {
+		if(value == null) {
+			throw new Error("current_keyboard_type cannot be null or undefined");
+		}
+		this._current_keyboard_type = value;
+	}
 
 	public get current_keyboard(): Map<string[1], Direction> {
-		return this.innerDictionary.get(this.current_keyboard_type);
+		return this._innerDictionary.get(this._current_keyboard_type);
 	}
 
 	constructor(keyboard_type?: KeyboardType) {
@@ -33,19 +40,19 @@ export class KeyMapper {
 				"s": Direction.DOWN,
 				"d": Direction.RIGHT
 			});
-		this.current_keyboard_type = keyboard_type != null ? keyboard_type : KeyMapper.DEFAULT_KEYBOARD_TYPE;
+		this._current_keyboard_type = keyboard_type != null ? keyboard_type : KeyMapper.DEFAULT_KEYBOARD_TYPE;
 	}
 
 	private addKeyboard(type: KeyboardType, keys: { [key: string]: Direction }): void {
-		if (this.innerDictionary.get(type) != null) {
+		if (this._innerDictionary.get(type) != null) {
 			throw new Error("Keyboard already exists");
 		}
-		this.innerDictionary.set(type, new Map<string, Direction>());
+		this._innerDictionary.set(type, new Map<string, Direction>());
 		for (const key in keys) {
 			if (key.length !== 1) {
 				throw new Error("keys must contain only one character");
 			}
-			this.innerDictionary.get(type).set(key, keys[key]);
+			this._innerDictionary.get(type).set(key, keys[key]);
 		}
 	}
 }
