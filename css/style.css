@@ -34,4 +34,7 @@ body {
 canvas {
     background-color: white;       
     cursor: none;
+    image-rendering: -moz-crisp-edges;    /* Firefox */
+    image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
+    image-rendering: pixelated;           /* Chrome */
 }

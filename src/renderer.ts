@@ -25,7 +25,7 @@ export class Renderer {
 	}
 
 	public autoScale(): void {
-		const ratio = window.innerHeight / canvas_H;
+		const ratio = Math.round(window.innerHeight / canvas_H * 100) / 100;
 		canvas.width = canvas_W * ratio;
 		canvas.height = canvas_H * ratio;
 		ctx.scale(ratio, ratio);
