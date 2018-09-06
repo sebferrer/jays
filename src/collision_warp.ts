@@ -1,4 +1,4 @@
-import { Tile } from "./tile";
+import { Tile } from "./environment/tile";
 import { WarpInfo } from "./warp_info";
 
 export class CollisionWarp {

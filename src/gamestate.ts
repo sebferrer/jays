@@ -1,14 +1,14 @@
 import { canvas_W, canvas_H, ctx, renderer } from "./main";
-import { TearBasic, Tear } from "./tear";
-import { RoomMap } from "./room_map";
-import { Jays } from "./jays";
+import { TearBasic, Tear } from "./character/tear";
+import { RoomMap } from "./environment/room_map";
+import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
-import { Floor } from "./floor";
+import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
 

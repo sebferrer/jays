@@ -1,5 +1,5 @@
 import { gameState, ctx, bank, canvas, canvas_W, canvas_H } from "./main";
-import { RoomMap } from "./room_map";
+import { RoomMap } from "./environment/room_map";
 
 export class Renderer {
 	public zoomScale: number;
@@ -32,10 +32,10 @@ export class Renderer {
 		this.disableSmoothing();
 	}
 
-	public render_map(map: RoomMap): void {
-		for (let i = 0; i < map.height; i++) {
-			for (let j = 0; j < map.width; j++) {
-				const tile = map.tiles[i][j];
+	public render_map(room: RoomMap): void {
+		for (let i = 0; i < room.height; i++) {
+			for (let j = 0; j < room.width; j++) {
+				const tile = room.tiles[i][j];
 				ctx.drawImage(bank.pic["assets/img/tiles.png"],
 					tile.src.x * tile.height, tile.src.y * tile.width, tile.width, tile.height,
 					tile.pos.x, tile.pos.y, tile.width, tile.height);

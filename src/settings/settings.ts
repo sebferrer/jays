@@ -1,5 +1,5 @@
-import { renderer, gameState, key_mapper } from "./main";
-import { KeyboardType } from "./enum";
+import { renderer, gameState, key_mapper } from "../main";
+import { KeyboardType } from "../enum";
 
 export class Settings {
 

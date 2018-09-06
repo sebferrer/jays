@@ -1,11 +1,11 @@
-import { Entity } from "./entity";
-import { gameState, canvas_H, canvas_W } from "./main";
-import { RoomMap, TILE_REF } from "./room_map";
-import { Direction, Direction_Int, Direction_String, WarpType } from "./enum";
-import { Sprite } from "./sprite";
-import { Point } from "./point";
-import { CollisionWarp } from "./collision_warp";
-import { CollisionDelta } from "./collision_delta";
+import { Entity } from "../entity";
+import { gameState, canvas_H, canvas_W } from "../main";
+import { RoomMap, TILE_REF } from "../environment/room_map";
+import { Direction, Direction_Int, Direction_String, WarpType } from "../enum";
+import { Sprite } from "../sprite";
+import { Point } from "../point";
+import { CollisionWarp } from "../collision_warp";
+import { CollisionDelta } from "../collision_delta";
 
 export class Jays extends Entity {
 	public tear_delay: number;

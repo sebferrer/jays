@@ -1,4 +1,4 @@
-import { Tile } from "./tile";
+import { Tile } from "./environment/tile";
 import { Entity } from "./entity";
 import { Point } from "./point";
 

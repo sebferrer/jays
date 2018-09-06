@@ -1,7 +1,7 @@
-import { WARPS, Warp } from "./warp";
+import { WARPS, Warp } from "../warp";
 import { MAPS } from "./maps";
 import { Tile } from "./tile";
-import { Point } from "./point";
+import { Point } from "../point";
 
 export class RoomMap {
 	public id: number;

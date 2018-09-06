@@ -1,7 +1,7 @@
-import { gameState } from "./main";
-import { TileType } from "./enum";
-import { WarpInfo } from "./warp_info";
-import { Point } from "./point";
+import { gameState } from "../main";
+import { TileType } from "../enum";
+import { WarpInfo } from "../warp_info";
+import { Point } from "../point";
 
 export class Tile {
 

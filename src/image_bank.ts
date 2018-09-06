@@ -1,6 +1,6 @@
 import { GameState } from "./gamestate";
 
-export class ImgBank {
+export class ImageBank {
 
 	public buffer: any;
 	public pic: any;

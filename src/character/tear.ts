@@ -1,10 +1,10 @@
-import { ArrayUtil } from "./util";
-import { gameState } from "./main";
-import { Entity } from "./entity";
-import { Direction } from "./enum";
-import { Sprite } from "./sprite";
-import { CollisionWarp } from "./collision_warp";
-import { Point } from "./point";
+import { ArrayUtil } from "./../util";
+import { gameState } from "./../main";
+import { Entity } from "./../entity";
+import { Direction } from "./../enum";
+import { Sprite } from "./../sprite";
+import { CollisionWarp } from "./../collision_warp";
+import { Point } from "./../point";
 
 export abstract class Tear extends Entity {
 	public direction: Direction;
