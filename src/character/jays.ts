@@ -16,7 +16,7 @@ export class Jays extends Entity {
 		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20), 20, 20);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 2;
-		this.tear_delay = 500;
+		this.tear_delay = 480;
 		this.range = 8;
 		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), 20, 20);
 	}

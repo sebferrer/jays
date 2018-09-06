@@ -17,7 +17,7 @@ export class GameState {
 	public current_floor: Floor;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
-	public directions_keyDown: Direction[];
+	public directions_keyDown: Direction[]; 
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
 
@@ -99,7 +99,8 @@ export class GameState {
 		TIMERS.forEach(timer => timer.run());
 
 		try {
-			renderer.render_map(this.current_map);
+			// renderer.render_map(this.current_map);
+			renderer.render_wall();
 		} catch (err) {
 			// console.error(err);
 		}

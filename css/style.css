@@ -1,6 +1,7 @@
 body {
-    background-color: grey;
-    margin: 0;
+    background-color: black;
+	 margin: 0;
+	 margin-top: 3em;
     padding: 0;
     text-align: center;
     overflow: hidden;
@@ -33,7 +34,6 @@ body {
 
 canvas {
     background-color: white;       
-    cursor: none;
     image-rendering: -moz-crisp-edges;    /* Firefox */
     image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
     image-rendering: pixelated;           /* Chrome */

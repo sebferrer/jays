@@ -6,7 +6,7 @@ import { Settings } from "./settings/settings";
 import { KeyMapper } from "./settings/keymapper";
 
 export const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
-export const canvas_W = 640;
+export const canvas_W = 660;
 export const canvas_H = 480;
 export const ctx = canvas.getContext("2d");
 export const bank = new ImageBank();
