@@ -35,8 +35,8 @@ export class RoomMap implements IDrawable {
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
-			tile.pos.x = tile.coord_x * tile.width;
-			tile.pos.y = tile.coord_y * tile.height;
+			tile.pos.x = tile.coord_x * tile.width + wall.side_sprite.width;
+			tile.pos.y = tile.coord_y * tile.height + wall.side_sprite.height;
 			tile_coord_x++;
 
 			line.push(tile);
@@ -74,7 +74,7 @@ export class RoomMap implements IDrawable {
 				ctx.drawImage(pic,
 					tile.src.x * tile.height, tile.src.y * tile.width,
 					tile.width, tile.height,
-					tile.pos.x + this.wall.side_sprite.width, tile.pos.y + this.wall.side_sprite.height,
+					tile.pos.x, tile.pos.y,
 					tile.width, tile.height);
 			}
 		}
