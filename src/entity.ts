@@ -1,5 +1,5 @@
 import { Collision } from "./collision";
-import { gameState } from "./main";
+import { gameState, canvas_H, canvas } from "./main";
 import { Direction } from "./enum";
 import { Point } from "./point";
 import { CollisionDelta } from "./collision_delta";
@@ -56,6 +56,31 @@ export abstract class Entity { // Abstract, will never be instancied
 	}
 
 	public collision_map(direction: Direction, position: Point): CollisionDelta {
+
+		const wall_sprite = gameState.current_map.room_walls.side_sprite;
+
+		// Wall
+
+
+		if (position.x <= wall_sprite.width) {
+			// LEFT
+			return new CollisionDelta(true, this.pos.x - position.x, 0);
+		} else if (position.y <= wall_sprite.height - this.height) {
+			// TOP
+			//TODO: Warning: - this.height cause tears not to fire when jays is stuck to the wall !
+			return new CollisionDelta(true, 0, this.pos.y - position.y);
+		}
+		else if (position.y >= (((gameState.current_map.height + 1) * gameState.current_map.tile_height) + wall_sprite.height - this.height)) {
+			return new CollisionDelta(true, 0, -(position.y - this.pos.y));
+		} else if (position.x >= (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)) {
+			return new CollisionDelta(true, -(position.x - this.pos.x));
+		}
+
+		// else if (position.y >= (canvas_H - wall_sprite.height)) {
+		// 	// BOTTOM
+		// 	return new CollisionDelta(true, 0, position.y + canvas_H + this.height - wall_sprite.height);
+		// }
+
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
 				const current_tile = gameState.current_map.tiles[i][j];
@@ -63,10 +88,10 @@ export abstract class Entity { // Abstract, will never be instancied
 					continue;
 				}
 				switch (direction) {
-					case Direction.UP: return new CollisionDelta(true, 0, (current_tile.pos.y + current_tile.height - this.pos.y)); break;
-					case Direction.DOWN: return new CollisionDelta(true, 0, (this.pos.y + this.height - current_tile.pos.y) * -1); break;
-					case Direction.LEFT: return new CollisionDelta(true, (current_tile.pos.x + current_tile.width - this.pos.x), 0); break;
-					case Direction.RIGHT: return new CollisionDelta(true, (this.pos.x + this.width - current_tile.pos.x) * -1, 0); break;
+					case Direction.UP: return new CollisionDelta(true, 0, (current_tile.pos.y + current_tile.height - position.y));
+					case Direction.DOWN: return new CollisionDelta(true, 0, (position.y + this.height - current_tile.pos.y) * -1);
+					case Direction.LEFT: return new CollisionDelta(true, (current_tile.pos.x + current_tile.width - position.x), 0);
+					case Direction.RIGHT: return new CollisionDelta(true, (position.x + this.width - current_tile.pos.x) * -1, 0);
 				}
 			}
 		}

@@ -1,26 +1,45 @@
 import { Entity } from "../entity";
 import { gameState, canvas_H, canvas_W, bank } from "../main";
-import { RoomMap, TILE_REF } from "../environment/room_map";
-import { Direction, Direction_Int, Direction_String, WarpType } from "../enum";
+import { Direction, Direction_Int, Direction_String } from "../enum";
 import { Sprite } from "../sprite";
 import { Point } from "../point";
 import { CollisionWarp } from "../collision_warp";
 import { CollisionDelta } from "../collision_delta";
 import { IDrawable } from "../idrawable";
-import { FloorOneRoom } from "../environment/wall";
 
 export class Jays extends Entity implements IDrawable {
-	public tear_delay: number;
-	public range: number;
+	private _tear_delay: number;
+	public get tear_delay(): number { return this._tear_delay; }
+	public set tear_delay(new_tear_delay: number) {
+		this._tear_delay = new_tear_delay;
+		gameState.get_timer("tear").interval = this._tear_delay;
+	}
+
+	private _range: number;
+	public get range(): number { return this._range; }
+	public set range(value: number) {
+		if (value == null || value <= 0) {
+			throw new Error("Property `range` cannot be null or <= 0");
+		}
+		this._range = value;
+	}
+
 	public head: JaysHead;
 
+	private static body_height = 20;
+	private static body_width = 20;
+	private static head_height = 20;
+	private static head_width = 20;
+
 	constructor() {
-		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20), 20, 20);
+		// height is = body height + head height...
+		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20),
+			Jays.body_width, Jays.body_height + Jays.head_height);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 2;
-		this.tear_delay = 480;
+		this._tear_delay = 480;
 		this.range = 8;
-		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), 20, 20);
+		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), Jays.head_width, Jays.body_width);
 	}
 
 	public move_direction(direction: Direction) {
@@ -48,24 +67,24 @@ export class Jays extends Entity implements IDrawable {
 	public on_collision_map(): void { }
 
 	public on_collision_warp(collision_warp: CollisionWarp): void {
-		gameState.current_map = new RoomMap(collision_warp.warp_info.destination, new FloorOneRoom());
-		switch (collision_warp.warp_info.type) {
-			case WarpType.CLASSIC:
-				if (collision_warp.tile.coord_y === gameState.current_map.height - 1) {
-					this.pos.y = 0 + TILE_REF.height + this.head.height;
-				}
-				else if (collision_warp.tile.coord_y === 0) {
-					this.pos.y = canvas_H - this.height - TILE_REF.height;
-				}
-				else if (collision_warp.tile.coord_x === gameState.current_map.width - 1) {
-					this.pos.x = 0 + TILE_REF.width;
-				}
-				else if (collision_warp.tile.coord_x === 0) {
-					this.pos.x = canvas_W - this.width - TILE_REF.width;
-				}
-				break;
-		}
-		gameState.clear_tears();
+		// gameState.current_map = new RoomMap(collision_warp.warp_info.destination, new FloorOneWalls());
+		// switch (collision_warp.warp_info.type) {
+		// 	case WarpType.CLASSIC:
+		// 		if (collision_warp.tile.coord_y === gameState.current_map.height - 1) {
+		// 			this.pos.y = 0 + TILE_REF.height + this.head.height;
+		// 		}
+		// 		else if (collision_warp.tile.coord_y === 0) {
+		// 			this.pos.y = canvas_H - this.height - TILE_REF.height;
+		// 		}
+		// 		else if (collision_warp.tile.coord_x === gameState.current_map.width - 1) {
+		// 			this.pos.x = 0 + TILE_REF.width;
+		// 		}
+		// 		else if (collision_warp.tile.coord_x === 0) {
+		// 			this.pos.x = canvas_W - this.width - TILE_REF.width;
+		// 		}
+		// 		break;
+		// }
+		// gameState.clear_tears();
 	}
 
 	public update(): void {
@@ -103,16 +122,13 @@ export class Jays extends Entity implements IDrawable {
 		this.current_sprite = this.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(direction)];
 	}
 
-	public set_tear_delay(new_tear_delay: number): void {
-		this.tear_delay = new_tear_delay;
-		gameState.get_timer("tear").interval = this.tear_delay;
-	}
-
 	public draw(ctx: CanvasRenderingContext2D): void {
+		// Draw body
 		ctx.drawImage(bank.pic[this.sprite_filename],
 			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
-			this.pos.x, this.pos.y, this.width, this.height);
+			this.pos.x, this.pos.y, Jays.body_width, Jays.body_height);
 
+		// Draw head
 		ctx.drawImage(bank.pic[this.sprite_filename],
 			this.head.current_sprite.src_x, this.head.current_sprite.src_y, this.head.current_sprite.src_width, this.head.current_sprite.src_height,
 			this.head.pos.x, this.head.pos.y, this.head.width, this.head.height);

@@ -1,52 +1,67 @@
-import { WARPS, Warp } from "../warp";
-import { MAPS } from "./maps";
-import { Tile } from "./tile";
+import { Warp } from "../warp";
+import { IRawMap } from "./maps";
+import { Tile, TILE_TYPES, TILE_REF } from "./tile";
 import { Point } from "../point";
 import { IDrawable } from "../idrawable";
 import { bank } from "../main";
-import { Wall } from "./wall";
+import { RoomWalls } from "./room_walls";
 
-export class RoomMap implements IDrawable {
-	public id: number;
-	public width: number;
-	public height: number;
-	public tiles: Tile[][];
+export abstract class RoomMap implements IDrawable {
+
+	protected _raw_map: IRawMap;
+	public get raw_map(): IRawMap { return this._raw_map; }
+
+	protected _room_walls: RoomWalls;
+	public get room_walls(): RoomWalls { return this._room_walls; }
+
+	public get height(): number { return this._raw_map.height; }
+	public get width(): number { return this._raw_map.width; }
+
+	protected _tiles: Tile[][];
+	public get tiles() { return this._tiles; }
+
+	public get tile_height(): number { return this._tiles[0][0].height; }
+	public get tile_width(): number { return this._tiles[0][0].width; }
+
 	public warps: Warp[];
-	public wall: Wall;
 
-	constructor(id: number, wall: Wall) {
-
+	constructor(raw_map: IRawMap, wall: RoomWalls) {
+		if (raw_map == null) {
+			throw new Error("parameter `raw_map` cannot be null");
+		}
 		if (wall == null) {
 			throw new Error("parameter `wall` cannot be null");
 		}
-		this.wall = wall;
 
-		this.id = id;
-		this.width = MAPS[id].width;
-		this.height = MAPS[id].height;
-		this.tiles = new Array<Array<Tile>>();
+		this._raw_map = raw_map;
+		this._room_walls = wall;
 		this.warps = new Array<Warp>();
+		this._tiles = this.get_tiles(this.raw_map, this._room_walls);
+	}
 
-		let line = new Array<Tile>();
+	protected get_tiles(raw_map: IRawMap, room_walls: RoomWalls): Tile[][] {
+		const result: Tile[][] = [];
+		let line: Tile[] = [];
 		let tile_coord_x = 0;
 		let tile_coord_y = 0;
-		for (let i = 0; i < MAPS[id].tiles.length; i++) {
-			const tile_ref = RoomMap.getTileById(MAPS[id].tiles[i]);
+		for (let i = 0; i < raw_map.tiles.length; i++) {
+			const tile_ref = RoomMap.getTileById(raw_map.tiles[i]);
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
-			tile.pos.x = tile.coord_x * tile.width + wall.side_sprite.width;
-			tile.pos.y = tile.coord_y * tile.height + wall.side_sprite.height;
+			tile.pos.x = tile.coord_x * tile.width + room_walls.side_sprite.width;
+			tile.pos.y = tile.coord_y * tile.height + room_walls.side_sprite.height;
 			tile_coord_x++;
 
 			line.push(tile);
 			if (i > 0 && ((i + 1) % this.width) === 0) {
-				this.tiles.push(line);
+				result.push(line);
 				line = new Array<Tile>();
 				tile_coord_x = 0;
 				tile_coord_y++;
 			}
 		}
+		return result;
 	}
 
 	/**
@@ -54,8 +69,9 @@ export class RoomMap implements IDrawable {
 	 * Remove warpmap.ts & warpdesc.ts if necessary
 	 */
 	public get_warp(): any {
+		return null;
 		// I wanted to return a WarpMap using itself a WarpDesc...
-		return WARPS.find(warp => warp.map_id === this.id) || null;
+		// return WARPS.find(warp => warp.map_id === this.mapId) || null;
 	}
 
 	public static getTileById(id: number): Tile {
@@ -64,32 +80,12 @@ export class RoomMap implements IDrawable {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 
-		this.wall.draw(ctx);
+		// Draw room walls
+		this._room_walls.draw(ctx);
 
-		const pic = bank.pic["assets/img/tiles.png"];
-
-		for (let i = 0; i < this.height; i++) {
-			for (let j = 0; j < this.width; j++) {
-				const tile = this.tiles[i][j];
-				ctx.drawImage(pic,
-					tile.src.x * tile.height, tile.src.y * tile.width,
-					tile.width, tile.height,
-					tile.pos.x, tile.pos.y,
-					tile.width, tile.height);
-			}
-		}
+		// Draw each tile
+		this.tiles.forEach(line =>
+			line.forEach(tile => tile.draw(ctx))
+		);
 	}
 }
-
-export const TILE_REF = new Tile(0, "", new Point(-1, -1), false);
-
-const TILE_TYPES: { [key: number]: Tile } = {
-	1: new Tile(1, "Earth", new Point(0, 0), false),
-	2: new Tile(2, "Rock", new Point(1, 0), true),
-	3: new Tile(3, "Water", new Point(2, 0), true),
-	4: new Tile(4, "Grass", new Point(3, 0), false),
-	5: new Tile(5, "Grass textured light", new Point(4, 0), false),
-	9: new Tile(9, "Grass light", new Point(3, 1), false),
-	10: new Tile(10, "Grass textured", new Point(4, 1), false),
-	12: new Tile(12, "Iron", new Point(1, 2), true)
-};

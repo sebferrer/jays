@@ -1,7 +1,4 @@
-import { gameState, ctx, bank, canvas, canvas_W, canvas_H } from "./main";
-import { RoomMap } from "./environment/room_map";
-import { FloorOneRoom } from "./environment/wall";
-import { Point } from "./point";
+import { ctx, canvas, canvas_W, canvas_H } from "./main";
 
 export class Renderer {
 	public zoomScale: number;

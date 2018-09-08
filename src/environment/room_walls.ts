@@ -3,7 +3,7 @@ import { WallSprite } from "./wall_sprite";
 import { canvas_W, canvas_H, bank } from "../main";
 import { IDrawable } from "../idrawable";
 
-export abstract class Wall implements IDrawable {
+export abstract class RoomWalls implements IDrawable {
 	protected _corner_sprite: WallSprite;
 	public get corner_sprite(): WallSprite { return this._corner_sprite; }
 
@@ -135,14 +135,5 @@ export abstract class Wall implements IDrawable {
 			this.corner_sprite.height
 		);
 		ctx.restore();
-	}
-}
-
-export class FloorOneRoom extends Wall {
-	constructor() {
-		const corner_sprite = new WallSprite(new Point(0, 0), new Point(60, 60), "assets/img/walls/floor_one.png");
-		const side_sprite = new WallSprite(new Point(60, 0), new Point(120, 60), "assets/img/walls/floor_one.png");
-
-		super(corner_sprite, side_sprite);
 	}
 }
