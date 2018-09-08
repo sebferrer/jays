@@ -1,6 +1,7 @@
 import { gameState, ctx, bank, canvas, canvas_W, canvas_H } from "./main";
 import { RoomMap } from "./environment/room_map";
 import { Wall, FloorOneRoom } from "./environment/wall";
+import { Point } from "./point";
 
 export class Renderer {
 	public zoomScale: number;
@@ -47,12 +48,14 @@ export class Renderer {
 	public render_wall() {
 		const wall = new FloorOneRoom();
 
+		const sidePic = bank.pic[wall.side_sprite.sprite_sheet_path];
+		const cornerPic = bank.pic[wall.corner_sprite.sprite_sheet_path];
+
 		// SIDES
 
 		// TOP
-		const topPic = bank.pic[wall.side_sprite.sprite_sheet_path];
 		for (let i = 1; i < 10; ++i) {
-			ctx.drawImage(topPic,
+			ctx.drawImage(sidePic,
 				wall.side_sprite.top_left.x,
 				wall.side_sprite.top_left.y,
 				wall.side_sprite.width, wall.side_sprite.height,
@@ -63,16 +66,10 @@ export class Renderer {
 		}
 
 		// LEFT
-		const leftPic = bank.pic[wall.side_sprite.sprite_sheet_path];
-
 		for (let i = 1; i < 7; ++i) {
 			ctx.save();
-			// Translate from center of picture
-			ctx.translate(wall.side_sprite.width / 2, (i * wall.side_sprite.height + wall.side_sprite.height / 2));
-			ctx.rotate(this.getRadians(-90));
-			ctx.translate(- (wall.side_sprite.width / 2), -(i * wall.side_sprite.height + wall.side_sprite.height / 2));
-
-			ctx.drawImage(leftPic,
+			wall.corner_sprite.rotate(ctx, new Point(0, i * wall.side_sprite.height), -90);
+			ctx.drawImage(sidePic,
 				wall.side_sprite.top_left.x,
 				wall.side_sprite.top_left.y,
 				wall.side_sprite.width, wall.side_sprite.height,
@@ -80,21 +77,14 @@ export class Renderer {
 				wall.side_sprite.width,
 				wall.side_sprite.height
 			);
-
 			ctx.restore();
 		}
 
 		// BOTTOM
-		const bottomPic = bank.pic[wall.side_sprite.sprite_sheet_path];
-
 		for (let i = 1; i < 10; ++i) {
 			ctx.save();
-			// Translate from center of picture
-			ctx.translate((i * wall.side_sprite.width + wall.side_sprite.width / 2), canvas_H - wall.side_sprite.height / 2);
-			ctx.rotate(this.getRadians(-180));
-			ctx.translate(-(i * wall.side_sprite.width + wall.side_sprite.width / 2), -(canvas_H - wall.side_sprite.height / 2));
-
-			ctx.drawImage(bottomPic,
+			wall.corner_sprite.rotate(ctx, new Point(i * wall.side_sprite.width, canvas_H - wall.side_sprite.height), -180);
+			ctx.drawImage(sidePic,
 				wall.side_sprite.top_left.x,
 				wall.side_sprite.top_left.y,
 				wall.side_sprite.width, wall.side_sprite.height,
@@ -102,21 +92,14 @@ export class Renderer {
 				wall.side_sprite.width,
 				wall.side_sprite.height
 			);
-
 			ctx.restore();
 		}
 
 		// RIGHT
-		const right = bank.pic[wall.side_sprite.sprite_sheet_path];
-
 		for (let i = 1; i < 7; ++i) {
 			ctx.save();
-			// Translate from center of picture
-			ctx.translate(canvas_W - wall.side_sprite.width / 2, (i * wall.side_sprite.height + wall.side_sprite.height / 2));
-			ctx.rotate(this.getRadians(90));
-			ctx.translate(- (canvas_W - wall.side_sprite.width / 2), -(i * wall.side_sprite.height + wall.side_sprite.height / 2));
-
-			ctx.drawImage(right,
+			wall.corner_sprite.rotate(ctx, new Point(canvas_W - wall.side_sprite.width, i * wall.side_sprite.height), 90);
+			ctx.drawImage(sidePic,
 				wall.side_sprite.top_left.x,
 				wall.side_sprite.top_left.y,
 				wall.side_sprite.width, wall.side_sprite.height,
@@ -124,17 +107,13 @@ export class Renderer {
 				wall.side_sprite.width,
 				wall.side_sprite.height
 			);
-
 			ctx.restore();
 		}
-
-
 
 		// CORNERS
 
 		// Top left
-		const topLeftPic = bank.pic[wall.corner_sprite.sprite_sheet_path];
-		ctx.drawImage(topLeftPic,
+		ctx.drawImage(cornerPic,
 			wall.corner_sprite.top_left.x,
 			wall.corner_sprite.top_left.y,
 			wall.corner_sprite.width, wall.corner_sprite.height,
@@ -144,14 +123,9 @@ export class Renderer {
 		);
 
 		// Bottom left
-		const bottomLeftPic = bank.pic[wall.corner_sprite.sprite_sheet_path];
 		ctx.save();
-		// Translate from center of picture
-		ctx.translate(wall.corner_sprite.width / 2, canvas_H - (wall.corner_sprite.height / 2));
-		ctx.rotate(this.getRadians(-90));
-		ctx.translate(-(wall.corner_sprite.width / 2), -(canvas_H - (wall.corner_sprite.height / 2)));
-
-		ctx.drawImage(bottomLeftPic,
+		wall.corner_sprite.rotate(ctx, new Point(0, canvas_H - wall.corner_sprite.height), -90);
+		ctx.drawImage(cornerPic,
 			wall.corner_sprite.top_left.x,
 			wall.corner_sprite.top_left.y,
 			wall.corner_sprite.width, wall.corner_sprite.height,
@@ -162,14 +136,9 @@ export class Renderer {
 		ctx.restore();
 
 		// Top right
-		const topRightPic = bank.pic[wall.corner_sprite.sprite_sheet_path];
 		ctx.save();
-		// Translate from center of picture
-		ctx.translate(canvas_W - (wall.corner_sprite.width / 2), wall.corner_sprite.height / 2);
-		ctx.rotate(this.getRadians(90));
-		ctx.translate(-(canvas_W - (wall.corner_sprite.width / 2)), -(wall.corner_sprite.height / 2));
-
-		ctx.drawImage(topRightPic,
+		wall.corner_sprite.rotate(ctx, new Point(canvas_W - wall.corner_sprite.width, 0), 90);
+		ctx.drawImage(cornerPic,
 			wall.corner_sprite.top_left.x,
 			wall.corner_sprite.top_left.y,
 			wall.corner_sprite.width, wall.corner_sprite.height,
@@ -180,15 +149,9 @@ export class Renderer {
 		ctx.restore();
 
 		// Bottom right
-		const bottomRight = bank.pic[wall.corner_sprite.sprite_sheet_path];
 		ctx.save();
-
-		// Translate from center of picture
-		ctx.translate(canvas_W - (wall.corner_sprite.width / 2), canvas_H - (wall.corner_sprite.height / 2));
-		ctx.rotate(this.getRadians(180));
-		ctx.translate(-(canvas_W - (wall.corner_sprite.width / 2)), -(canvas_H - (wall.corner_sprite.height / 2)));
-
-		ctx.drawImage(bottomRight,
+		wall.corner_sprite.rotate(ctx, new Point(canvas_W - wall.corner_sprite.width, canvas_H - wall.corner_sprite.height), 180);
+		ctx.drawImage(cornerPic,
 			wall.corner_sprite.top_left.x,
 			wall.corner_sprite.top_left.y,
 			wall.corner_sprite.width, wall.corner_sprite.height,
