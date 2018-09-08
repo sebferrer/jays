@@ -62,11 +62,12 @@ export abstract class RoomWalls implements IDrawable {
 		// LEFT
 		for (let i = 1; i < 8; ++i) {
 			ctx.save();
-			this.corner_sprite.rotate(ctx, new Point(0, i * this.side_sprite.height), -90);
+			const dest_left_side = new Point(0, i * this.side_sprite.height);
+			this.corner_sprite.rotate(ctx, dest_left_side, -90);
 			ctx.drawImage(side_pic,
 				this.side_sprite.top_left.x, this.side_sprite.top_left.y,
 				this.side_sprite.width, this.side_sprite.height,
-				0, i * this.side_sprite.height,
+				dest_left_side.x, dest_left_side.y,
 				this.side_sprite.width, this.side_sprite.height
 			);
 			ctx.restore();
@@ -75,11 +76,12 @@ export abstract class RoomWalls implements IDrawable {
 		// BOTTOM
 		for (let i = 1; i < 11; ++i) {
 			ctx.save();
-			this.corner_sprite.rotate(ctx, new Point(i * this.side_sprite.width, canvas_H - this.side_sprite.height), -180);
+			const dest_bottom_side = new Point(i * this.side_sprite.width, canvas_H - this.side_sprite.height);
+			this.corner_sprite.rotate(ctx, dest_bottom_side, -180);
 			ctx.drawImage(side_pic,
 				this.side_sprite.top_left.x, this.side_sprite.top_left.y,
 				this.side_sprite.width, this.side_sprite.height,
-				i * this.side_sprite.width, canvas_H - this.side_sprite.height,
+				dest_bottom_side.x, dest_bottom_side.y,
 				this.side_sprite.width, this.side_sprite.height
 			);
 			ctx.restore();
@@ -88,11 +90,12 @@ export abstract class RoomWalls implements IDrawable {
 		// RIGHT
 		for (let i = 1; i < 8; ++i) {
 			ctx.save();
-			this.corner_sprite.rotate(ctx, new Point(canvas_W - this.side_sprite.width, i * this.side_sprite.height), 90);
+			const dest_right_side = new Point(canvas_W - this.side_sprite.width, i * this.side_sprite.height);
+			this.corner_sprite.rotate(ctx, dest_right_side, 90);
 			ctx.drawImage(side_pic,
 				this.side_sprite.top_left.x, this.side_sprite.top_left.y,
 				this.side_sprite.width, this.side_sprite.height,
-				canvas_W - this.side_sprite.width, i * this.side_sprite.height,
+				dest_right_side.x, dest_right_side.y,
 				this.side_sprite.width, this.side_sprite.height
 			);
 			ctx.restore();
@@ -110,33 +113,36 @@ export abstract class RoomWalls implements IDrawable {
 
 		// Bottom left
 		ctx.save();
-		this.corner_sprite.rotate(ctx, new Point(0, canvas_H - this.corner_sprite.height), -90);
+		const dest_bottom_left_corner = new Point(0, canvas_H - this.corner_sprite.height);
+		this.corner_sprite.rotate(ctx, dest_bottom_left_corner, -90);
 		ctx.drawImage(corner_pic,
 			this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
 			this.corner_sprite.width, this.corner_sprite.height,
-			0, canvas_H - this.corner_sprite.height,
+			dest_bottom_left_corner.x, dest_bottom_left_corner.y,
 			this.corner_sprite.width, this.corner_sprite.height
 		);
 		ctx.restore();
 
 		// Top right
 		ctx.save();
-		this.corner_sprite.rotate(ctx, new Point(canvas_W - this.corner_sprite.width, 0), 90);
+		const dest_top_right_corner = new Point(canvas_W - this.corner_sprite.width, 0);
+		this.corner_sprite.rotate(ctx, dest_top_right_corner, 90);
 		ctx.drawImage(corner_pic,
 			this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
 			this.corner_sprite.width, this.corner_sprite.height,
-			canvas_W - this.corner_sprite.width, 0,
+			dest_top_right_corner.x, dest_top_right_corner.y,
 			this.corner_sprite.width, this.corner_sprite.height
 		);
 		ctx.restore();
 
 		// Bottom right
 		ctx.save();
-		this.corner_sprite.rotate(ctx, new Point(canvas_W - this.corner_sprite.width, canvas_H - this.corner_sprite.height), 180);
+		const dest_bottom_right_corner = new Point(canvas_W - this.corner_sprite.width, canvas_H - this.corner_sprite.height)
+		this.corner_sprite.rotate(ctx, dest_bottom_right_corner, 180);
 		ctx.drawImage(corner_pic,
 			this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
 			this.corner_sprite.width, this.corner_sprite.height,
-			canvas_W - this.corner_sprite.width, canvas_H - this.corner_sprite.height,
+			dest_bottom_right_corner.x, dest_bottom_right_corner.y,
 			this.corner_sprite.width, this.corner_sprite.height
 		);
 		ctx.restore();
@@ -153,35 +159,41 @@ export abstract class RoomWalls implements IDrawable {
 						this.door_sprite.width, this.door_sprite.height
 					);
 					break;
+
 				case Direction.DOWN:
 					ctx.save();
-					this.door_sprite.rotate(ctx, new Point(canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height), 180);
+					const dest_down_door = new Point(canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height)
+					this.door_sprite.rotate(ctx, dest_down_door, 180);
 					ctx.drawImage(door_pic,
 						this.door_sprite.top_left.x, this.door_sprite.top_left.y,
 						this.door_sprite.width, this.door_sprite.height,
-						canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height,
+						dest_down_door.x, dest_down_door.y,
 						this.door_sprite.width, this.door_sprite.height
 					);
 					ctx.restore();
 					break;
+
 				case Direction.LEFT:
 					ctx.save();
-					this.door_sprite.rotate(ctx, new Point(0, canvas_H / 2 - this.door_sprite.height / 2), -90);
+					const dest_left_door = new Point(0, canvas_H / 2 - this.door_sprite.height / 2);
+					this.door_sprite.rotate(ctx, dest_left_door, -90);
 					ctx.drawImage(door_pic,
 						this.door_sprite.top_left.x, this.door_sprite.top_left.y,
 						this.door_sprite.width, this.door_sprite.height,
-						0, canvas_H / 2 - this.door_sprite.height / 2,
+						dest_left_door.x, dest_left_door.y,
 						this.door_sprite.width, this.door_sprite.height
 					);
 					ctx.restore();
 					break;
+
 				case Direction.RIGHT:
 					ctx.save();
-					this.door_sprite.rotate(ctx, new Point(canvas_W - this.door_sprite.width, canvas_H / 2 - this.door_sprite.height / 2), 90);
+					const dest_right_door = new Point(canvas_W - this.door_sprite.width, canvas_H / 2 - this.door_sprite.height / 2);
+					this.door_sprite.rotate(ctx, dest_right_door, 90);
 					ctx.drawImage(door_pic,
 						this.door_sprite.top_left.x, this.door_sprite.top_left.y,
 						this.door_sprite.width, this.door_sprite.height,
-						canvas_W - this.door_sprite.width, canvas_H / 2 - this.door_sprite.height / 2,
+						dest_right_door.x, dest_right_door.y,
 						this.door_sprite.width, this.door_sprite.height
 					);
 					ctx.restore();
