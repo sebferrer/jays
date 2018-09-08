@@ -2,15 +2,25 @@ import { WARPS, Warp } from "../warp";
 import { MAPS } from "./maps";
 import { Tile } from "./tile";
 import { Point } from "../point";
+import { IDrawable } from "../idrawable";
+import { bank } from "../main";
+import { Wall } from "./wall";
 
-export class RoomMap {
+export class RoomMap implements IDrawable {
 	public id: number;
 	public width: number;
 	public height: number;
 	public tiles: Tile[][];
 	public warps: Warp[];
+	public wall: Wall;
 
-	constructor(id: number) {
+	constructor(id: number, wall: Wall) {
+
+		if (wall == null) {
+			throw new Error("parameter `wall` cannot be null");
+		}
+		this.wall = wall;
+
 		this.id = id;
 		this.width = MAPS[id].width;
 		this.height = MAPS[id].height;
@@ -50,6 +60,24 @@ export class RoomMap {
 
 	public static getTileById(id: number): Tile {
 		return TILE_TYPES[id] || TILE_REF;
+	}
+
+	public draw(ctx: CanvasRenderingContext2D): void {
+
+		this.wall.draw(ctx);
+
+		const pic = bank.pic["assets/img/tiles.png"];
+
+		for (let i = 0; i < this.height; i++) {
+			for (let j = 0; j < this.width; j++) {
+				const tile = this.tiles[i][j];
+				ctx.drawImage(pic,
+					tile.src.x * tile.height, tile.src.y * tile.width,
+					tile.width, tile.height,
+					tile.pos.x + this.wall.side_sprite.width, tile.pos.y + this.wall.side_sprite.height,
+					tile.width, tile.height);
+			}
+		}
 	}
 }
 

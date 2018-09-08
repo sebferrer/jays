@@ -1,12 +1,13 @@
 import { ArrayUtil } from "./../util";
-import { gameState } from "./../main";
+import { gameState, bank } from "./../main";
 import { Entity } from "./../entity";
 import { Direction } from "./../enum";
 import { Sprite } from "./../sprite";
 import { CollisionWarp } from "./../collision_warp";
 import { Point } from "./../point";
+import { IDrawable } from "../idrawable";
 
-export abstract class Tear extends Entity {
+export abstract class Tear extends Entity implements IDrawable {
 	public direction: Direction;
 	public init_pos: Point;
 	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
@@ -29,6 +30,12 @@ export abstract class Tear extends Entity {
 
 	public on_out_of_range() {
 		ArrayUtil.removeFromArray(gameState.tears, this);
+	}
+
+	public draw(ctx: CanvasRenderingContext2D): void {
+		ctx.drawImage(bank.pic[this.sprite_filename],
+			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
+			this.pos.x, this.pos.y, this.width, this.height);
 	}
 }
 

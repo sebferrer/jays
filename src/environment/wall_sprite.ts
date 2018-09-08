@@ -38,6 +38,12 @@ export class WallSprite {
 		return new Point(destX + this.width / 2, destY + this.height / 2);
 	}
 
+	/**
+	 * 
+	 * @param ctx rendering context
+	 * @param dest the coordinates of the top left corner of the sprite in the canvas
+	 * @param angleInDegrees angle
+	 */
 	public rotate(ctx: CanvasRenderingContext2D, dest: Point, angleInDegrees: number): void {
 
 		const center = this.getCenter(dest.x, dest.y);

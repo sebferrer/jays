@@ -1,13 +1,15 @@
 import { Entity } from "../entity";
-import { gameState, canvas_H, canvas_W } from "../main";
+import { gameState, canvas_H, canvas_W, bank } from "../main";
 import { RoomMap, TILE_REF } from "../environment/room_map";
 import { Direction, Direction_Int, Direction_String, WarpType } from "../enum";
 import { Sprite } from "../sprite";
 import { Point } from "../point";
 import { CollisionWarp } from "../collision_warp";
 import { CollisionDelta } from "../collision_delta";
+import { IDrawable } from "../idrawable";
+import { FloorOneRoom } from "../environment/wall";
 
-export class Jays extends Entity {
+export class Jays extends Entity implements IDrawable {
 	public tear_delay: number;
 	public range: number;
 	public head: JaysHead;
@@ -46,7 +48,7 @@ export class Jays extends Entity {
 	public on_collision_map(): void { }
 
 	public on_collision_warp(collision_warp: CollisionWarp): void {
-		gameState.current_map = new RoomMap(collision_warp.warp_info.destination);
+		gameState.current_map = new RoomMap(collision_warp.warp_info.destination, new FloorOneRoom());
 		switch (collision_warp.warp_info.type) {
 			case WarpType.CLASSIC:
 				if (collision_warp.tile.coord_y === gameState.current_map.height - 1) {
@@ -104,6 +106,16 @@ export class Jays extends Entity {
 	public set_tear_delay(new_tear_delay: number): void {
 		this.tear_delay = new_tear_delay;
 		gameState.get_timer("tear").interval = this.tear_delay;
+	}
+
+	public draw(ctx: CanvasRenderingContext2D): void {
+		ctx.drawImage(bank.pic[this.sprite_filename],
+			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
+			this.pos.x, this.pos.y, this.width, this.height);
+
+		ctx.drawImage(bank.pic[this.sprite_filename],
+			this.head.current_sprite.src_x, this.head.current_sprite.src_y, this.head.current_sprite.src_width, this.head.current_sprite.src_height,
+			this.head.pos.x, this.head.pos.y, this.head.width, this.head.height);
 	}
 }
 

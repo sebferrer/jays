@@ -17,7 +17,7 @@ export class GameState {
 	public current_floor: Floor;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
-	public directions_keyDown: Direction[]; 
+	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
 
@@ -99,21 +99,20 @@ export class GameState {
 		TIMERS.forEach(timer => timer.run());
 
 		try {
-			// renderer.render_map(this.current_map);
-			renderer.render_wall();
+			this.current_map.draw(ctx);
 		} catch (err) {
 			// console.error(err);
 		}
 
-		this.tears.forEach(function (tear) {
-			renderer.render_tear(tear);
+		this.tears.forEach(tear => {
+			tear.draw(ctx);
 		});
 
 		this.jays.update();
 		this.tears_update();
 
 		try {
-			renderer.render_jays();
+			this.jays.draw(ctx);
 		} catch (err) {
 			// console.error(err);
 		}
