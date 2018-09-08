@@ -66,20 +66,16 @@ export abstract class Entity { // Abstract, will never be instancied
 			// LEFT
 			return new CollisionDelta(true, this.pos.x - position.x, 0);
 		} else if (position.y <= wall_sprite.height - this.height) {
-			// TOP
-			//TODO: Warning: - this.height cause tears not to fire when jays is stuck to the wall !
+			// UP
 			return new CollisionDelta(true, 0, this.pos.y - position.y);
 		}
 		else if (position.y >= (((gameState.current_map.height + 1) * gameState.current_map.tile_height) + wall_sprite.height - this.height)) {
+			// DOWN
 			return new CollisionDelta(true, 0, -(position.y - this.pos.y));
 		} else if (position.x >= (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)) {
+			// RIGHT
 			return new CollisionDelta(true, -(position.x - this.pos.x));
 		}
-
-		// else if (position.y >= (canvas_H - wall_sprite.height)) {
-		// 	// BOTTOM
-		// 	return new CollisionDelta(true, 0, position.y + canvas_H + this.height - wall_sprite.height);
-		// }
 
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
@@ -88,10 +84,10 @@ export abstract class Entity { // Abstract, will never be instancied
 					continue;
 				}
 				switch (direction) {
-					case Direction.UP: return new CollisionDelta(true, 0, (current_tile.pos.y + current_tile.height - position.y));
-					case Direction.DOWN: return new CollisionDelta(true, 0, (position.y + this.height - current_tile.pos.y) * -1);
-					case Direction.LEFT: return new CollisionDelta(true, (current_tile.pos.x + current_tile.width - position.x), 0);
-					case Direction.RIGHT: return new CollisionDelta(true, (position.x + this.width - current_tile.pos.x) * -1, 0);
+					case Direction.UP: return new CollisionDelta(true, 0, this.pos.y - position.y);
+					case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.pos.y));
+					case Direction.LEFT: return new CollisionDelta(true, this.pos.x - position.x, 0);
+					case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.pos.x), 0);
 				}
 			}
 		}
