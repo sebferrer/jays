@@ -153,6 +153,39 @@ export abstract class RoomWalls implements IDrawable {
 						this.door_sprite.width, this.door_sprite.height
 					);
 					break;
+				case Direction.DOWN:
+					ctx.save();
+					this.door_sprite.rotate(ctx, new Point(canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height), 180);
+					ctx.drawImage(door_pic,
+						this.door_sprite.top_left.x, this.door_sprite.top_left.y,
+						this.door_sprite.width, this.door_sprite.height,
+						canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height,
+						this.door_sprite.width, this.door_sprite.height
+					);
+					ctx.restore();
+					break;
+				case Direction.LEFT:
+					ctx.save();
+					this.door_sprite.rotate(ctx, new Point(0, canvas_H / 2 - this.door_sprite.height / 2), -90);
+					ctx.drawImage(door_pic,
+						this.door_sprite.top_left.x, this.door_sprite.top_left.y,
+						this.door_sprite.width, this.door_sprite.height,
+						0, canvas_H / 2 - this.door_sprite.height / 2,
+						this.door_sprite.width, this.door_sprite.height
+					);
+					ctx.restore();
+					break;
+				case Direction.RIGHT:
+					ctx.save();
+					this.door_sprite.rotate(ctx, new Point(canvas_W - this.door_sprite.width, canvas_H / 2 - this.door_sprite.height / 2), 90);
+					ctx.drawImage(door_pic,
+						this.door_sprite.top_left.x, this.door_sprite.top_left.y,
+						this.door_sprite.width, this.door_sprite.height,
+						canvas_W - this.door_sprite.width, canvas_H / 2 - this.door_sprite.height / 2,
+						this.door_sprite.width, this.door_sprite.height
+					);
+					ctx.restore();
+					break;
 			}
 
 		});
