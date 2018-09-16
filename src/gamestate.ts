@@ -11,6 +11,7 @@ import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
+import { Joystick, Circle } from "./joystick";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -20,6 +21,7 @@ export class GameState {
 	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
+	public joysticks: Joystick[];
 
 	constructor(map: RoomMap) {
 		this.current_map = map;
@@ -27,10 +29,51 @@ export class GameState {
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.tears = new Array<Tear>();
+		this.joysticks = new Array<Joystick>();
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
+
+		/*document.onmousedown = event => this.touch_start(event.offsetX, event.offsetY);
+		document.onmouseup = event => this.touch_end();
+		document.onmousemove = event => this.touch_move(event.offsetX, event.offsetY);*/
+		
+		document.ontouchstart = event => this.touch_start(event.touches);
+		document.ontouchend = event => this.touch_end();
+		document.ontouchmove = event => this.touch_move(event.touches);
+	}
+
+	public touch_start(touches): void {
+		this.joysticks.push(new Joystick(	new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 40,
+											new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 20));
+		//console.log("start");
+	}
+
+	public touch_end(): void {
+		if (this.joysticks != null) {
+			this.joysticks.forEach(joystick => {
+				joystick.canvas.remove();
+			});
+			this.joysticks.splice(0, this.joysticks.length);
+		} else {
+			this.joysticks = new Array<Joystick>();
+		}
+		//console.log("end");
+	}
+
+	public touch_move(touches): void {
+		if (this.joysticks.length > 0) {
+			// TODO: setters
+			/*this.joysticks.forEach(joystick => {
+				joystick.move(x, y);
+				console.log("x: "+joystick.coeff_x+" | y: "+joystick.coeff_y);
+			});*/
+			for(let i = 0; i < this.joysticks.length; i++) {
+				this.joysticks[i].move(touches[i].pageX, touches[i].pageY);
+				//console.log("x: "+this.joysticks[i].coeff_x+" | y: "+this.joysticks[i].coeff_y);
+			}
+		}
 	}
 
 	public key_down(keyName: string): void {
@@ -117,10 +160,18 @@ export class GameState {
 			// console.error(err);
 		}
 
+		this.joysticks_update();
+
 		ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
+	}
+
+	public joysticks_update() {
+		this.joysticks.forEach(joystick => {
+			joystick.draw();
+		});
 	}
 
 	public tears_update(): void {

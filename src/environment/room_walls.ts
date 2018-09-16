@@ -137,7 +137,7 @@ export abstract class RoomWalls implements IDrawable {
 
 		// Bottom right
 		ctx.save();
-		const dest_bottom_right_corner = new Point(canvas_W - this.corner_sprite.width, canvas_H - this.corner_sprite.height)
+		const dest_bottom_right_corner = new Point(canvas_W - this.corner_sprite.width, canvas_H - this.corner_sprite.height);
 		this.corner_sprite.rotate(ctx, dest_bottom_right_corner, 180);
 		ctx.drawImage(corner_pic,
 			this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
@@ -162,7 +162,7 @@ export abstract class RoomWalls implements IDrawable {
 
 				case Direction.DOWN:
 					ctx.save();
-					const dest_down_door = new Point(canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height)
+					const dest_down_door = new Point(canvas_W / 2 - this.door_sprite.width / 2, canvas_H - this.door_sprite.height);
 					this.door_sprite.rotate(ctx, dest_down_door, 180);
 					ctx.drawImage(door_pic,
 						this.door_sprite.top_left.x, this.door_sprite.top_left.y,

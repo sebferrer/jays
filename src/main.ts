@@ -24,7 +24,7 @@ window.onload = () => {
 };
 
 function main(): void {
-	renderer.scale(1);
+	renderer.scale(0.6);
 
 	Settings.init();
 
