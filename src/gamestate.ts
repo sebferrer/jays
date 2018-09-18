@@ -22,6 +22,8 @@ export class GameState {
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
 	public joysticks: Joystick[];
+	public touches: TouchList;
+	public timer_joysticks: Timer;
 
 	constructor(map: RoomMap) {
 		this.current_map = map;
@@ -30,6 +32,7 @@ export class GameState {
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.tears = new Array<Tear>();
 		this.joysticks = new Array<Joystick>();
+		this.timer_joysticks = this.get_timer("joysticks");
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
@@ -39,21 +42,31 @@ export class GameState {
 		document.onmouseup = event => this.touch_end();
 		document.onmousemove = event => this.touch_move(event.offsetX, event.offsetY);*/
 		
+		/*
 		document.ontouchstart = event => this.touch_start(event.touches);
 		document.ontouchend = event => this.touch_end();
 		document.ontouchmove = event => this.touch_move(event.touches);
+		*/
+
+		document.ontouchstart = event => this.touch_start(event.touches);
+		document.ontouchend = event => this.touch_end();
+		document.ontouchmove = event => { if (this.timer_joysticks.next_tick()) { this.touches = event.touches; } };
 	}
 
 	public touch_start(touches): void {
+		this.get_timer("joysticks").enable();
+		this.touches = touches;
 		this.joysticks.push(new Joystick(	new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 40,
 											new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 20));
 		//console.log("start");
 	}
 
 	public touch_end(): void {
+		this.get_timer("joysticks").disable();
 		if (this.joysticks != null) {
 			this.joysticks.forEach(joystick => {
-				joystick.canvas.remove();
+				joystick.div_zone.remove();
+				joystick.div_controller.remove();
 			});
 			this.joysticks.splice(0, this.joysticks.length);
 		} else {
@@ -62,16 +75,18 @@ export class GameState {
 		//console.log("end");
 	}
 
-	public touch_move(touches): void {
-		if (this.joysticks.length > 0) {
-			// TODO: setters
-			/*this.joysticks.forEach(joystick => {
-				joystick.move(x, y);
-				console.log("x: "+joystick.coeff_x+" | y: "+joystick.coeff_y);
-			});*/
-			for(let i = 0; i < this.joysticks.length; i++) {
-				this.joysticks[i].move(touches[i].pageX, touches[i].pageY);
-				//console.log("x: "+this.joysticks[i].coeff_x+" | y: "+this.joysticks[i].coeff_y);
+	public touch_move(): void {
+		if (this.timer_joysticks.next_tick()) {
+			if (this.joysticks.length > 0) {
+				// TODO: setters
+				/*this.joysticks.forEach(joystick => {
+					joystick.move(x, y);
+					console.log("x: "+joystick.coeff_x+" | y: "+joystick.coeff_y);
+				});*/
+				for(let i = 0; i < this.joysticks.length; i++) {
+					this.joysticks[i].move(this.touches[i].pageX, this.touches[i].pageY);
+					//console.log("x: "+this.joysticks[i].coeff_x+" | y: "+this.joysticks[i].coeff_y);
+				}
 			}
 		}
 	}
@@ -160,19 +175,20 @@ export class GameState {
 			// console.error(err);
 		}
 
-		this.joysticks_update();
+		//this.joysticks_update();
+		this.touch_move();
 
 		ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
 	}
-
+/*
 	public joysticks_update() {
 		this.joysticks.forEach(joystick => {
-			joystick.draw();
+			joystick.update();
 		});
-	}
+	}*/
 
 	public tears_update(): void {
 		const timer_tear = this.get_timer("tear");

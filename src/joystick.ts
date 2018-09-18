@@ -5,64 +5,67 @@ export class Joystick {
 	public controller: JoystickCircle;
 	public coeff_x: number;
 	public coeff_y: number;
-	public canvas: HTMLCanvasElement;
-	public ctx: CanvasRenderingContext2D;
-	public canvas_rect = new Rect();
+	public div_zone: HTMLDivElement;
+	public rect_zone: Rect;
+	public div_controller: HTMLDivElement;
+	public rect_controller: Rect;
 
 	constructor(zonePos: Point, zoneRadius: number, controllerPos: Point, controllerRadius: number) {
 		this.zone = new JoystickCircle(zonePos, zoneRadius, "rgba(18, 65, 145, 0.5)");
 		this.controller = new JoystickCircle(controllerPos, controllerRadius, "rgba(18, 65, 145, 0.8)");
-		this.createCanvas();
-		this.zone.circle.pos.x = this.zone.circle.radius+this.controller.circle.radius;
-		this.zone.circle.pos.y = this.zone.circle.radius+this.controller.circle.radius;
-		this.controller.circle.pos.x = this.zone.circle.radius+this.controller.circle.radius;
-		this.controller.circle.pos.y = this.zone.circle.radius+this.controller.circle.radius;
-		this.draw();
+		this.rect_zone = new Rect();
+		this.rect_controller = new Rect();
+		this.createDivs();
 	}
 
-	public createCanvas() {
-		this.canvas_rect.left = (this.zone.circle.pos.x-this.zone.circle.radius);
-		this.canvas_rect.top = (this.zone.circle.pos.y-this.zone.circle.radius);
-		this.canvas_rect.width = this.zone.circle.radius*2+this.controller.circle.radius*2;
-		this.canvas_rect.height = this.zone.circle.radius*2+this.controller.circle.radius*2;
+	public createDivs() {
+		this.rect_zone.x = (this.zone.circle.pos.x-this.zone.circle.radius);
+		this.rect_zone.y = (this.zone.circle.pos.y-this.zone.circle.radius);
+		this.rect_zone.width = this.zone.circle.radius*2;
+		this.rect_zone.height = this.zone.circle.radius*2;
 
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = this.canvas_rect.width;
-		this.canvas.height = this.canvas_rect.height;
-		this.canvas.style.position = "absolute";
-		this.canvas.style.left = this.canvas_rect.left+"px";
-		this.canvas.style.top = this.canvas_rect.top+"px";
-		this.canvas.style.backgroundColor = "transparent";
-		document.body.appendChild(this.canvas);
-		this.ctx = this.canvas.getContext("2d");
-	}
+		this.rect_controller.x = (this.controller.circle.pos.x-this.controller.circle.radius);
+		this.rect_controller.y = (this.controller.circle.pos.y-this.controller.circle.radius);
+		this.rect_controller.width = this.controller.circle.radius*2;
+		this.rect_controller.height = this.controller.circle.radius*2;
 
-	public draw(): void {
-		this.ctx.save();
-		this.ctx.clearRect(0, 0, this.canvas_rect.width, this.canvas_rect.height);
+		this.div_zone = document.createElement("div");
+		this.div_zone.style.width = this.rect_zone.width+"px";
+		this.div_zone.style.height = this.rect_zone.height+"px";
+		this.div_zone.style.position = "absolute";
+		this.div_zone.style.left = this.rect_zone.x+"px";
+		this.div_zone.style.top = this.rect_zone.y+"px";
+		this.div_zone.style.backgroundColor = this.zone.color;
+		this.div_zone.style.borderRadius = "20em";
 
-		this.zone.draw(this.ctx);
-		this.controller.draw(this.ctx);
+		this.div_controller = document.createElement("div");
+		this.div_controller.style.width = this.rect_controller.width+"px";
+		this.div_controller.style.height = this.rect_controller.height+"px";
+		this.div_controller.style.position = "absolute";
+		this.div_controller.style.left = this.rect_controller.x+"px";
+		this.div_controller.style.top = this.rect_controller.y+"px";
+		this.div_controller.style.backgroundColor = this.controller.color;
+		this.div_controller.style.borderRadius = "20em";
 
-		this.ctx.restore();
+		document.body.appendChild(this.div_zone);
+		document.body.appendChild(this.div_controller);
 	}
 
 	public move(x: number, y: number): void {
-		x -= this.canvas_rect.left;
-		y -= this.canvas_rect.top;
 		const next_circle = new Circle(new Point(x, y), this.controller.circle.radius);
 		if (this.zone.circle.containsPoint(next_circle.pos)) {
 			const angle = this.zone.circle.pos.angle(next_circle.pos) + (Math.PI / 2);
-			next_circle.pos = new Point(next_circle.pos.translateFromPoint(angle, this.zone.circle.radius, this.zone.circle.pos).x,
-			next_circle.pos.translateFromPoint(angle, this.zone.circle.radius, this.zone.circle.pos).y);
+			next_circle.pos = next_circle.pos.translateFromPoint(angle, this.zone.circle.radius, this.zone.circle.pos);
 		}
-		this.controller.circle.pos = new Point(next_circle.pos.x, next_circle.pos.y);
+
 		this.coeff_x = (this.zone.circle.pos.x-next_circle.pos.x)*(-1) / this.zone.circle.radius;
 		this.coeff_x = Math.round(this.coeff_x*100) / 100;
 		this.coeff_y = (this.zone.circle.pos.y-next_circle.pos.y) / this.zone.circle.radius;
 		this.coeff_y = Math.round(this.coeff_y*100) / 100;
-	}
 
+		this.div_controller.style.left = (next_circle.pos.x-this.controller.circle.radius)+"px";
+		this.div_controller.style.top = (next_circle.pos.y-this.controller.circle.radius)+"px";
+	}
 }
 
 class JoystickCircle {
@@ -71,13 +74,6 @@ class JoystickCircle {
 	constructor(pos: Point, radius: number, color: string) {
 		this.circle = new Circle(pos, radius);
 		this.color = color;
-	}
-
-	public draw(ctx: CanvasRenderingContext2D): void {
-		ctx.beginPath();
-		ctx.arc(this.circle.pos.x, this.circle.pos.y, this.circle.radius, 0, 2 * Math.PI);
-		ctx.fillStyle = this.color;
-		ctx.fill();
 	}
 }
 
@@ -99,13 +95,13 @@ export class Circle {
 }
 
 class Rect {
-	public left: number;
-	public top: number;
+	public x: number;
+	public y: number;
 	public width: number;
 	public height: number;
-	constructor(left?: number, top?: number, width?: number, height?: number) {
-		this.left = left;
-		this.top = top;
+	constructor(x?: number, y?: number, width?: number, height?: number) {
+		this.x = x;
+		this.y = y;
 		this.width = width;
 		this.height = height;
 	}
