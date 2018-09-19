@@ -128,10 +128,12 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				this.tears.push(new TearBasic(
-					new Point(this.jays.head.pos.x + this.jays.head.width / 2,
-						this.jays.head.pos.y + this.jays.head.height / 2),
-					this.attack_direction_event.directions[0]));
+				this.tears.push(
+					new TearBasic(
+						new Point(this.jays.pos.x + this.jays.width / 2, this.jays.pos.y + this.jays.height / 2),
+						this.attack_direction_event.directions[0]
+					)
+				);
 			}
 		} else {
 			timer_tear.reset();

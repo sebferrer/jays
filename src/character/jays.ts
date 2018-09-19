@@ -39,29 +39,7 @@ export class Jays extends Entity implements IDrawable {
 		this.speed = 2;
 		this._tear_delay = 480;
 		this.range = 8;
-		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), Jays.head_width, Jays.body_width);
-	}
-
-	public move_direction(direction: Direction) {
-		super.move_direction(direction);
-		this.head.pos.x = this.pos.x;
-		this.head.pos.y = this.pos.y - this.head.height;
-	}
-
-	public collision_map(direction: Direction, position: Point): CollisionDelta {
-		const result = super.collision_map(direction, position);
-		if (!result.is_collision) {
-			return this.head.collision_map(direction, new Point(position.x, position.y - this.head.height));
-		}
-		return result;
-	}
-
-	public get_collision_warp(): CollisionWarp | null {
-		const result = super.get_collision_warp();
-		if (result != null) {
-			return this.head.get_collision_warp();
-		}
-		return result;
+		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), Jays.head_width, Jays.head_height);
 	}
 
 	public on_collision_map(): void { }
@@ -95,16 +73,15 @@ export class Jays extends Entity implements IDrawable {
 		}
 
 		// DIRECTION EVENT
-		const self = this;
 		gameState.direction_event.getAllDirectionsValues()
 			.filter(dir_event_move => dir_event_move.enabled)
 			.forEach(dir_event_move => {
-				self.move_direction(dir_event_move.direction);
+				this.move_direction(dir_event_move.direction);
 				// By default the head turn to the direction of the body but the attack direction has the priority.
 				if (gameState.attack_direction_event.directions.length === 0) {
-					self.head.current_sprite = self.head.sprite_collecs.get("HEAD")[Direction_Int.get(dir_event_move.direction)];
+					this.head.current_sprite = this.head.sprite_collecs.get("HEAD")[Direction_Int.get(dir_event_move.direction)];
 				}
-				self.current_sprite = self.sprite_collecs.get(Direction_String.get(dir_event_move.direction))[timer_sprites.tick];
+				this.current_sprite = this.sprite_collecs.get(Direction_String.get(dir_event_move.direction))[timer_sprites.tick];
 			});
 
 		// ATTACK DIRECTION EVENT
@@ -126,16 +103,16 @@ export class Jays extends Entity implements IDrawable {
 		// Draw body
 		ctx.drawImage(bank.pic[this.sprite_filename],
 			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
-			this.pos.x, this.pos.y, Jays.body_width, Jays.body_height);
+			this.pos.x, this.pos.y + Jays.head_height, Jays.body_width, Jays.body_height);
 
 		// Draw head
 		ctx.drawImage(bank.pic[this.sprite_filename],
 			this.head.current_sprite.src_x, this.head.current_sprite.src_y, this.head.current_sprite.src_width, this.head.current_sprite.src_height,
-			this.head.pos.x, this.head.pos.y, this.head.width, this.head.height);
+			this.pos.x, this.pos.y, Jays.head_width, Jays.head_height);
 	}
 }
 
-export class JaysHead extends Entity {
+class JaysHead extends Entity {
 	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
 		super(id, current_sprite, new Point(pos.x, pos.y), width, height);
 		this.sprite_filename = "assets/img/jays.png";

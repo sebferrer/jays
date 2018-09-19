@@ -69,7 +69,7 @@ export abstract class Entity { // Abstract, will never be instancied
 			// UP
 			return new CollisionDelta(true, 0, this.pos.y - position.y);
 		}
-		else if (position.y >= (((gameState.current_map.height + 1) * gameState.current_map.tile_height) + wall_sprite.height - this.height)) {
+		else if (position.y >= (((gameState.current_map.height) * gameState.current_map.tile_height) + wall_sprite.height - this.height)) {
 			// DOWN
 			return new CollisionDelta(true, 0, -(position.y - this.pos.y));
 		} else if (position.x >= (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)) {
