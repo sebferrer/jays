@@ -95,6 +95,21 @@ export abstract class Entity { // Abstract, will never be instancied
 	}
 
 	public get_collision_warp(): CollisionWarp | null {
+
+		// Doors
+		const entity_center = new Point(this.pos.x + this.width / 2, this.pos.y - this.height / 2);
+		const doors = gameState.current_map.room_walls.getDoorPlacement();
+
+		for (const direction in doors) {
+			const door_placement = doors[direction];
+
+			if (entity_center.distanceBetween(door_placement) <= 60) {
+				console.log("player: (" + this.pos.x + ", " + this.pos.y + ")");
+				console.log("door:" + direction + " (" + door_placement.x + ", " + door_placement.y + ")");
+				console.log(entity_center.distanceBetween(door_placement));
+			}
+		}
+
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
 				const tile = gameState.current_map.tiles[i][j];

@@ -149,7 +149,6 @@ export abstract class RoomWalls implements IDrawable {
 
 		// DOORS
 		this.door_placement.forEach(placement => {
-
 			switch (placement) {
 				case Direction.UP:
 					ctx.drawImage(door_pic,
@@ -199,7 +198,27 @@ export abstract class RoomWalls implements IDrawable {
 					ctx.restore();
 					break;
 			}
-
 		});
+	}
+
+	public getDoorPlacement(): { [key: string]: Point } {
+		const result: { [key: string]: Point } = {};
+		this.door_placement.forEach(direction => {
+			switch (direction) {
+				case Direction.UP:
+					result[Direction.UP] = new Point(canvas_W / 2, this.door_sprite.height);
+					break;
+				case Direction.DOWN:
+					result[Direction.DOWN] = new Point(canvas_W / 2, canvas_H - this.door_sprite.height);
+					break;
+				case Direction.LEFT:
+					result[Direction.LEFT] = new Point(this.door_sprite.width, canvas_H / 2);
+					break;
+				case Direction.RIGHT:
+					result[Direction.RIGHT] = new Point(canvas_W - this.door_sprite.width, canvas_H / 2);
+					break;
+			}
+		});
+		return result;
 	}
 }
