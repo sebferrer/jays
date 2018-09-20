@@ -11,6 +11,8 @@ export abstract class RoomWalls implements IDrawable {
 	protected _side_sprite: WallSprite;
 	public get side_sprite(): WallSprite { return this._side_sprite; }
 
+	// TODO: modéliser les portes dans une classe Door
+
 	protected _door_sprite: WallSprite;
 	public get door_sprite(): WallSprite { return this._door_sprite; }
 
