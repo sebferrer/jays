@@ -1,9 +1,7 @@
 import { Warp } from "../warp";
 import { IRawMap } from "./maps";
 import { Tile, TILE_TYPES, TILE_REF } from "./tile";
-import { Point } from "../point";
 import { IDrawable } from "../idrawable";
-import { bank } from "../main";
 import { RoomWalls } from "./room_walls";
 
 export abstract class RoomMap implements IDrawable {
@@ -49,8 +47,8 @@ export abstract class RoomMap implements IDrawable {
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
-			tile.pos.x = tile.coord_x * tile.width + room_walls.side_sprite.width;
-			tile.pos.y = tile.coord_y * tile.height + room_walls.side_sprite.height;
+			tile.pos.x = tile.coord_x * tile.width + room_walls.wall_width;
+			tile.pos.y = tile.coord_y * tile.height + room_walls.wall_height;
 			tile_coord_x++;
 
 			line.push(tile);

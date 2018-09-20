@@ -56,39 +56,25 @@ export abstract class Entity { // Abstract, will never be instancied
 		}
 	}
 
-	public isOnDoor(position: Point, door_placement: Point, door_sprite: WallSprite) {
-		if (door_placement == null) {
-			return false;
-		}
-
-		const door_bottom_right = new Point(door_placement.x + door_sprite.width, door_placement.y + door_sprite.height);
-		return position.x >= door_placement.x && position.x <= door_bottom_right.x &&
-			position.y >= door_placement.y && position.y <= door_bottom_right.y;
-	}
-
 	public collision_map(direction: Direction, position: Point): CollisionDelta {
 
-		const wall_sprite = gameState.current_map.room_walls.side_sprite;
-		const door_sprite = gameState.current_map.room_walls.door_sprite;
-		const door_placements = gameState.current_map.room_walls.getDoorPlacement();
+		// const wall_sprite = gameState.current_map.room_walls.side_sprite;
 
-		// Wall
-		if (position.x < wall_sprite.width && !this.isOnDoor(position, door_placements[Direction.LEFT], door_sprite)) {
-			// LEFT
-			return new CollisionDelta(true, this.pos.x - position.x, 0);
-		} else if (position.y < wall_sprite.height && !this.isOnDoor(position, door_placements[Direction.UP], door_sprite)) {
-			// UP
-			return new CollisionDelta(true, 0, this.pos.y - position.y);
-		}
-		else if (position.y > (((gameState.current_map.height) * gameState.current_map.tile_height) + wall_sprite.height - this.height)
-			&& !this.isOnDoor(position, door_placements[Direction.DOWN], door_sprite)) {
-			// DOWN
-			return new CollisionDelta(true, 0, -(position.y - this.pos.y));
-		} else if (position.x > (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)
-			&& !this.isOnDoor(position, door_placements[Direction.RIGHT], door_sprite)) {
-			// RIGHT
-			return new CollisionDelta(true, -(position.x - this.pos.x));
-		}
+		// // Wall
+		// if (position.x < wall_sprite.width) {
+		// 	// LEFT
+		// 	return new CollisionDelta(true, this.pos.x - position.x, 0);
+		// } else if (position.y < wall_sprite.height) {
+		// 	// UP
+		// 	return new CollisionDelta(true, 0, this.pos.y - position.y);
+		// }
+		// else if (position.y > (((gameState.current_map.height) * gameState.current_map.tile_height) + wall_sprite.height - this.height)) {
+		// 	// DOWN
+		// 	return new CollisionDelta(true, 0, -(position.y - this.pos.y));
+		// } else if (position.x > (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)) {
+		// 	// RIGHT
+		// 	return new CollisionDelta(true, -(position.x - this.pos.x));
+		// }
 
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
@@ -109,19 +95,19 @@ export abstract class Entity { // Abstract, will never be instancied
 
 	public get_collision_warp(): CollisionWarp | null {
 
-		// Doors
-		const entity_center = new Point(this.pos.x + this.width / 2, this.pos.y - this.height / 2);
-		const doors = gameState.current_map.room_walls.getDoorPlacement();
+		// // Doors
+		// const entity_center = new Point(this.pos.x + this.width / 2, this.pos.y - this.height / 2);
+		// const doors = gameState.current_map.room_walls.get_door_placement();
 
-		for (const direction in doors) {
-			const door_placement = doors[direction];
+		// for (const direction in doors) {
+		// 	const door_placement = doors[direction];
 
-			if (entity_center.distanceBetween(door_placement) <= 60) {
-				console.log("player: (" + this.pos.x + ", " + this.pos.y + ")");
-				console.log("door:" + direction + " (" + door_placement.x + ", " + door_placement.y + ")");
-				console.log(entity_center.distanceBetween(door_placement));
-			}
-		}
+		// 	if (entity_center.distanceBetween(door_placement) <= 60) {
+		// 		console.log("player: (" + this.pos.x + ", " + this.pos.y + ")");
+		// 		console.log("door:" + direction + " (" + door_placement.x + ", " + door_placement.y + ")");
+		// 		console.log(entity_center.distanceBetween(door_placement));
+		// 	}
+		// }
 
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
