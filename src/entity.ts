@@ -6,6 +6,7 @@ import { CollisionDelta } from "./collision_delta";
 import { CollisionWarp } from "./collision_warp";
 import { Sprite } from "./sprite";
 import { SpriteHelper } from "./sprite_helper";
+import { WallSprite } from "./environment/wall_sprite";
 
 export abstract class Entity { // Abstract, will never be instancied
 	public id: string;
@@ -55,24 +56,36 @@ export abstract class Entity { // Abstract, will never be instancied
 		}
 	}
 
+	public isOnDoor(position: Point, door_placement: Point, door_sprite: WallSprite) {
+		if (door_placement == null) {
+			return false;
+		}
+
+		const door_bottom_right = new Point(door_placement.x + door_sprite.width, door_placement.y + door_sprite.height);
+		return position.x >= door_placement.x && position.x <= door_bottom_right.x &&
+			position.y >= door_placement.y && position.y <= door_bottom_right.y;
+	}
+
 	public collision_map(direction: Direction, position: Point): CollisionDelta {
 
 		const wall_sprite = gameState.current_map.room_walls.side_sprite;
+		const door_sprite = gameState.current_map.room_walls.door_sprite;
+		const door_placements = gameState.current_map.room_walls.getDoorPlacement();
 
 		// Wall
-
-
-		if (position.x < wall_sprite.width) {
+		if (position.x < wall_sprite.width && !this.isOnDoor(position, door_placements[Direction.LEFT], door_sprite)) {
 			// LEFT
 			return new CollisionDelta(true, this.pos.x - position.x, 0);
-		} else if (position.y < wall_sprite.height) {
+		} else if (position.y < wall_sprite.height && !this.isOnDoor(position, door_placements[Direction.UP], door_sprite)) {
 			// UP
 			return new CollisionDelta(true, 0, this.pos.y - position.y);
 		}
-		else if (position.y > (((gameState.current_map.height) * gameState.current_map.tile_height) + wall_sprite.height - this.height)) {
+		else if (position.y > (((gameState.current_map.height) * gameState.current_map.tile_height) + wall_sprite.height - this.height)
+			&& !this.isOnDoor(position, door_placements[Direction.DOWN], door_sprite)) {
 			// DOWN
 			return new CollisionDelta(true, 0, -(position.y - this.pos.y));
-		} else if (position.x > (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)) {
+		} else if (position.x > (((gameState.current_map.width) * gameState.current_map.tile_width) + wall_sprite.width - this.width)
+			&& !this.isOnDoor(position, door_placements[Direction.RIGHT], door_sprite)) {
 			// RIGHT
 			return new CollisionDelta(true, -(position.x - this.pos.x));
 		}
