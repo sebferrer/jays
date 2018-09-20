@@ -2,8 +2,9 @@ import { WallSprite } from "../wall_sprite";
 import { Point } from "../../point";
 import { RoomWalls } from "../room_walls";
 import { Direction } from "../../enum";
-import { RoomSideWall } from "../room_side_wall";
 import { RoomDoor } from "../room_door";
+import { RoomSideWall } from "../room_side_wall";
+import { RoomCornerWall } from "../room_corner_wall";
 
 export class FloorOneWalls extends RoomWalls {
 	constructor(door_placement: Direction[]) {
@@ -18,10 +19,15 @@ export class FloorOneWalls extends RoomWalls {
 			new RoomSideWall(Direction.RIGHT, side_sprite),
 		];
 
+		const corner_walls = [
+			new RoomCornerWall(Direction.TOP_LEFT, corner_sprite),
+			new RoomCornerWall(Direction.TOP_RIGHT, corner_sprite),
+			new RoomCornerWall(Direction.BOTTOM_LEFT, corner_sprite),
+			new RoomCornerWall(Direction.BOTTOM_RIGHT, corner_sprite),
+		];
+
 		const doors = door_placement.map(placement => new RoomDoor(placement, door_sprite));
 
-		super(corner_sprite, side_walls, doors);
-
-		// super(corner_sprite, side_sprite, door_sprite, door_placement);
+		super(side_walls, corner_walls, doors);
 	}
 }

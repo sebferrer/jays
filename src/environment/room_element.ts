@@ -47,7 +47,11 @@ export abstract class WallElement implements IDrawable {
 			case Direction.DOWN: return -180;
 			case Direction.LEFT: return -90;
 			case Direction.RIGHT: return 90;
-			default: throw new Error(`Unknown direction '${direction}'`);
+
+			case Direction.TOP_LEFT: return 0;
+			case Direction.TOP_RIGHT: return -180;
+			case Direction.BOTTOM_LEFT: return -90;
+			case Direction.BOTTOM_RIGHT: return 90;
 		}
 	}
 

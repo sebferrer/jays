@@ -5,11 +5,10 @@ import { IDrawable } from "../idrawable";
 import { RoomSideWall } from "./room_side_wall";
 import { RoomDoor } from "./room_door";
 import { WallElement } from "./room_element";
-import { RoomCornerWall } from "./room_corner_wall";
 
 export abstract class RoomWalls implements IDrawable {
-	protected _corner_walls: RoomCornerWall[];
-	public get corner_walls(): RoomCornerWall[] { return this._corner_walls; }
+	protected _corner_sprite: WallSprite;
+	public get corner_sprite(): WallSprite { return this._corner_sprite; }
 
 	protected _side_walls: RoomSideWall[];
 	public get side_walls(): RoomSideWall[] { return this._side_walls; }
@@ -29,12 +28,11 @@ export abstract class RoomWalls implements IDrawable {
 	}
 
 	constructor(
+		corner_sprite: WallSprite,
 		side_walls: RoomSideWall[],
-		corner_walls: RoomCornerWall[],
-		doors: RoomDoor[],
-		misc_elements: WallElement[] = null
+		doors: RoomDoor[]
 	) {
-		if (corner_walls == null) {
+		if (corner_sprite == null) {
 			throw new Error("Parameter 'corner_sprite' cannot be null");
 		}
 		if (side_walls == null) {
@@ -44,16 +42,14 @@ export abstract class RoomWalls implements IDrawable {
 			throw new Error("Parameter 'door_sprite' cannot be null");
 		}
 
-		this._corner_walls = corner_walls;
+		this._corner_sprite = corner_sprite;
 		this._side_walls = side_walls;
 		this._doors = doors;
-		this._misc_elements = misc_elements != null ? misc_elements : [];
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		[
 			...this.side_walls,
-			...this._corner_walls,
 			...this.doors,
 			...this.misc_elements
 		].forEach(element => element.draw(ctx));
