@@ -1,8 +1,9 @@
-import { Direction } from "../enum";
-import { Point } from "../point";
+
 import { WallSprite } from "./wall_sprite";
-import { bank } from "../main";
-import { IDrawable } from "../idrawable";
+import { IDrawable } from "../../idrawable";
+import { Point } from "../../point";
+import { Direction } from "../../enum";
+import { bank } from "../../main";
 
 export abstract class WallElement implements IDrawable {
 	protected _direction: Direction;

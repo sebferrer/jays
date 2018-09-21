@@ -1,12 +1,11 @@
-import { Collision, Rectangle } from "./collision";
-import { gameState, canvas_H, canvas } from "./main";
+import { Collision } from "./collision";
+import { gameState } from "./main";
 import { Direction } from "./enum";
 import { Point } from "./point";
 import { CollisionDelta } from "./collision_delta";
 import { CollisionWarp } from "./collision_warp";
 import { Sprite } from "./sprite";
 import { SpriteHelper } from "./sprite_helper";
-import { WallSprite } from "./environment/wall_sprite";
 
 export abstract class Entity { // Abstract, will never be instancied
 	public id: string;

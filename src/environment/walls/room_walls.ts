@@ -1,21 +1,21 @@
-import { IDrawable } from "../idrawable";
-import { RoomSideWall } from "./room_side_wall";
-import { RoomDoor } from "./room_door";
-import { WallElement } from "./room_element";
-import { RoomCornerWall } from "./room_corner_wall";
-import { Point } from "../point";
-import { Direction } from "../enum";
-import { Rectangle } from "../collision";
+import { IDrawable } from "../../idrawable";
+import { RoomCornerWall } from "./corner_wall";
+import { SideWall } from "./side_wall";
+import { Door } from "./door";
+import { WallElement } from "./wall_element";
+import { Rectangle } from "../../collision";
+import { Point } from "../../point";
+import { Direction } from "../../enum";
 
-export abstract class RoomWalls implements IDrawable {
+export class RoomWalls implements IDrawable {
 	protected _corner_walls: RoomCornerWall[];
 	public get corner_walls(): RoomCornerWall[] { return this._corner_walls; }
 
-	protected _side_walls: RoomSideWall[];
-	public get side_walls(): RoomSideWall[] { return this._side_walls; }
+	protected _side_walls: SideWall[];
+	public get side_walls(): SideWall[] { return this._side_walls; }
 
-	protected _doors: RoomDoor[];
-	public get doors(): RoomDoor[] { return this._doors; }
+	protected _doors: Door[];
+	public get doors(): Door[] { return this._doors; }
 
 	protected _misc_elements: WallElement[];
 	public get misc_elements(): WallElement[] { return this._misc_elements; }
@@ -29,9 +29,9 @@ export abstract class RoomWalls implements IDrawable {
 	}
 
 	constructor(
-		side_walls: RoomSideWall[],
+		side_walls: SideWall[],
 		corner_walls: RoomCornerWall[],
-		doors: RoomDoor[],
+		doors: Door[],
 		misc_elements: WallElement[] = null
 	) {
 		if (corner_walls == null) {
@@ -55,10 +55,9 @@ export abstract class RoomWalls implements IDrawable {
 		this.side_walls.map(wall => {
 			return { wall, door: this.doors.find(door => door.direction === wall.direction) };
 		})
-			.filter(wall_and_door => wall_and_door.door != null)
 			.forEach(wall_and_door => {
 
-				if (!wall_and_door.door.is_open) {
+				if (wall_and_door.door == null || !wall_and_door.door.is_open) {
 					result.push(new Rectangle(
 						wall_and_door.wall.position,
 						new Point(

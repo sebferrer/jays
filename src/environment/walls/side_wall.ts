@@ -1,11 +1,11 @@
-import { WallElement } from "./room_element";
-import { Direction } from "../enum";
+import { WallElement } from "./wall_element";
 import { WallSprite } from "./wall_sprite";
-import { Point } from "../point";
-import { canvas_W, canvas_H } from "../main";
+import { Direction } from "../../enum";
+import { canvas_H, canvas_W } from "../../main";
+import { Point } from "../../point";
 
 /** Represents a whole portion of a wall */
-export class RoomSideWall extends WallElement {
+export class SideWall extends WallElement {
 	constructor(direction: Direction, sprite: WallSprite) {
 		let dimensions: { width: number, height: number };
 		switch (direction) {

@@ -1,8 +1,8 @@
-import { WallElement } from "./room_element";
-import { Direction } from "../enum";
-import { Point } from "../point";
+import { Direction } from "../../enum";
+import { Point } from "../../point";
+import { canvas_H, canvas_W } from "../../main";
 import { WallSprite } from "./wall_sprite";
-import { canvas_H, canvas_W } from "../main";
+import { WallElement } from "./wall_element";
 
 export class RoomCornerWall extends WallElement {
 

@@ -1,11 +1,11 @@
-import { WallElement } from "./room_element";
-import { Direction } from "../enum";
+import { Direction } from "../../enum";
+import { Point } from "../../point";
+import { canvas_W, canvas_H } from "../../main";
 import { WallSprite } from "./wall_sprite";
-import { Point } from "../point";
-import { canvas_W, canvas_H } from "../main";
+import { WallElement } from "./wall_element";
 
 /** Represents a whole portion of a wall */
-export class RoomDoor extends WallElement {
+export class Door extends WallElement {
 
 	protected _is_open: boolean;
 	public get is_open(): boolean { return this._is_open; }
