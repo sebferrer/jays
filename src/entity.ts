@@ -1,4 +1,4 @@
-import { Collision } from "./collision";
+import { Collision, Rectangle } from "./collision";
 import { gameState, canvas_H, canvas } from "./main";
 import { Direction } from "./enum";
 import { Point } from "./point";
@@ -76,21 +76,33 @@ export abstract class Entity { // Abstract, will never be instancied
 		// 	return new CollisionDelta(true, -(position.x - this.pos.x));
 		// }
 
+		const wall_rectangles = gameState.current_map.room_walls.get_collisions_rectangle();
+		for (let i = 0; i < wall_rectangles.length; ++i) {
+			if (!Collision.is_collision_rectangle(this, position, wall_rectangles[i])) {
+				continue;
+			}
+			return this.get_collision_delta(direction, position);
+		}
+
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
 				const current_tile = gameState.current_map.tiles[i][j];
 				if (!current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile)) {
 					continue;
 				}
-				switch (direction) {
-					case Direction.UP: return new CollisionDelta(true, 0, this.pos.y - position.y);
-					case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.pos.y));
-					case Direction.LEFT: return new CollisionDelta(true, this.pos.x - position.x, 0);
-					case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.pos.x), 0);
-				}
+				return this.get_collision_delta(direction, position);
 			}
 		}
 		return new CollisionDelta(false);
+	}
+
+	private get_collision_delta(direction: Direction, position: Point) {
+		switch (direction) {
+			case Direction.UP: return new CollisionDelta(true, 0, this.pos.y - position.y);
+			case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.pos.y));
+			case Direction.LEFT: return new CollisionDelta(true, this.pos.x - position.x, 0);
+			case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.pos.x), 0);
+		}
 	}
 
 	public get_collision_warp(): CollisionWarp | null {

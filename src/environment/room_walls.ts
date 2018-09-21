@@ -5,15 +5,7 @@ import { WallElement } from "./room_element";
 import { RoomCornerWall } from "./room_corner_wall";
 import { Point } from "../point";
 import { Direction } from "../enum";
-
-
-export class Rectangle {
-
-	public get width(): number { return this.bottom_right.x - this.top_left.x; }
-	public get height(): number { return this.bottom_right.y - this.top_left.y; }
-
-	constructor(public top_left: Point, public bottom_right: Point) { }
-}
+import { Rectangle } from "../collision";
 
 export abstract class RoomWalls implements IDrawable {
 	protected _corner_walls: RoomCornerWall[];
@@ -130,7 +122,9 @@ export abstract class RoomWalls implements IDrawable {
 			...this.doors,
 			...this.misc_elements
 		].forEach(element => element.draw(ctx));
+	}
 
+	private draw_collision_rectangle(ctx: CanvasRenderingContext2D): void {
 		this.get_collisions_rectangle().forEach(rectangle => {
 			ctx.strokeStyle = "red";
 			ctx.lineWidth = 5;

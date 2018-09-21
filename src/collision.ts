@@ -2,8 +2,24 @@ import { Tile } from "./environment/tile";
 import { Entity } from "./entity";
 import { Point } from "./point";
 
+
+export class Rectangle {
+
+	public get width(): number { return this.bottom_right.x - this.top_left.x; }
+	public get height(): number { return this.bottom_right.y - this.top_left.y; }
+
+	constructor(public top_left: Point, public bottom_right: Point) { }
+}
+
 export class Collision {
 	private constructor() { }
+
+	public static is_collision_rectangle(entity: Entity, next_position: Point, object: Rectangle): boolean {
+		return Collision.is_collision(
+			next_position.x, next_position.y, next_position.x + entity.width, next_position.y + entity.height,
+			object.top_left.x, object.top_left.y, object.bottom_right.x, object.bottom_right.y
+		);
+	}
 
 	public static is_collision(collisioner_x1: number, collisioner_y1: number, collisioner_x2: number, collisioner_y2: number,
 		collisionee_x1: number, collisionee_y1: number, collisionee_x2: number, collisionee_y2: number): boolean {

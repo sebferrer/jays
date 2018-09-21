@@ -103,7 +103,6 @@ export abstract class WallElement implements IDrawable {
 
 		}
 
-
 		// Otherwise, draw a single image
 		ctx.save();
 		this.sprite.rotate(ctx, this.position, this._rotation_angle);
