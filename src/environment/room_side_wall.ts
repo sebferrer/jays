@@ -28,7 +28,7 @@ export class RoomSideWall extends WallElement {
 			case Direction.DOWN: return new Point(sprite.width, canvas_H - sprite.height);
 			case Direction.LEFT: return new Point(0, sprite.height);
 			case Direction.RIGHT: return new Point(canvas_W - sprite.width, sprite.height);
-			default: throw new Error(`Unknown direction '${direction}'`);
+			default: throw new Error(`Unknown or invalid direction '${direction}'`);
 		}
 	}
 }

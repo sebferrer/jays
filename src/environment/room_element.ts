@@ -1,27 +1,27 @@
 import { Direction } from "../enum";
 import { Point } from "../point";
 import { WallSprite } from "./wall_sprite";
-import { canvas_H, canvas_W, bank } from "../main";
+import { bank } from "../main";
 import { IDrawable } from "../idrawable";
 
 export abstract class WallElement implements IDrawable {
-	private _direction: Direction;
+	protected _direction: Direction;
 	public get direction(): Direction { return this._direction; }
 
-	private _sprite: WallSprite;
+	protected _sprite: WallSprite;
 	public get sprite(): WallSprite { return this._sprite; }
 
-	private _position: Point;
+	protected _position: Point;
 	/** Position of the top left corner of the element on the canvas */
 	public get position(): Point { return this._position; }
 
-	private _width: number;
+	protected _width: number;
 	public get width(): number { return this._width; }
 
-	private _height: number;
+	protected _height: number;
 	public get height(): number { return this._height; }
 
-	private _rotation_angle: number;
+	protected _rotation_angle: number;
 
 	constructor(
 		direction: Direction,
@@ -44,14 +44,17 @@ export abstract class WallElement implements IDrawable {
 	public get_rotation(direction: Direction) {
 		switch (direction) {
 			case Direction.UP: return 0;
-			case Direction.DOWN: return -180;
-			case Direction.LEFT: return -90;
+			case Direction.DOWN: return 180;
+			case Direction.LEFT: return 270;
 			case Direction.RIGHT: return 90;
 
 			case Direction.TOP_LEFT: return 0;
-			case Direction.TOP_RIGHT: return -180;
-			case Direction.BOTTOM_LEFT: return -90;
-			case Direction.BOTTOM_RIGHT: return 90;
+			case Direction.TOP_RIGHT: return 90;
+			case Direction.BOTTOM_LEFT: return 270;
+			case Direction.BOTTOM_RIGHT: return 180;
+
+			default:
+				throw new Error(`Unknown or invalid direction '${direction}'`);
 		}
 	}
 
@@ -110,5 +113,11 @@ export abstract class WallElement implements IDrawable {
 			this.position.x, this.position.y,
 			this.sprite.width, this.sprite.height);
 		ctx.restore();
+	}
+}
+
+export class CustomWallElement extends WallElement {
+	public get_position(direction: Direction, sprite: WallSprite): Point {
+		throw new Error("CustomWallElements are not positioned with a direction, you must precise their position");
 	}
 }

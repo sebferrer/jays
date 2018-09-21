@@ -1,11 +1,19 @@
-import { Point } from "../point";
-import { WallSprite } from "./wall_sprite";
-import { canvas_W, canvas_H, bank } from "../main";
 import { IDrawable } from "../idrawable";
 import { RoomSideWall } from "./room_side_wall";
 import { RoomDoor } from "./room_door";
 import { WallElement } from "./room_element";
 import { RoomCornerWall } from "./room_corner_wall";
+import { Point } from "../point";
+import { Direction } from "../enum";
+
+
+export class Rectangle {
+
+	public get width(): number { return this.bottom_right.x - this.top_left.x; }
+	public get height(): number { return this.bottom_right.y - this.top_left.y; }
+
+	constructor(public top_left: Point, public bottom_right: Point) { }
+}
 
 export abstract class RoomWalls implements IDrawable {
 	protected _corner_walls: RoomCornerWall[];
@@ -50,6 +58,71 @@ export abstract class RoomWalls implements IDrawable {
 		this._misc_elements = misc_elements != null ? misc_elements : [];
 	}
 
+	public get_collisions_rectangle() {
+		const result = new Array<Rectangle>();
+		this.side_walls.map(wall => {
+			return { wall, door: this.doors.find(door => door.direction === wall.direction) };
+		})
+			.filter(wall_and_door => wall_and_door.door != null)
+			.forEach(wall_and_door => {
+
+				if (!wall_and_door.door.is_open) {
+					result.push(new Rectangle(
+						wall_and_door.wall.position,
+						new Point(
+							wall_and_door.wall.position.x + wall_and_door.wall.width,
+							wall_and_door.wall.position.y + wall_and_door.wall.height
+						)
+					));
+				} else if (wall_and_door.door.direction === Direction.LEFT || wall_and_door.door.direction === Direction.RIGHT) {
+					result.push(
+						new Rectangle(
+							wall_and_door.wall.position,
+							new Point(
+								wall_and_door.door.position.x + wall_and_door.door.width,
+								wall_and_door.door.position.y
+							)
+						)
+					);
+					result.push(
+						new Rectangle(
+							new Point(
+								wall_and_door.door.position.x,
+								wall_and_door.door.position.y + wall_and_door.door.height),
+							new Point(
+								wall_and_door.door.position.x + wall_and_door.door.width,
+								wall_and_door.wall.position.y + wall_and_door.wall.height
+							)
+						)
+					);
+				} else {
+					result.push(
+						new Rectangle(
+							wall_and_door.wall.position,
+							new Point(
+								wall_and_door.door.position.x,
+								wall_and_door.door.position.y + wall_and_door.door.height
+							)
+						)
+					);
+					result.push(
+						new Rectangle(
+							new Point(
+								wall_and_door.door.position.x + wall_and_door.door.width,
+								wall_and_door.door.position.y
+							),
+							new Point(
+								wall_and_door.wall.position.x + wall_and_door.wall.width,
+								wall_and_door.wall.position.y + wall_and_door.wall.height
+							)
+						)
+					);
+				}
+			});
+		return result;
+	}
+
+
 	public draw(ctx: CanvasRenderingContext2D): void {
 		[
 			...this.side_walls,
@@ -58,54 +131,10 @@ export abstract class RoomWalls implements IDrawable {
 			...this.misc_elements
 		].forEach(element => element.draw(ctx));
 
-		// CORNERS
-		// const corner_pic = bank.pic[this.corner_sprite.sprite_sheet_path];
-
-		// // Top left
-		// ctx.drawImage(corner_pic,
-		// 	this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height,
-		// 	0, 0,
-		// 	this.corner_sprite.width, this.corner_sprite.height
-		// );
-
-		// // Bottom left
-		// ctx.save();
-		// const dest_bottom_left_corner = new Point(0, canvas_H - this.corner_sprite.height);
-		// this.corner_sprite.rotate(ctx, dest_bottom_left_corner, -90);
-		// ctx.drawImage(corner_pic,
-		// 	this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height,
-		// 	dest_bottom_left_corner.x, dest_bottom_left_corner.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height
-		// );
-		// ctx.restore();
-
-		// // Top right
-		// ctx.save();
-		// const dest_top_right_corner = new Point(canvas_W - this.corner_sprite.width, 0);
-		// this.corner_sprite.rotate(ctx, dest_top_right_corner, 90);
-		// ctx.drawImage(corner_pic,
-		// 	this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height,
-		// 	dest_top_right_corner.x, dest_top_right_corner.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height
-		// );
-		// ctx.restore();
-
-		// // Bottom right
-		// ctx.save();
-		// const dest_bottom_right_corner = new Point(canvas_W - this.corner_sprite.width, canvas_H - this.corner_sprite.height);
-		// this.corner_sprite.rotate(ctx, dest_bottom_right_corner, 180);
-		// ctx.drawImage(corner_pic,
-		// 	this.corner_sprite.top_left.x, this.corner_sprite.top_left.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height,
-		// 	dest_bottom_right_corner.x, dest_bottom_right_corner.y,
-		// 	this.corner_sprite.width, this.corner_sprite.height
-		// );
-		// ctx.restore();
-
-
-		// DOORS
+		this.get_collisions_rectangle().forEach(rectangle => {
+			ctx.strokeStyle = "red";
+			ctx.lineWidth = 5;
+			ctx.strokeRect(rectangle.top_left.x, rectangle.top_left.y, rectangle.width, rectangle.height);
+		});
 	}
 }

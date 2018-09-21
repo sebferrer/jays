@@ -16,7 +16,7 @@ export class RoomCornerWall extends WallElement {
 			case Direction.TOP_RIGHT: return new Point(canvas_W - sprite.width, 0);
 			case Direction.BOTTOM_LEFT: return new Point(0, canvas_H - sprite.height);
 			case Direction.BOTTOM_RIGHT: return new Point(canvas_W - sprite.width, canvas_H - sprite.height);
-			default: throw new Error(`Unknown direction '${direction}'`);
+			default: throw new Error(`Unknown or invalid direction '${direction}'`);
 		}
 	}
 }
