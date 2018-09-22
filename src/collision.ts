@@ -14,7 +14,12 @@ export class Rectangle {
 export class Collision {
 	private constructor() { }
 
-	public static is_collision_rectangle(entity: Entity, next_position: Point, object: Rectangle): boolean {
+	public static is_collision_rectangle(entity: Entity, object: Rectangle, next_position: Point = null): boolean {
+
+		if (next_position == null) {
+			next_position = entity.pos;
+		}
+
 		return Collision.is_collision(
 			next_position.x, next_position.y, next_position.x + entity.width, next_position.y + entity.height,
 			object.top_left.x, object.top_left.y, object.bottom_right.x, object.bottom_right.y

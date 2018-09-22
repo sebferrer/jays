@@ -7,4 +7,10 @@ export class Floor {
 		this.tile_map = tile_map;
 		this.music = music;
 	}
+
+	public on_collision_warp() {
+		/*tslint:disable */
+		console.log("warp");
+		/*tslint:enable*/
+	}
 }

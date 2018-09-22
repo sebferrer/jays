@@ -4,8 +4,9 @@ import { IDrawable } from "../../idrawable";
 import { Point } from "../../point";
 import { Direction } from "../../enum";
 import { bank } from "../../main";
+import { IPositionable, PositionAccessor } from "../positions_accessor";
 
-export abstract class WallElement implements IDrawable {
+export abstract class WallElement implements IDrawable, IPositionable {
 	protected _direction: Direction;
 	public get direction(): Direction { return this._direction; }
 
@@ -24,6 +25,9 @@ export abstract class WallElement implements IDrawable {
 
 	protected _rotation_angle: number;
 
+	protected _positions_accessor: PositionAccessor;
+	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
+
 	constructor(
 		direction: Direction,
 		sprite: WallSprite,
@@ -37,6 +41,7 @@ export abstract class WallElement implements IDrawable {
 		this._rotation_angle = this.get_rotation(direction);
 		this._width = width == null ? sprite.width : width;
 		this._height = height == null ? sprite.height : height;
+		this._positions_accessor = new PositionAccessor(this);
 	}
 
 	protected abstract get_position(direction: Direction, sprite: WallSprite): Point;

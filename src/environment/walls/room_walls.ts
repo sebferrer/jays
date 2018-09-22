@@ -50,69 +50,33 @@ export class RoomWalls implements IDrawable {
 		this._misc_elements = misc_elements != null ? misc_elements : [];
 	}
 
-	public get_collisions_rectangle() {
+	public get_walls_collisions_rectangle(): Rectangle[] {
+		//TODO: store this to avoid computing it each time
+		//the only change which could happen is a door opening, just re-compute
+		// the Rectangle array when this happens
 		const result = new Array<Rectangle>();
 		this.side_walls.map(wall => {
 			return { wall, door: this.doors.find(door => door.direction === wall.direction) };
 		})
-			.forEach(wall_and_door => {
-
-				if (wall_and_door.door == null || !wall_and_door.door.is_open) {
-					result.push(new Rectangle(
-						wall_and_door.wall.position,
-						new Point(
-							wall_and_door.wall.position.x + wall_and_door.wall.width,
-							wall_and_door.wall.position.y + wall_and_door.wall.height
-						)
-					));
-				} else if (wall_and_door.door.direction === Direction.LEFT || wall_and_door.door.direction === Direction.RIGHT) {
-					result.push(
-						new Rectangle(
-							wall_and_door.wall.position,
-							new Point(
-								wall_and_door.door.position.x + wall_and_door.door.width,
-								wall_and_door.door.position.y
-							)
-						)
-					);
-					result.push(
-						new Rectangle(
-							new Point(
-								wall_and_door.door.position.x,
-								wall_and_door.door.position.y + wall_and_door.door.height),
-							new Point(
-								wall_and_door.door.position.x + wall_and_door.door.width,
-								wall_and_door.wall.position.y + wall_and_door.wall.height
-							)
-						)
-					);
+			.forEach(wd => {
+				if (wd.door == null || !wd.door.is_open) {
+					result.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.wall.positions_accessor.bottom_right));
+				} else if (wd.door.direction === Direction.LEFT || wd.door.direction === Direction.RIGHT) {
+					result.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.top_right));
+					result.push(new Rectangle(wd.door.positions_accessor.bottom_left, wd.wall.positions_accessor.bottom_right));
 				} else {
-					result.push(
-						new Rectangle(
-							wall_and_door.wall.position,
-							new Point(
-								wall_and_door.door.position.x,
-								wall_and_door.door.position.y + wall_and_door.door.height
-							)
-						)
-					);
-					result.push(
-						new Rectangle(
-							new Point(
-								wall_and_door.door.position.x + wall_and_door.door.width,
-								wall_and_door.door.position.y
-							),
-							new Point(
-								wall_and_door.wall.position.x + wall_and_door.wall.width,
-								wall_and_door.wall.position.y + wall_and_door.wall.height
-							)
-						)
-					);
+					result.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.bottom_left));
+					result.push(new Rectangle(wd.door.positions_accessor.top_right, wd.wall.positions_accessor.bottom_right));
 				}
 			});
 		return result;
 	}
 
+	public get_doors_collisions_rectangle(): Rectangle[] {
+		return this.doors
+			.filter(door => door != null && door.is_open)
+			.map(door => door.get_exit_rectangle());
+	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		[
@@ -121,10 +85,11 @@ export class RoomWalls implements IDrawable {
 			...this.doors,
 			...this.misc_elements
 		].forEach(element => element.draw(ctx));
+		this.draw_collision_rectangle(ctx);
 	}
 
 	private draw_collision_rectangle(ctx: CanvasRenderingContext2D): void {
-		this.get_collisions_rectangle().forEach(rectangle => {
+		this.get_walls_collisions_rectangle().forEach(rectangle => {
 			ctx.strokeStyle = "red";
 			ctx.lineWidth = 5;
 			ctx.strokeRect(rectangle.top_left.x, rectangle.top_left.y, rectangle.width, rectangle.height);

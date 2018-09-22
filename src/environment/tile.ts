@@ -40,17 +40,19 @@ export class Tile implements IDrawable {
 	}
 
 	public get_warp_info(): WarpInfo | null {
-		const warp = gameState.current_map.get_warp();
-		if (warp != null) {
-			const tile = this;
-			for (let i = 0; i < warp.zones.length; i++) {
-				for (let j = 0; j < warp.zones[i].tiles.length; j++) {
-					if (tile.same_coords_array(warp.zones[i].tiles[j])) {
-						return new WarpInfo(warp.zones[i].destination, warp.zones[i].type);
-					}
-				}
-			}
-		}
+		// Note: tile cannot be used to warp for now
+		
+		// const warp = gameState.current_map.get_warp();
+		// if (warp != null) {
+		// 	const tile = this;
+		// 	for (let i = 0; i < warp.zones.length; i++) {
+		// 		for (let j = 0; j < warp.zones[i].tiles.length; j++) {
+		// 			if (tile.same_coords_array(warp.zones[i].tiles[j])) {
+		// 				return new WarpInfo(warp.zones[i].destination, warp.zones[i].type);
+		// 			}
+		// 		}
+		// 	}
+		// }
 		return null;
 	}
 

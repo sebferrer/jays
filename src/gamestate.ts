@@ -1,6 +1,6 @@
 import { canvas_W, canvas_H, ctx, renderer } from "./main";
 import { TearBasic, Tear } from "./character/tear";
-import { RoomMap } from "./environment/room_map";
+import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
@@ -22,6 +22,7 @@ export class GameState {
 	public tears: Tear[];
 
 	constructor(map: RoomMap) {
+		this.current_floor = new Floor(1, "", "");
 		this.current_map = map;
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();

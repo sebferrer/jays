@@ -1,8 +1,8 @@
-import { Warp } from "../warp";
-import { IRawMap } from "./maps";
-import { Tile, TILE_TYPES, TILE_REF } from "./tile";
-import { IDrawable } from "../idrawable";
-import { RoomWalls } from "./walls/room_walls";
+import { Warp } from "../../warp";
+import { IRawMap } from "../maps";
+import { Tile, TILE_TYPES, TILE_REF } from "../tile";
+import { IDrawable } from "../../idrawable";
+import { RoomWalls } from "../walls/room_walls";
 
 export abstract class RoomMap implements IDrawable {
 
@@ -62,28 +62,14 @@ export abstract class RoomMap implements IDrawable {
 		return result;
 	}
 
-	/**
-	 * TODO fix this shit
-	 * Remove warpmap.ts & warpdesc.ts if necessary
-	 */
-	public get_warp(): any {
-		return null;
-		// I wanted to return a WarpMap using itself a WarpDesc...
-		// return WARPS.find(warp => warp.map_id === this.mapId) || null;
-	}
-
 	public static getTileById(id: number): Tile {
 		return TILE_TYPES[id] || TILE_REF;
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
-
 		// Draw room walls
 		this._room_walls.draw(ctx);
-
 		// Draw each tile
-		this.tiles.forEach(line =>
-			line.forEach(tile => tile.draw(ctx))
-		);
+		this.tiles.forEach(tile => tile.forEach(tile => tile.draw(ctx)));
 	}
 }

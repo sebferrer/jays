@@ -13,7 +13,7 @@ export const ctx = canvas.getContext("2d");
 export const bank = new ImageBank();
 export const renderer = new Renderer();
 export const gameState = new GameState(
-	new FourFireRoom([Direction.UP, Direction.LEFT, Direction.RIGHT])
+	new FourFireRoom([Direction.UP, Direction.LEFT, Direction.RIGHT, Direction.DOWN])
 );
 
 //TODO: add a localstorage service to retrieve the value the user wants to use

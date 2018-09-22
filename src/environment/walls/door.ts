@@ -3,6 +3,7 @@ import { Point } from "../../point";
 import { canvas_W, canvas_H } from "../../main";
 import { WallSprite } from "./wall_sprite";
 import { WallElement } from "./wall_element";
+import { Rectangle } from "../../collision";
 
 /** Represents a whole portion of a wall */
 export class Door extends WallElement {
@@ -38,6 +39,19 @@ export class Door extends WallElement {
 			case Direction.LEFT: return new Point(0, canvas_H / 2 - sprite.height / 2);
 			case Direction.RIGHT: return new Point(canvas_W - sprite.width, canvas_H / 2 - sprite.height / 2);
 			default: throw new Error(`Unknown or invalid direction '${direction}'`);
+		}
+	}
+
+	public get_exit_rectangle(): Rectangle {
+		if (!this.is_open) {
+			return null;
+		}
+		switch (this.direction) {
+			case Direction.UP: return new Rectangle(this._positions_accessor.top_left, this._positions_accessor.top_right);
+			case Direction.DOWN: return new Rectangle(this._positions_accessor.bottom_left, this._positions_accessor.bottom_right);
+			case Direction.LEFT: return new Rectangle(this._positions_accessor.top_left, this._positions_accessor.bottom_left);
+			case Direction.RIGHT: return new Rectangle(this._positions_accessor.top_right, this._positions_accessor.bottom_right);
+			default: throw new Error(`Unknown or invalid direction '${this.direction}'`);
 		}
 	}
 }

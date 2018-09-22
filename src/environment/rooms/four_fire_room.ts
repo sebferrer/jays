@@ -1,4 +1,4 @@
-import { RoomMap } from "../room_map";
+import { RoomMap } from "./room_map";
 import { IRawMap } from "../maps";
 import { Direction } from "../../enum";
 import { RoomWalls } from "../walls/room_walls";
@@ -57,7 +57,7 @@ export class FourFireRoom extends RoomMap {
 			new RoomCornerWall(Direction.BOTTOM_RIGHT, corner_sprite),
 		];
 
-		const doors = door_placement.map((placement, index) => new Door(placement, open_door_sprite, closed_door_sprite, index % 2 === 0));
+		const doors = door_placement.map((placement, index) => new Door(placement, open_door_sprite, closed_door_sprite));
 
 		const custom_elements = [
 			new CustomWallElement(Direction.UP, cracks, new Point(180, 0)),
