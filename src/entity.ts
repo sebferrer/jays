@@ -59,7 +59,7 @@ export abstract class Entity { // Abstract, will never be instancied
 
 		// Collision with walls
 		const collision_rectangle = gameState.current_map.room_walls
-			.get_walls_collisions_rectangle()
+			.get_walls_collisions_rectangles()
 			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position));
 		if (collision_rectangle != null) {
 			return this.get_collision_delta(direction, position);
@@ -91,7 +91,7 @@ export abstract class Entity { // Abstract, will never be instancied
 	public get_collision_warp(): void {
 
 		// Doors
-		const door_collision = gameState.current_map.room_walls.get_doors_collisions_rectangle()
+		const door_collision = gameState.current_map.room_walls.get_doors_collisions_rectangles()
 			.find(door_rectangle => Collision.is_collision_rectangle(this, door_rectangle));
 		if (door_collision != null) {
 			gameState.current_floor.on_collision_warp();

@@ -4,8 +4,12 @@ import { SideWall } from "./side_wall";
 import { Door } from "./door";
 import { WallElement } from "./wall_element";
 import { Rectangle } from "../../collision";
-import { Point } from "../../point";
 import { Direction } from "../../enum";
+
+export interface IWallsRegisterable {
+	parent: RoomWalls;
+	register(walls: RoomWalls): void;
+}
 
 export class RoomWalls implements IDrawable {
 	protected _corner_walls: RoomCornerWall[];
@@ -48,34 +52,59 @@ export class RoomWalls implements IDrawable {
 		this._side_walls = side_walls;
 		this._doors = doors;
 		this._misc_elements = misc_elements != null ? misc_elements : [];
+
+		// Registration
+		[
+			...this._corner_walls,
+			...this._side_walls,
+			...this._doors,
+			...this._misc_elements
+		].forEach(element => element.register(this));
 	}
 
-	public get_walls_collisions_rectangle(): Rectangle[] {
+	protected _walls_collisions_rectangle: Rectangle[];
+	public get_walls_collisions_rectangles(): Rectangle[] {
+
+		if (this._walls_collisions_rectangle != null) {
+			return this._walls_collisions_rectangle;
+		}
+
 		//TODO: store this to avoid computing it each time
 		//the only change which could happen is a door opening, just re-compute
 		// the Rectangle array when this happens
-		const result = new Array<Rectangle>();
+		console.log("walls: computing collisions...");
+		this._walls_collisions_rectangle = new Array<Rectangle>();
 		this.side_walls.map(wall => {
 			return { wall, door: this.doors.find(door => door.direction === wall.direction) };
 		})
 			.forEach(wd => {
 				if (wd.door == null || !wd.door.is_open) {
-					result.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.wall.positions_accessor.bottom_right));
+					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.wall.positions_accessor.bottom_right));
 				} else if (wd.door.direction === Direction.LEFT || wd.door.direction === Direction.RIGHT) {
-					result.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.top_right));
-					result.push(new Rectangle(wd.door.positions_accessor.bottom_left, wd.wall.positions_accessor.bottom_right));
+					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.top_right));
+					this._walls_collisions_rectangle.push(new Rectangle(wd.door.positions_accessor.bottom_left, wd.wall.positions_accessor.bottom_right));
 				} else {
-					result.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.bottom_left));
-					result.push(new Rectangle(wd.door.positions_accessor.top_right, wd.wall.positions_accessor.bottom_right));
+					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.bottom_left));
+					this._walls_collisions_rectangle.push(new Rectangle(wd.door.positions_accessor.top_right, wd.wall.positions_accessor.bottom_right));
 				}
 			});
-		return result;
+
+		return this._walls_collisions_rectangle;
 	}
 
-	public get_doors_collisions_rectangle(): Rectangle[] {
-		return this.doors
-			.filter(door => door != null && door.is_open)
-			.map(door => door.get_exit_rectangle());
+	protected _doors_collisions_rectangles: Rectangle[];
+	public get_doors_collisions_rectangles(): Rectangle[] {
+		if (this._doors_collisions_rectangles == null) {
+			this._doors_collisions_rectangles = this.doors
+				.map(door => door.get_exit_rectangle())
+				.filter(rectangle => rectangle != null);
+		}
+		return this._doors_collisions_rectangles;
+	}
+
+	public on_collisions_changed(source: WallElement): void {
+		this._walls_collisions_rectangle = null;
+		this._doors_collisions_rectangles = null;
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
@@ -85,8 +114,8 @@ export class RoomWalls implements IDrawable {
 			...this.doors,
 			...this.misc_elements
 		].forEach(element => element.draw(ctx));
-		this.draw_debug_rectangles(ctx, this.get_doors_collisions_rectangle());
-		this.draw_debug_rectangles(ctx, this.get_walls_collisions_rectangle());
+		this.draw_debug_rectangles(ctx, this.get_doors_collisions_rectangles());
+		this.draw_debug_rectangles(ctx, this.get_walls_collisions_rectangles());
 	}
 
 	private draw_debug_rectangles(ctx: CanvasRenderingContext2D, rectangles: Rectangle[]): void {

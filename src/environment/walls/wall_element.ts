@@ -5,8 +5,9 @@ import { Point } from "../../point";
 import { Direction } from "../../enum";
 import { bank } from "../../main";
 import { IPositionable, PositionAccessor } from "../positions_accessor";
+import { IWallsRegisterable, RoomWalls } from "./room_walls";
 
-export abstract class WallElement implements IDrawable, IPositionable {
+export abstract class WallElement implements IDrawable, IPositionable, IWallsRegisterable {
 	protected _direction: Direction;
 	public get direction(): Direction { return this._direction; }
 
@@ -28,6 +29,9 @@ export abstract class WallElement implements IDrawable, IPositionable {
 	protected _positions_accessor: PositionAccessor;
 	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
 
+	protected _parent: RoomWalls;
+	public get parent(): RoomWalls { return this._parent; }
+
 	constructor(
 		direction: Direction,
 		sprite: WallSprite,
@@ -45,6 +49,13 @@ export abstract class WallElement implements IDrawable, IPositionable {
 	}
 
 	protected abstract get_position(direction: Direction, sprite: WallSprite): Point;
+
+	public register(parent: RoomWalls) {
+		if (parent == null) {
+			throw new Error("Parameter 'parent' cannot be null");
+		}
+		this._parent = parent;
+	}
 
 	/** Returns the rotation necessary to draw the element correctly */
 	public get_rotation(direction: Direction) {

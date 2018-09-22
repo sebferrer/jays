@@ -13,7 +13,13 @@ export class Door extends WallElement {
 	public set is_open(value: boolean) {
 		this._is_open = value;
 		this._sprite = value ? this._open_sprite : this._closed_sprite;
+		this._exit_rectangle = null;
+		if (this.parent != null) {
+			this.parent.on_collisions_changed(this);
+		}
 	}
+
+	protected _exit_rectangle: Rectangle;
 
 	protected _open_sprite: WallSprite;
 	protected _closed_sprite: WallSprite;
@@ -45,13 +51,26 @@ export class Door extends WallElement {
 	public get_exit_rectangle(): Rectangle {
 		if (!this.is_open) {
 			return null;
+		} else if (this._exit_rectangle != null) {
+			return this._exit_rectangle;
 		}
+		console.log("doors: computing collisions...");
 		switch (this.direction) {
-			case Direction.UP: return new Rectangle(this._positions_accessor.top_left, this._positions_accessor.top_right);
-			case Direction.DOWN: return new Rectangle(this._positions_accessor.bottom_left, this._positions_accessor.bottom_right);
-			case Direction.LEFT: return new Rectangle(this._positions_accessor.top_left, this._positions_accessor.bottom_left);
-			case Direction.RIGHT: return new Rectangle(this._positions_accessor.top_right, this._positions_accessor.bottom_right);
-			default: throw new Error(`Unknown or invalid direction '${this.direction}'`);
+			case Direction.UP:
+				this._exit_rectangle = new Rectangle(this._positions_accessor.top_left, this._positions_accessor.top_right);
+				break;
+			case Direction.DOWN:
+				this._exit_rectangle = new Rectangle(this._positions_accessor.bottom_left, this._positions_accessor.bottom_right);
+				break;
+			case Direction.LEFT:
+				this._exit_rectangle = new Rectangle(this._positions_accessor.top_left, this._positions_accessor.bottom_left);
+				break;
+			case Direction.RIGHT:
+				this._exit_rectangle = new Rectangle(this._positions_accessor.top_right, this._positions_accessor.bottom_right);
+				break;
+			default:
+				throw new Error(`Unknown or invalid direction '${this.direction}'`);
 		}
+		return this._exit_rectangle;
 	}
 }
