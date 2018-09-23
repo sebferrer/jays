@@ -21,9 +21,9 @@ export class GameState {
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
 
-	constructor(map: RoomMap) {
+	constructor() {
 		this.current_floor = new Floor(1, "", "");
-		this.current_map = map;
+		this.current_map = this.current_floor.floor_map[this.current_floor.current_position.x][this.current_floor.current_position.y];
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();

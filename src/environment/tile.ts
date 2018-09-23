@@ -76,5 +76,6 @@ export const TILE_TYPES: { [key: number]: Tile } = {
 	5: new Tile(5, "Grass textured light", new Point(4, 0), false),
 	9: new Tile(9, "Grass light", new Point(3, 1), false),
 	10: new Tile(10, "Grass textured", new Point(4, 1), false),
-	12: new Tile(12, "Iron", new Point(1, 2), true)
+	12: new Tile(12, "Iron", new Point(1, 2), true),
+	13: new Tile(13, "better water", new Point(1, 1), true)
 };

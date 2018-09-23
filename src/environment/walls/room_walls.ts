@@ -82,12 +82,12 @@ export class RoomWalls implements IDrawable {
 	public draw(ctx: CanvasRenderingContext2D): void {
 		[
 			...this.side_walls,
-			...this._corner_walls,
-			...this.doors,
-			...this.misc_elements
+			...this.corner_walls,
+			...this.misc_elements,
+			...this.doors
 		].forEach(element => element.draw(ctx));
-		this.draw_debug_rectangles(ctx, this.doors.map(d => d.get_exit_rectangle()));
-		this.draw_debug_rectangles(ctx, this.get_walls_collisions_rectangles());
+		// this.draw_debug_rectangles(ctx, this.doors.map(d => d.get_exit_rectangle()));
+		// this.draw_debug_rectangles(ctx, this.get_walls_collisions_rectangles());
 	}
 
 	private draw_debug_rectangles(ctx: CanvasRenderingContext2D, rectangles: Rectangle[]): void {
