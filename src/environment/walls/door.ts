@@ -14,9 +14,6 @@ export class Door extends WallElement {
 		this._is_open = value;
 		this._sprite = value ? this._open_sprite : this._closed_sprite;
 		this._exit_rectangle = null;
-		if (this.parent != null) {
-			this.parent.on_collisions_changed(this);
-		}
 	}
 
 	protected _exit_rectangle: Rectangle;

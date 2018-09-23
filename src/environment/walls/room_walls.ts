@@ -6,11 +6,6 @@ import { WallElement } from "./wall_element";
 import { Rectangle } from "../../collision";
 import { Direction } from "../../enum";
 
-export interface IWallsRegisterable {
-	parent: RoomWalls;
-	register(walls: RoomWalls): void;
-}
-
 export class RoomWalls implements IDrawable {
 	protected _corner_walls: RoomCornerWall[];
 	public get corner_walls(): RoomCornerWall[] { return this._corner_walls; }
@@ -52,14 +47,6 @@ export class RoomWalls implements IDrawable {
 		this._side_walls = side_walls;
 		this._doors = doors;
 		this._misc_elements = misc_elements != null ? misc_elements : [];
-
-		// Registration
-		[
-			...this._corner_walls,
-			...this._side_walls,
-			...this._doors,
-			...this._misc_elements
-		].forEach(element => element.register(this));
 	}
 
 	protected _walls_collisions_rectangle: Rectangle[];
@@ -92,21 +79,6 @@ export class RoomWalls implements IDrawable {
 		return this._walls_collisions_rectangle;
 	}
 
-	protected _doors_collisions_rectangles: Rectangle[];
-	public get_doors_collisions_rectangles(): Rectangle[] {
-		if (this._doors_collisions_rectangles == null) {
-			this._doors_collisions_rectangles = this.doors
-				.map(door => door.get_exit_rectangle())
-				.filter(rectangle => rectangle != null);
-		}
-		return this._doors_collisions_rectangles;
-	}
-
-	public on_collisions_changed(source: WallElement): void {
-		this._walls_collisions_rectangle = null;
-		this._doors_collisions_rectangles = null;
-	}
-
 	public draw(ctx: CanvasRenderingContext2D): void {
 		[
 			...this.side_walls,
@@ -114,7 +86,7 @@ export class RoomWalls implements IDrawable {
 			...this.doors,
 			...this.misc_elements
 		].forEach(element => element.draw(ctx));
-		this.draw_debug_rectangles(ctx, this.get_doors_collisions_rectangles());
+		this.draw_debug_rectangles(ctx, this.doors.map(d => d.get_exit_rectangle()));
 		this.draw_debug_rectangles(ctx, this.get_walls_collisions_rectangles());
 	}
 

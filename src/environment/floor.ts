@@ -1,3 +1,5 @@
+import { Door } from "./walls/door";
+
 export class Floor {
 	public id: number;
 	public tile_map: string;
@@ -8,9 +10,9 @@ export class Floor {
 		this.music = music;
 	}
 
-	public on_collision_warp() {
+	public on_collision_warp(door: Door) {
 		/*tslint:disable */
-		console.log("warp");
+		console.log("warp, direction: " + door.direction);
 		/*tslint:enable*/
 	}
 }

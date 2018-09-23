@@ -91,10 +91,10 @@ export abstract class Entity { // Abstract, will never be instancied
 	public get_collision_warp(): void {
 
 		// Doors
-		const door_collision = gameState.current_map.room_walls.get_doors_collisions_rectangles()
-			.find(door_rectangle => Collision.is_collision_rectangle(this, door_rectangle));
-		if (door_collision != null) {
-			gameState.current_floor.on_collision_warp();
+		const collided_door = gameState.current_map.room_walls.doors
+			.find(door => Collision.is_collision_rectangle(this, door.get_exit_rectangle()));
+		if (collided_door != null) {
+			gameState.current_floor.on_collision_warp(collided_door);
 			return;
 		}
 

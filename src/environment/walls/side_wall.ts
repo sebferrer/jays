@@ -36,7 +36,6 @@ export class SideWall extends WallElement {
 
 		const picture = bank.pic[this.sprite.sprite_sheet_path];
 
-
 		// Small variation of what base.draw() does: ignore the corner
 		if (this.width !== this.sprite.width) {
 			const repetitions = this.width / this.sprite.width;
