@@ -3,7 +3,7 @@ import { WallSprite } from "./wall_sprite";
 import { IDrawable } from "../../idrawable";
 import { Point } from "../../point";
 import { Direction } from "../../enum";
-import { bank } from "../../main";
+import { IMAGE_BANK } from "../../main";
 import { IPositionable, PositionAccessor } from "../positions_accessor";
 import { RoomWalls } from "./room_walls";
 
@@ -67,7 +67,7 @@ export abstract class WallElement implements IDrawable, IPositionable {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 
-		const picture = bank.pic[this.sprite.sprite_sheet_path];
+		const picture = IMAGE_BANK.pic[this.sprite.sprite_sheet_path];
 
 		// If the width/height of the element is different than the sprite's,
 		// it means the element is repeatable

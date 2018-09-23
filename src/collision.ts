@@ -17,7 +17,7 @@ export class Collision {
 	public static is_collision_rectangle(entity: Entity, object: Rectangle, next_position: Point = null): boolean {
 
 		if (next_position == null) {
-			next_position = entity.pos;
+			next_position = entity.position;
 		}
 
 		return Collision.is_collision(
@@ -33,7 +33,7 @@ export class Collision {
 	}
 
 	public static is_collision_entity_tile(entity: Entity, tile: Tile): boolean {
-		return Collision.is_collision(entity.pos.x, entity.pos.y, entity.pos.x + entity.width, entity.pos.y + entity.height,
+		return Collision.is_collision(entity.position.x, entity.position.y, entity.position.x + entity.width, entity.position.y + entity.height,
 			tile.pos.x, tile.pos.y, tile.pos.x + tile.width, tile.pos.y + tile.height);
 	}
 

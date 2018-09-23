@@ -1,5 +1,4 @@
 import { RoomMap } from "./room_map";
-import { IRawMap } from "../maps";
 import { Direction } from "../../enum";
 import { RoomWalls } from "../walls/room_walls";
 import { RoomCornerWall } from "../walls/corner_wall";
@@ -9,6 +8,7 @@ import { SideWall } from "../walls/side_wall";
 import { Door } from "../walls/door";
 import { canvas_H } from "../../main";
 import { CustomWallElement } from "../walls/custom_wall_element";
+import { IRawMap } from "../irawmap";
 
 export class FourFireRoom extends RoomMap {
 

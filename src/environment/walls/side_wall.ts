@@ -1,7 +1,7 @@
 import { WallElement } from "./wall_element";
 import { WallSprite } from "./wall_sprite";
 import { Direction } from "../../enum";
-import { canvas_H, canvas_W, bank } from "../../main";
+import { canvas_H, canvas_W, IMAGE_BANK } from "../../main";
 import { Point } from "../../point";
 
 /** Represents a whole portion of a wall */
@@ -11,7 +11,6 @@ export class SideWall extends WallElement {
 		switch (direction) {
 			case Direction.UP:
 			case Direction.DOWN:
-				// the sides could be removed, but idgaf
 				dimensions = { width: canvas_W - 2 * sprite.width, height: sprite.height };
 				break;
 			case Direction.LEFT:
@@ -34,7 +33,7 @@ export class SideWall extends WallElement {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 
-		const picture = bank.pic[this.sprite.sprite_sheet_path];
+		const picture = IMAGE_BANK.pic[this.sprite.sprite_sheet_path];
 
 		// Small variation of what base.draw() does: ignore the corner
 		if (this.width !== this.sprite.width) {

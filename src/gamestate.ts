@@ -131,7 +131,7 @@ export class GameState {
 			if (timer_tear.next_tick()) {
 				this.tears.push(
 					new TearBasic(
-						new Point(this.jays.pos.x + this.jays.width / 2, this.jays.pos.y + this.jays.height / 2),
+						new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
 						this.attack_direction_event.directions[0]
 					)
 				);

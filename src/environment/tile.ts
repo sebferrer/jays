@@ -3,7 +3,7 @@ import { TileType } from "./../enum";
 import { WarpInfo } from "./../warp_info";
 import { Point } from "./../point";
 import { IDrawable } from "./../idrawable";
-import { bank } from "../main";
+import { IMAGE_BANK } from "../main";
 
 export class Tile implements IDrawable {
 
@@ -31,34 +31,9 @@ export class Tile implements IDrawable {
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
 	}
 
-	public same_coords(tile: Tile): boolean {
-		return this.coord_x === tile.coord_x && this.coord_y === this.coord_y;
-	}
-
-	public same_coords_array(array: Tile): boolean {
-		return this.coord_x === array[0] && this.coord_y === array[1];
-	}
-
-	public get_warp_info(): WarpInfo | null {
-		// Note: tile cannot be used to warp for now
-		
-		// const warp = gameState.current_map.get_warp();
-		// if (warp != null) {
-		// 	const tile = this;
-		// 	for (let i = 0; i < warp.zones.length; i++) {
-		// 		for (let j = 0; j < warp.zones[i].tiles.length; j++) {
-		// 			if (tile.same_coords_array(warp.zones[i].tiles[j])) {
-		// 				return new WarpInfo(warp.zones[i].destination, warp.zones[i].type);
-		// 			}
-		// 		}
-		// 	}
-		// }
-		return null;
-	}
-
 	public draw(ctx: CanvasRenderingContext2D): void {
 		//TODO: "assets/img/tiles.png" should be an attribute, so we can use whatever sprite sheet we want
-		ctx.drawImage(bank.pic["assets/img/tiles.png"],
+		ctx.drawImage(IMAGE_BANK.pic["assets/img/tiles.png"],
 			this.src.x * this.height, this.src.y * this.width,
 			this.width, this.height,
 			this.pos.x, this.pos.y,

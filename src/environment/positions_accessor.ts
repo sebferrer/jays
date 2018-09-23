@@ -7,7 +7,7 @@ export interface IPositionable {
 	position: Point;
 }
 
-/** Used to easily retrieve the top corner points of a positionable object */
+/** Helper class used to easily retrieve the top corner points of a positionable object */
 export class PositionAccessor {
 
 	private _target: IPositionable;

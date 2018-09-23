@@ -8,7 +8,7 @@ export const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 export const canvas_W = 660;
 export const canvas_H = 480;
 export const ctx = canvas.getContext("2d");
-export const bank = new ImageBank();
+export const IMAGE_BANK = new ImageBank();
 export const renderer = new Renderer();
 export const gameState = new GameState();
 
@@ -25,6 +25,6 @@ function main(): void {
 	Settings.init();
 
 	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
-	bank.preload(gameState);
+	IMAGE_BANK.preload(gameState);
 	gameState.update();
 }

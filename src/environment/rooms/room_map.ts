@@ -1,8 +1,8 @@
 import { Warp } from "../../warp";
-import { IRawMap } from "../maps";
 import { Tile, TILE_TYPES, TILE_REF } from "../tile";
 import { IDrawable } from "../../idrawable";
 import { RoomWalls } from "../walls/room_walls";
+import { IRawMap } from "../irawmap";
 
 export abstract class RoomMap implements IDrawable {
 

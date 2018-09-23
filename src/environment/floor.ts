@@ -48,27 +48,28 @@ export class Floor {
 		console.log("warp, direction: " + door.direction);
 		/*tslint:enable*/
 
+		// Remove tears
+		gameState.tears.splice(0, gameState.tears.length);
+
 		switch (door.direction) {
 			case Direction.LEFT:
 				this.current_position.y--;
-				gameState.jays.pos = new Point(canvas_W - 60 - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
+				gameState.jays.position = new Point(canvas_W - 60 - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
 				break;
 			case Direction.RIGHT:
 				this.current_position.y++;
-				gameState.jays.pos = new Point(60 + gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
+				gameState.jays.position = new Point(60 + gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
 				break;
 			case Direction.UP:
 				this.current_position.x--;
-				gameState.jays.pos = new Point((canvas_W / 2) - (gameState.jays.width / 2), canvas_H - 60 - gameState.jays.height / 2);
+				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), canvas_H - 60 - gameState.jays.height / 2);
 				break;
 			case Direction.DOWN:
 				this.current_position.x++;
-				gameState.jays.pos = new Point((canvas_W / 2) - (gameState.jays.width / 2), 60 + gameState.jays.height / 2);
+				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), 60 + gameState.jays.height / 2);
 				break;
 		}
 
 		gameState.current_map = this.floor_map[this.current_position.x][this.current_position.y];
-
-
 	}
 }

@@ -1,11 +1,10 @@
 import { Entity } from "../entity";
-import { gameState, canvas_H, canvas_W, bank } from "../main";
+import { gameState, canvas_H, canvas_W, IMAGE_BANK } from "../main";
 import { Direction, Direction_Int, Direction_String } from "../enum";
 import { Sprite } from "../sprite";
 import { Point } from "../point";
-import { CollisionWarp } from "../collision_warp";
-import { CollisionDelta } from "../collision_delta";
 import { IDrawable } from "../idrawable";
+import { Collision } from "../collision";
 
 export class Jays extends Entity implements IDrawable {
 	private _tear_delay: number;
@@ -24,7 +23,7 @@ export class Jays extends Entity implements IDrawable {
 		this._range = value;
 	}
 
-	public head: JaysHead;
+	protected head: JaysHead;
 
 	private static body_height = 20;
 	private static body_width = 20;
@@ -39,30 +38,19 @@ export class Jays extends Entity implements IDrawable {
 		this.speed = 2;
 		this._tear_delay = 480;
 		this.range = 8;
-		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.pos.x, this.pos.y - 20), Jays.head_width, Jays.head_height);
+		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.position.x, this.position.y - 20), Jays.head_width, Jays.head_height);
 	}
 
-	public on_collision_map(): void { }
+	public move_direction(direction: Direction): void {
+		super.move_direction(direction);
 
-	public on_collision_warp(collision_warp: CollisionWarp): void {
-		// gameState.current_map = new RoomMap(collision_warp.warp_info.destination, new FloorOneWalls());
-		// switch (collision_warp.warp_info.type) {
-		// 	case WarpType.CLASSIC:
-		// 		if (collision_warp.tile.coord_y === gameState.current_map.height - 1) {
-		// 			this.pos.y = 0 + TILE_REF.height + this.head.height;
-		// 		}
-		// 		else if (collision_warp.tile.coord_y === 0) {
-		// 			this.pos.y = canvas_H - this.height - TILE_REF.height;
-		// 		}
-		// 		else if (collision_warp.tile.coord_x === gameState.current_map.width - 1) {
-		// 			this.pos.x = 0 + TILE_REF.width;
-		// 		}
-		// 		else if (collision_warp.tile.coord_x === 0) {
-		// 			this.pos.x = canvas_W - this.width - TILE_REF.width;
-		// 		}
-		// 		break;
-		// }
-		// gameState.clear_tears();
+		// Warp with doors ?
+		const collided_door = gameState.current_map.room_walls.doors
+			.find(door => Collision.is_collision_rectangle(this, door.get_exit_rectangle()));
+		if (collided_door != null) {
+			gameState.current_floor.on_collision_warp(collided_door);
+			return;
+		}
 	}
 
 	public update(): void {
@@ -101,24 +89,20 @@ export class Jays extends Entity implements IDrawable {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		// Draw body
-		ctx.drawImage(bank.pic[this.sprite_filename],
+		ctx.drawImage(IMAGE_BANK.pic[this.sprite_filename],
 			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
-			this.pos.x, this.pos.y + Jays.head_height, Jays.body_width, Jays.body_height);
+			this.position.x, this.position.y + Jays.head_height, Jays.body_width, Jays.body_height);
 
 		// Draw head
-		ctx.drawImage(bank.pic[this.sprite_filename],
+		ctx.drawImage(IMAGE_BANK.pic[this.sprite_filename],
 			this.head.current_sprite.src_x, this.head.current_sprite.src_y, this.head.current_sprite.src_width, this.head.current_sprite.src_height,
-			this.pos.x, this.pos.y, Jays.head_width, Jays.head_height);
+			this.position.x, this.position.y, Jays.head_width, Jays.head_height);
 	}
 }
 
 class JaysHead extends Entity {
-	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
-		super(id, current_sprite, new Point(pos.x, pos.y), width, height);
+	constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number) {
+		super(id, current_sprite, Point.copy(position), width, height);
 		this.sprite_filename = "assets/img/jays.png";
 	}
-
-	public on_collision_map(): void { }
-
-	public on_collision_warp(collision_warp: CollisionWarp): void { }
 }

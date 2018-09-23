@@ -8,6 +8,10 @@ import { Rectangle } from "../../collision";
 /** Represents a whole portion of a wall */
 export class Door extends WallElement {
 
+	protected _exit_rectangle: Rectangle;
+	protected _open_sprite: WallSprite;
+	protected _closed_sprite: WallSprite;
+
 	protected _is_open: boolean;
 	public get is_open(): boolean { return this._is_open; }
 	public set is_open(value: boolean) {
@@ -15,11 +19,6 @@ export class Door extends WallElement {
 		this._sprite = value ? this._open_sprite : this._closed_sprite;
 		this._exit_rectangle = null;
 	}
-
-	protected _exit_rectangle: Rectangle;
-
-	protected _open_sprite: WallSprite;
-	protected _closed_sprite: WallSprite;
 
 	constructor(direction: Direction, open_sprite: WallSprite, closed_sprite: WallSprite, is_open: boolean = true) {
 		if (open_sprite == null) {
@@ -51,7 +50,6 @@ export class Door extends WallElement {
 		} else if (this._exit_rectangle != null) {
 			return this._exit_rectangle;
 		}
-		console.log("doors: computing collisions...");
 		switch (this.direction) {
 			case Direction.UP:
 				this._exit_rectangle = new Rectangle(this._positions_accessor.top_left, this._positions_accessor.top_right);

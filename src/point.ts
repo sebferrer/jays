@@ -10,4 +10,8 @@ export class Point {
 	public distanceBetween(p: Point): number {
 		return Math.sqrt(Math.pow(this.x - p.x, 2) + Math.pow(this.y - p.y, 2));
 	}
+
+	public static copy(point: Point): Point {
+		return point == null ? new Point() : new Point(point.x, point.y);
+	}
 }

@@ -56,14 +56,8 @@ export class RoomWalls implements IDrawable {
 			return this._walls_collisions_rectangle;
 		}
 
-		//TODO: store this to avoid computing it each time
-		//the only change which could happen is a door opening, just re-compute
-		// the Rectangle array when this happens
-		console.log("walls: computing collisions...");
 		this._walls_collisions_rectangle = new Array<Rectangle>();
-		this.side_walls.map(wall => {
-			return { wall, door: this.doors.find(door => door.direction === wall.direction) };
-		})
+		this.side_walls.map(wall => { return { wall, door: this.doors.find(door => door.direction === wall.direction) }; })
 			.forEach(wd => {
 				if (wd.door == null || !wd.door.is_open) {
 					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.wall.positions_accessor.bottom_right));
