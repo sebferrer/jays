@@ -1,4 +1,4 @@
-import { KeyboardType, Direction } from "./enum";
+import { KeyboardType, Direction } from "../enum";
 
 export class KeyMapper {
 

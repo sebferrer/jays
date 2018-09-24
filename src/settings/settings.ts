@@ -1,5 +1,5 @@
-import { renderer, gameState, key_mapper } from "./main";
-import { KeyboardType } from "./enum";
+import { renderer, gameState, key_mapper } from "../main";
+import { KeyboardType } from "../enum";
 
 export class Settings {
 
@@ -15,13 +15,13 @@ export class Settings {
 		}
 	}
 
-	public static set_jays(param: string, val: number) {
+	public static set_jays(param: string, val: string) {
 		switch (param) {
 			case "speed":
 				gameState.jays.speed = Number(val);
 				break;
 			case "tear_delay":
-				gameState.jays.set_tear_delay(Number(val));
+				gameState.jays.tear_delay = Number(val);
 				break;
 			case "range":
 				gameState.jays.range = Number(val);

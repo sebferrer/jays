@@ -3,37 +3,48 @@ import { gameState } from "./main";
 import { Direction } from "./enum";
 import { Point } from "./point";
 import { CollisionDelta } from "./collision_delta";
-import { CollisionWarp } from "./collision_warp";
 import { Sprite } from "./sprite";
 import { SpriteHelper } from "./sprite_helper";
+import { PositionAccessor, IPositionable } from "./environment/positions_accessor";
 
-export abstract class Entity { // Abstract, will never be instancied
-	public id: string;
-	public facing_direction: Direction;
+export abstract class Entity implements IPositionable {
+
+	protected _id: string;
+	public get id(): string { return this._id; }
+
 	public sprite_filename: string;
 	public current_sprite: Sprite;
 	public sprite_collecs: Map<string, Sprite[]>;
 	public speed: number;
-	public width: number;
-	public height: number;
-	public pos: Point;
+
+	protected _width: number;
+	public get width(): number { return this._width; }
+
+	protected _height: number;
+	public get height(): number { return this._height; }
+
+	public position: Point;
+
+	protected _positions_accessor: PositionAccessor;
+	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
 
 	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
-		this.id = id;
+		this._id = id;
 		this.current_sprite = current_sprite;
-		this.pos = new Point(pos.x, pos.y);
-		this.width = width;
-		this.height = height;
+		this.position = new Point(pos.x, pos.y);
+		this._width = width;
+		this._height = height;
 		this.sprite_collecs = SpriteHelper.getCollecs(this.id);
+		this._positions_accessor = new PositionAccessor(this);
 	}
 
 	public next_position(direction: Direction): Point {
-		const pos = new Point(this.pos.x, this.pos.y);
+		const pos = new Point(this.position.x, this.position.y);
 		switch (direction) {
-			case Direction.UP: pos.y = this.pos.y - this.speed; break;
-			case Direction.DOWN: pos.y = this.pos.y + this.speed; break;
-			case Direction.LEFT: pos.x = this.pos.x - this.speed; break;
-			case Direction.RIGHT: pos.x = this.pos.x + this.speed; break;
+			case Direction.UP: pos.y = this.position.y - this.speed; break;
+			case Direction.DOWN: pos.y = this.position.y + this.speed; break;
+			case Direction.LEFT: pos.x = this.position.x - this.speed; break;
+			case Direction.RIGHT: pos.x = this.position.x + this.speed; break;
 		}
 		return new Point(pos.x, pos.y);
 	}
@@ -42,51 +53,47 @@ export abstract class Entity { // Abstract, will never be instancied
 		const next_position = this.next_position(direction);
 		const collision_map = this.collision_map(direction, next_position);
 		if (collision_map.is_collision) {
-			if (collision_map.delta_x !== 0) { this.pos.x += collision_map.delta_x; }
-			if (collision_map.delta_y !== 0) { this.pos.y += collision_map.delta_y; }
+			if (collision_map.delta_x !== 0) { this.position.x += collision_map.delta_x; }
+			if (collision_map.delta_y !== 0) { this.position.y += collision_map.delta_y; }
 			this.on_collision_map();
 		} else {
-			this.pos.x = next_position.x;
-			this.pos.y = next_position.y;
-		}
-		const collision_warp = this.get_collision_warp();
-		if (collision_warp != null) {
-			this.on_collision_warp(collision_warp);
+			this.position.x = next_position.x;
+			this.position.y = next_position.y;
 		}
 	}
 
 	public collision_map(direction: Direction, position: Point): CollisionDelta {
+
+		// Collision with walls
+		const collision_rectangle = gameState.current_map.room_walls
+			.get_walls_collisions_rectangles()
+			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position));
+		if (collision_rectangle != null) {
+			return this.get_collision_delta(direction, position);
+		}
+
+		// Collision with tiles
 		for (let i = 0; i < gameState.current_map.height; i++) {
 			for (let j = 0; j < gameState.current_map.width; j++) {
 				const current_tile = gameState.current_map.tiles[i][j];
 				if (!current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile)) {
 					continue;
 				}
-				switch (direction) {
-					case Direction.UP: return new CollisionDelta(true, 0, (current_tile.pos.y + current_tile.height - this.pos.y)); break;
-					case Direction.DOWN: return new CollisionDelta(true, 0, (this.pos.y + this.height - current_tile.pos.y) * -1); break;
-					case Direction.LEFT: return new CollisionDelta(true, (current_tile.pos.x + current_tile.width - this.pos.x), 0); break;
-					case Direction.RIGHT: return new CollisionDelta(true, (this.pos.x + this.width - current_tile.pos.x) * -1, 0); break;
-				}
+				return this.get_collision_delta(direction, position);
 			}
 		}
+
 		return new CollisionDelta(false);
 	}
 
-	public get_collision_warp(): CollisionWarp | null {
-		for (let i = 0; i < gameState.current_map.height; i++) {
-			for (let j = 0; j < gameState.current_map.width; j++) {
-				const tile = gameState.current_map.tiles[i][j];
-				const warp_info = tile.get_warp_info();
-				if (warp_info != null && Collision.is_collision_entity_tile(this, tile)) {
-					return new CollisionWarp(warp_info, tile);
-				}
-			}
+	private get_collision_delta(direction: Direction, position: Point) {
+		switch (direction) {
+			case Direction.UP: return new CollisionDelta(true, 0, this.position.y - position.y);
+			case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.position.y));
+			case Direction.LEFT: return new CollisionDelta(true, this.position.x - position.x, 0);
+			case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.position.x), 0);
 		}
-		return null;
 	}
 
-	public abstract on_collision_map(): void;
-
-	public abstract on_collision_warp(collision_warp: CollisionWarp): void;
+	public on_collision_map(): void { }
 }

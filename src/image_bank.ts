@@ -1,6 +1,6 @@
 import { GameState } from "./gamestate";
 
-export class ImgBank {
+export class ImageBank {
 
 	public buffer: any;
 	public pic: any;
@@ -17,7 +17,7 @@ export class ImgBank {
 		this.unload = 0;
 		this.loaded = 0;
 		this.nextLoad = 0;
-		this.list = ["assets/img/tiles.png", "assets/img/jays.png", "assets/img/tear.png"];
+		this.list = ["assets/img/tiles.png", "assets/img/jays.png", "assets/img/tear.png", "assets/img/walls/floor_one.png"];
 	}
 
 	public preload(gameState: GameState): void {

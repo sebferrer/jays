@@ -1,5 +1,4 @@
-import { gameState, ctx, bank, canvas, canvas_W, canvas_H } from "./main";
-import { RoomMap } from "./room_map";
+import { ctx, canvas, canvas_W, canvas_H } from "./main";
 
 export class Renderer {
 	public zoomScale: number;
@@ -31,34 +30,6 @@ export class Renderer {
 		ctx.scale(ratio, ratio);
 		this.disableSmoothing();
 	}
-
-	public render_map(map: RoomMap): void {
-		for (let i = 0; i < map.height; i++) {
-			for (let j = 0; j < map.width; j++) {
-				const tile = map.tiles[i][j];
-				ctx.drawImage(bank.pic["assets/img/tiles.png"],
-					tile.src.x * tile.height, tile.src.y * tile.width, tile.width, tile.height,
-					tile.pos.x, tile.pos.y, tile.width, tile.height);
-			}
-		}
-	}
-
-	public render_jays(): void {
-		const jays = gameState.jays;
-		ctx.drawImage(bank.pic[jays.sprite_filename],
-			jays.current_sprite.src_x, jays.current_sprite.src_y, jays.current_sprite.src_width, jays.current_sprite.src_height,
-			jays.pos.x, jays.pos.y, jays.width, jays.height);
-		ctx.drawImage(bank.pic[jays.sprite_filename],
-			jays.head.current_sprite.src_x, jays.head.current_sprite.src_y, jays.head.current_sprite.src_width, jays.head.current_sprite.src_height,
-			jays.head.pos.x, jays.head.pos.y, jays.head.width, jays.head.height);
-	}
-
-	public render_tear(tear): void {
-		ctx.drawImage(bank.pic[tear.sprite_filename],
-			tear.current_sprite.src_x, tear.current_sprite.src_y, tear.current_sprite.src_width, tear.current_sprite.src_height,
-			tear.pos.x, tear.pos.y, tear.width, tear.height);
-	}
-
 }
 
 window.requestAnimationFrame = (function () {

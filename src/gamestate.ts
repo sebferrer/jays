@@ -1,14 +1,14 @@
 import { canvas_W, canvas_H, ctx, renderer } from "./main";
-import { TearBasic, Tear } from "./tear";
-import { RoomMap } from "./room_map";
-import { Jays } from "./jays";
+import { TearBasic, Tear } from "./character/tear";
+import { RoomMap } from "./environment/rooms/room_map";
+import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
-import { Floor } from "./floor";
+import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
 
@@ -21,8 +21,9 @@ export class GameState {
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
 
-	constructor(map: RoomMap) {
-		this.current_map = map;
+	constructor() {
+		this.current_floor = new Floor(1, "", "");
+		this.current_map = this.current_floor.floor_map[this.current_floor.current_position.x][this.current_floor.current_position.y];
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
@@ -99,20 +100,20 @@ export class GameState {
 		TIMERS.forEach(timer => timer.run());
 
 		try {
-			renderer.render_map(this.current_map);
+			this.current_map.draw(ctx);
 		} catch (err) {
 			// console.error(err);
 		}
 
-		this.tears.forEach(function (tear) {
-			renderer.render_tear(tear);
+		this.tears.forEach(tear => {
+			tear.draw(ctx);
 		});
 
 		this.jays.update();
 		this.tears_update();
 
 		try {
-			renderer.render_jays();
+			this.jays.draw(ctx);
 		} catch (err) {
 			// console.error(err);
 		}
@@ -128,10 +129,12 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				this.tears.push(new TearBasic(
-					new Point(this.jays.head.pos.x + this.jays.head.width / 2,
-						this.jays.head.pos.y + this.jays.head.height / 2),
-					this.attack_direction_event.directions[0]));
+				this.tears.push(
+					new TearBasic(
+						new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
+						this.attack_direction_event.directions[0]
+					)
+				);
 			}
 		} else {
 			timer_tear.reset();
