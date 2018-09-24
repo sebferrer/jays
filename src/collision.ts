@@ -8,14 +8,22 @@ export class Rectangle {
 	public get width(): number { return this.bottom_right.x - this.top_left.x; }
 	public get height(): number { return this.bottom_right.y - this.top_left.y; }
 
-	constructor(public top_left: Point, public bottom_right: Point) { }
+	public top_left: Point;
+	public bottom_right: Point;
+
+	constructor(top_left: Point, bottom_right: Point) {
+		this.top_left = Point.copy(top_left);
+		this.bottom_right = Point.copy(bottom_right);
+	}
 }
 
 export class Collision {
 	private constructor() { }
 
 	public static is_collision_rectangle(entity: Entity, object: Rectangle, next_position: Point = null): boolean {
-
+		if (object == null) {
+			return false;
+		}
 		if (next_position == null) {
 			next_position = entity.position;
 		}
