@@ -22,6 +22,7 @@ export class Floor {
 
 	public initialize(): void {
 		// Draw minimap
+		this.floor_map.current_room.has_been_visited = true;
 		renderer.update_minimap(this.floor_map);
 	}
 
