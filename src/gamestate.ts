@@ -1,4 +1,4 @@
-import { canvas_W, canvas_H, ctx, renderer } from "./main";
+import { canvas_W, canvas_H, ctx, renderer, minimap_ctx } from "./main";
 import { TearBasic, Tear } from "./character/tear";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
@@ -23,7 +23,9 @@ export class GameState {
 
 	constructor() {
 		this.current_floor = new Floor(1, "", "");
-		this.current_map = this.current_floor.floor_map.floor_map[this.current_floor.floor_map.current_position.x][this.current_floor.floor_map.current_position.y];
+		this.current_floor.initialize();
+		this.current_map = this.current_floor.floor_map.current_room;
+		
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
@@ -32,6 +34,7 @@ export class GameState {
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
+
 	}
 
 	public key_down(keyName: string): void {
@@ -101,7 +104,6 @@ export class GameState {
 
 		try {
 			this.current_map.draw(ctx);
-			this.current_floor.floor_map.draw(ctx);
 		} catch (err) {
 			// console.error(err);
 		}

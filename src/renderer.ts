@@ -1,4 +1,5 @@
-import { ctx, canvas, canvas_W, canvas_H } from "./main";
+import { ctx, canvas, canvas_W, canvas_H, minimap_canvas, minimap_ctx } from "./main";
+import { IDrawable } from "./idrawable";
 
 export class Renderer {
 	public zoomScale: number;
@@ -29,6 +30,11 @@ export class Renderer {
 		canvas.height = canvas_H * ratio;
 		ctx.scale(ratio, ratio);
 		this.disableSmoothing();
+	}
+
+	public update_minimap(drawable: IDrawable): void {
+		minimap_ctx.clearRect(0, 0, 300, 480);
+		drawable.draw(minimap_ctx);
 	}
 }
 

@@ -6,10 +6,23 @@ import { FourFireRoom } from "./rooms/four_fire_room";
 import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
 import { EmptyGrassRoom } from "./rooms/empty_grass_room";
 import { DeadEndRightRoom } from "./rooms/dead_end_right_room";
-import { canvas_W, canvas_H } from "../main";
+
+enum MiniMapColors {
+	visited_border = "#aaaaaa",
+	visited_fill = "#ffffff55",
+
+	not_visited_border = "#aaaaaa",
+	not_visited_fill = "#000000",
+
+	active_border = "#ffffffaa",
+	active_fill = "#ffffff",
+}
 
 export class FloorMap implements IDrawable {
-	public floor_map: Array<RoomMap[]>;
+	public maps_grid: Array<RoomMap[]>;
+
+
+	public get current_room(): RoomMap { return this.maps_grid[this.current_position.x][this.current_position.y]; }
 
 	/** Position on the current map */
 	public current_position: Point;
@@ -20,38 +33,49 @@ export class FloorMap implements IDrawable {
 	constructor() {
 		// Generate a static map, for now
 
-		this.floor_map = new Array<RoomMap[]>(this.max_floor_map_height);
+		this.maps_grid = new Array<RoomMap[]>(this.max_floor_map_height);
 		for (let i = 0; i < this.max_floor_map_height; ++i) {
-			this.floor_map[i] = new Array<RoomMap>(this.max_floor_map_width);
+			this.maps_grid[i] = new Array<RoomMap>(this.max_floor_map_width);
 		}
 
 		this.current_position = new Point(2, 2);
 
-		this.floor_map[2][2] = new FourFireRoom([Direction.LEFT, Direction.DOWN]);
-		this.floor_map[3][2] = new WaterLeftRightRoom([Direction.UP]);
-		this.floor_map[2][1] = new EmptyGrassRoom([Direction.RIGHT, Direction.UP, Direction.LEFT]);
-		this.floor_map[2][0] = new DeadEndRightRoom([Direction.RIGHT]);
-		this.floor_map[1][1] = new WaterLeftRightRoom([Direction.DOWN]);
+		this.maps_grid[2][2] = new FourFireRoom([Direction.LEFT, Direction.DOWN, Direction.RIGHT]);
+		this.maps_grid[2][3] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT]);
+		this.maps_grid[2][4] = new EmptyGrassRoom([Direction.LEFT]);
+
+		this.maps_grid[3][2] = new WaterLeftRightRoom([Direction.UP]);
+		this.maps_grid[2][1] = new EmptyGrassRoom([Direction.RIGHT, Direction.UP, Direction.LEFT]);
+		this.maps_grid[2][0] = new DeadEndRightRoom([Direction.RIGHT]);
+		this.maps_grid[1][1] = new WaterLeftRightRoom([Direction.DOWN]);
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
-		for (let x = 0; x < this.floor_map.length; ++x) {
-			for (let y = 0; y < this.floor_map[x].length; ++y) {
-				const current = this.floor_map[y][x];
-				if (current != null) {
 
-					if(current === this.floor_map[this.current_position.x][this.current_position.y]) {
-						ctx.strokeStyle = "white";
-						ctx.lineWidth = 2;
-					} else {
-						ctx.strokeStyle = "black";
-						ctx.lineWidth = 1;
-					}
-					ctx.strokeRect(20 * x + 1 + canvas_W - 20 * this.max_floor_map_width, 20 * y + 1 / 2, 17, 17);
+		for (let x = 0; x < this.maps_grid.length; ++x) {
+			for (let y = 0; y < this.maps_grid[x].length; ++y) {
+				const current = this.maps_grid[y][x];
+				if (current == null) {
+					continue;
 				}
+
+				if (current === this.current_room) {
+					ctx.strokeStyle = MiniMapColors.active_border;
+					ctx.fillStyle = MiniMapColors.active_fill;
+					ctx.lineWidth = 2;
+				} else if (current.has_been_visited) {
+					ctx.strokeStyle = MiniMapColors.visited_border;
+					ctx.fillStyle = MiniMapColors.visited_fill;
+					ctx.lineWidth = 1;
+				} else {
+					ctx.strokeStyle = MiniMapColors.not_visited_border;
+					ctx.fillStyle = MiniMapColors.not_visited_fill;
+					ctx.lineWidth = 1;
+				}
+
+				ctx.fillRect(30 * x + 4, 30 * y + 4, 26, 26);
+				ctx.strokeRect(30 * x + 4, 30 * y + 4, 26, 26);
 			}
 		}
-		ctx.stroke();
-		ctx.restore();
 	}
 }

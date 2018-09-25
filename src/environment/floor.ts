@@ -3,10 +3,7 @@ import { RoomMap } from "./rooms/room_map";
 import { Point } from "../point";
 import { FourFireRoom } from "./rooms/four_fire_room";
 import { Direction } from "../enum";
-import { EmptyGrassRoom } from "./rooms/empty_grass_room";
-import { gameState, canvas_H, canvas_W } from "../main";
-import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
-import { DeadEndRightRoom } from "./rooms/dead_end_right_room";
+import { gameState, canvas_H, canvas_W, renderer } from "../main";
 import { FloorMap } from "./floor_map";
 
 export class Floor {
@@ -21,6 +18,11 @@ export class Floor {
 		this.tile_map = tile_map;
 		this.music = music;
 		this.floor_map = new FloorMap();
+	}
+
+	public initialize(): void {
+		// Draw minimap
+		renderer.update_minimap(this.floor_map);
 	}
 
 	public on_collision_warp(door: Door) {
@@ -51,6 +53,10 @@ export class Floor {
 				break;
 		}
 
-		gameState.current_map = this.floor_map.floor_map[this.floor_map.current_position.x][this.floor_map.current_position.y];
+		gameState.current_map = this.floor_map.current_room;
+		gameState.current_map.has_been_visited = true;
+
+		// Re-draw minimap
+		renderer.update_minimap(this.floor_map);
 	}
 }

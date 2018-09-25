@@ -23,6 +23,18 @@ export abstract class RoomMap implements IDrawable {
 
 	public warps: Warp[];
 
+	private _has_been_visited: boolean = false;
+	public get has_been_visited(): boolean { return this._has_been_visited; }
+	public set has_been_visited(value: boolean) {
+		if (value == null) {
+			throw new Error("Property 'has_been_visited' can not be null");
+		}
+		if (value === false) {
+			throw new Error("Cannot un-visit a room");
+		}
+		this._has_been_visited = value;
+	}
+
 	constructor(raw_map: IRawMap, wall: RoomWalls) {
 		if (raw_map == null) {
 			throw new Error("parameter `raw_map` cannot be null");
