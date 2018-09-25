@@ -23,7 +23,7 @@ export class GameState {
 
 	constructor() {
 		this.current_floor = new Floor(1, "", "");
-		this.current_map = this.current_floor.floor_map[this.current_floor.current_position.x][this.current_floor.current_position.y];
+		this.current_map = this.current_floor.floor_map.floor_map[this.current_floor.floor_map.current_position.x][this.current_floor.floor_map.current_position.y];
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
@@ -101,6 +101,7 @@ export class GameState {
 
 		try {
 			this.current_map.draw(ctx);
+			this.current_floor.floor_map.draw(ctx);
 		} catch (err) {
 			// console.error(err);
 		}
