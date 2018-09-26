@@ -1,4 +1,4 @@
-import { canvas_W, canvas_H, ctx, renderer, minimap_ctx } from "./main";
+import { canvas_W, canvas_H, ctx, renderer, minimap_ctx, IMAGE_BANK } from "./main";
 import { TearBasic, Tear } from "./character/tear";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
@@ -11,6 +11,7 @@ import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
+import { ImageBank } from "./image_bank";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -22,19 +23,20 @@ export class GameState {
 	public tears: Tear[];
 
 	constructor() {
-		this.current_floor = new Floor(1, "", "");
-		this.current_floor.initialize();
-		this.current_map = this.current_floor.floor_map.current_room;
-		
-		this.direction_event = new DirectionEvent();
-		this.directions_keyDown = new Array<Direction>();
-		this.attack_direction_event = new AttackDirectionEvent();
-		this.tears = new Array<Tear>();
+		IMAGE_BANK.load_images().then(() => {
+			this.current_floor = new Floor(1, "", "");
+			this.current_floor.initialize();
+			this.current_map = this.current_floor.floor_map.current_room;
 
-		this.jays = new Jays();
-		document.onkeyup = event => this.key_up(event.key);
-		document.onkeydown = event => this.key_down(event.key);
+			this.direction_event = new DirectionEvent();
+			this.directions_keyDown = new Array<Direction>();
+			this.attack_direction_event = new AttackDirectionEvent();
+			this.tears = new Array<Tear>();
 
+			this.jays = new Jays();
+			document.onkeyup = event => this.key_up(event.key);
+			document.onkeydown = event => this.key_down(event.key);
+		});
 	}
 
 	public key_down(keyName: string): void {

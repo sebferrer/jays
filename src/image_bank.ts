@@ -17,7 +17,13 @@ export class ImageBank {
 		this.unload = 0;
 		this.loaded = 0;
 		this.nextLoad = 0;
-		this.list = ["assets/img/tiles.png", "assets/img/jays.png", "assets/img/tear.png", "assets/img/walls/floor_one.png"];
+		this.list = [
+			"assets/img/tiles.png",
+			"assets/img/jays.png",
+			"assets/img/tear.png",
+			"assets/img/walls/floor_one.png",
+			"assets/img/minimap_icons.png"
+		];
 	}
 
 	public preload(gameState: GameState): void {
@@ -66,5 +72,28 @@ export class ImageBank {
 			self.loaded++;
 			self.error++;
 		};
+	}
+
+	public load_images(): Promise<any> {
+		return Promise.all(this.list.map(path =>
+			new Promise((resolve, reject) => {
+				const image = new Image();
+				image.addEventListener("load", e => {
+					this.pic[path] = image;
+					const canvas = document.createElement("canvas");
+					canvas.height = image.height;
+					canvas.width = image.width;
+					const ctx = canvas.getContext("2d");
+					ctx.drawImage(image, 0, 0);
+
+					this.pic[path] = canvas;
+					this.loaded++;
+					return image;
+				});
+				image.addEventListener("error", e => reject(new Error(`Failed to load image '${path}'`)));
+				image.src = path;
+				return image;
+			})
+		));
 	}
 }

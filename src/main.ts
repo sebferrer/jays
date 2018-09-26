@@ -29,6 +29,5 @@ function main(): void {
 	Settings.init();
 
 	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
-	IMAGE_BANK.preload(gameState);
 	gameState.update();
 }
