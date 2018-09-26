@@ -6,6 +6,7 @@ import { FourFireRoom } from "./rooms/four_fire_room";
 import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
 import { EmptyGrassRoom } from "./rooms/empty_grass_room";
 import { DeadEndRightRoom } from "./rooms/dead_end_right_room";
+import { renderer } from "../main";
 
 enum MiniMapColors {
 	visited_border = "#aaaaaa",
@@ -18,9 +19,12 @@ enum MiniMapColors {
 	active_fill = "#ffffff",
 }
 
+const minimap_room_width = 26;
+const minimap_room_height = 26;
+const minimap_room_margin = 4;
+
 export class FloorMap implements IDrawable {
 	public maps_grid: Array<RoomMap[]>;
-
 
 	public get current_room(): RoomMap { return this.maps_grid[this.current_position.x][this.current_position.y]; }
 
@@ -50,7 +54,7 @@ export class FloorMap implements IDrawable {
 		this.maps_grid[1][1] = new WaterLeftRightRoom([Direction.DOWN]);
 	}
 
-	public draw(ctx: CanvasRenderingContext2D): void {
+	public draw(context: CanvasRenderingContext2D): void {
 
 		for (let x = 0; x < this.maps_grid.length; ++x) {
 			for (let y = 0; y < this.maps_grid[x].length; ++y) {
@@ -60,21 +64,26 @@ export class FloorMap implements IDrawable {
 				}
 
 				if (current === this.current_room) {
-					ctx.strokeStyle = MiniMapColors.active_border;
-					ctx.fillStyle = MiniMapColors.active_fill;
-					ctx.lineWidth = 2;
+					context.strokeStyle = MiniMapColors.active_border;
+					context.fillStyle = MiniMapColors.active_fill;
+					context.lineWidth = 2;
 				} else if (current.has_been_visited) {
-					ctx.strokeStyle = MiniMapColors.visited_border;
-					ctx.fillStyle = MiniMapColors.visited_fill;
-					ctx.lineWidth = 1;
+					context.strokeStyle = MiniMapColors.visited_border;
+					context.fillStyle = MiniMapColors.visited_fill;
+					context.lineWidth = 1;
 				} else {
-					ctx.strokeStyle = MiniMapColors.not_visited_border;
-					ctx.fillStyle = MiniMapColors.not_visited_fill;
-					ctx.lineWidth = 1;
+					context.strokeStyle = MiniMapColors.not_visited_border;
+					context.fillStyle = MiniMapColors.not_visited_fill;
+					context.lineWidth = 1;
 				}
 
-				ctx.fillRect(30 * x + 4, 30 * y + 4, 26, 26);
-				ctx.strokeRect(30 * x + 4, 30 * y + 4, 26, 26);
+				const destination = new Point(
+					(minimap_room_width + minimap_room_margin) * x + minimap_room_margin,
+					(minimap_room_width + minimap_room_margin) * y + minimap_room_margin,
+				);
+
+				renderer.fill_round_rect(context, destination.x, destination.y, minimap_room_width, minimap_room_height, 5);
+				renderer.stroke_round_rect(context, destination.x, destination.y, minimap_room_width, minimap_room_height, 3);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-import { ctx, canvas, canvas_W, canvas_H, minimap_canvas, minimap_ctx } from "./main";
+import { ctx, canvas, canvas_W, canvas_H, minimap_ctx } from "./main";
 import { IDrawable } from "./idrawable";
 
 export class Renderer {
@@ -33,8 +33,36 @@ export class Renderer {
 	}
 
 	public update_minimap(drawable: IDrawable): void {
-		minimap_ctx.clearRect(0, 0, 300, 480);
+		minimap_ctx.clearRect(0, 0, minimap_ctx.canvas.width, minimap_ctx.canvas.height);
 		drawable.draw(minimap_ctx);
+	}
+
+	/** Draws a rectangle with a border radius */
+	public stroke_round_rect(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, ratio: number): void {
+		this.make_round_rect_path(context, x, y, width, height, ratio);
+		context.stroke();
+	}
+
+	/** Draws a rectangle with a border radius */
+	public fill_round_rect(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, ratio: number): void {
+		this.make_round_rect_path(context, x, y, width, height, ratio);
+		context.fill();
+	}
+
+	private make_round_rect_path(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, ratio: number): void {
+		if (width < 2 * ratio) {
+			ratio = width / 2;
+		}
+		if (height < 2 * ratio) {
+			ratio = height / 2;
+		}
+		context.beginPath();
+		context.moveTo(x + ratio, y);
+		context.arcTo(x + width, y, x + width, y + height, ratio);
+		context.arcTo(x + width, y + height, x, y + height, ratio);
+		context.arcTo(x, y + height, x, y, ratio);
+		context.arcTo(x, y, x + width, y, ratio);
+		context.closePath();
 	}
 }
 
