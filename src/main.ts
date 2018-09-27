@@ -14,20 +14,17 @@ export const minimap_ctx = minimap_canvas.getContext("2d", { alpha: true });
 
 export const IMAGE_BANK = new ImageBank();
 export const renderer = new Renderer();
-export const gameState = new GameState();
+export let gameState: GameState;
 
 //TODO: add a localstorage service to retrieve the value the user wants to use
 export const key_mapper = new KeyMapper();
 
 window.onload = () => {
-	main();
+	IMAGE_BANK.load_images().then(() => {
+		gameState = new GameState();
+		renderer.scale(1);
+		Settings.init();
+		gameState.get_timer("tear").interval = gameState.jays.tear_delay;
+		gameState.update();
+	});
 };
-
-function main(): void {
-	renderer.scale(1);
-
-	Settings.init();
-
-	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
-	gameState.update();
-}

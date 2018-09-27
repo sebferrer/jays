@@ -33,7 +33,7 @@ export class SideWall extends WallElement {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 
-		const picture = IMAGE_BANK.pic[this.sprite.sprite_sheet_path];
+		const picture = IMAGE_BANK.pictures[this.sprite.sprite_sheet_path];
 
 		// Small variation of what base.draw() does: ignore the corner
 		if (this.width !== this.sprite.width) {

@@ -67,7 +67,7 @@ export abstract class WallElement implements IDrawable, IPositionable {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 
-		const picture = IMAGE_BANK.pic[this.sprite.sprite_sheet_path];
+		const picture = IMAGE_BANK.pictures[this.sprite.sprite_sheet_path];
 
 		// If the width/height of the element is different than the sprite's,
 		// it means the element is repeatable

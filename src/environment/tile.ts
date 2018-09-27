@@ -33,7 +33,7 @@ export class Tile implements IDrawable {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		//TODO: "assets/img/tiles.png" should be an attribute, so we can use whatever sprite sheet we want
-		ctx.drawImage(IMAGE_BANK.pic["assets/img/tiles.png"],
+		ctx.drawImage(IMAGE_BANK.pictures["assets/img/tiles.png"],
 			this.src.x * this.height, this.src.y * this.width,
 			this.width, this.height,
 			this.pos.x, this.pos.y,

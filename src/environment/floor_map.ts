@@ -91,17 +91,17 @@ export class FloorMap implements IDrawable {
 				renderer.fill_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
 				renderer.stroke_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
 
-				if (isIIConRoom(current)) {
-					const icon_room = current as IIConRoom;
-					context.drawImage(
-						IMAGE_BANK.pic[icon_room.icon.sprite_sheet_path],
-						icon_room.icon.top_left.x, icon_room.icon.top_left.y,
-						icon_room.icon.width, icon_room.icon.height,
-						config.sizes.room_width / 2 - icon_room.icon.width / 2,
-						config.sizes.room_height / 2 - icon_room.icon.width / 2,
-						icon_room.icon.width, icon_room.icon.height
-					);
-				}
+				// if (isIIConRoom(current)) {
+				// 	const icon_room = current as IIConRoom;
+				// 	context.drawImage(
+				// 		IMAGE_BANK.pic[icon_room.icon.sprite_sheet_path],
+				// 		icon_room.icon.top_left.x, icon_room.icon.top_left.y,
+				// 		icon_room.icon.width, icon_room.icon.height,
+				// 		config.sizes.room_width / 2 - icon_room.icon.width / 2,
+				// 		config.sizes.room_height / 2 - icon_room.icon.width / 2,
+				// 		icon_room.icon.width, icon_room.icon.height
+				// 	);
+				// }
 			}
 		}
 	}

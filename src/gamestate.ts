@@ -23,7 +23,7 @@ export class GameState {
 	public tears: Tear[];
 
 	constructor() {
-		IMAGE_BANK.load_images().then(() => {
+		// IMAGE_BANK.load_images().then(() => {
 			this.current_floor = new Floor(1, "", "");
 			this.current_floor.initialize();
 			this.current_map = this.current_floor.floor_map.current_room;
@@ -36,7 +36,7 @@ export class GameState {
 			this.jays = new Jays();
 			document.onkeyup = event => this.key_up(event.key);
 			document.onkeydown = event => this.key_down(event.key);
-		});
+		// });
 	}
 
 	public key_down(keyName: string): void {

@@ -31,7 +31,7 @@ export abstract class Tear extends Entity implements IDrawable {
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
-		ctx.drawImage(IMAGE_BANK.pic[this.sprite_filename],
+		ctx.drawImage(IMAGE_BANK.pictures[this.sprite_filename],
 			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
 			this.position.x, this.position.y, this.width, this.height);
 	}
@@ -46,7 +46,7 @@ export class TearBasic extends Tear {
 		this.position.y -= this.height / 2;
 		this.direction = direction;
 		this.sprite_filename = "assets/img/tear.png";
-		this.speed = 3;
+		this.speed = 6;
 	}
 
 	public on_collision_map(): void {

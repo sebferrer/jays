@@ -35,7 +35,7 @@ export class Jays extends Entity implements IDrawable {
 		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20),
 			Jays.body_width, Jays.body_height + Jays.head_height);
 		this.sprite_filename = "assets/img/jays.png";
-		this.speed = 2;
+		this.speed = 4;
 		this._tear_delay = 480;
 		this.range = 8;
 		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.position.x, this.position.y - 20), Jays.head_width, Jays.head_height);
@@ -89,12 +89,12 @@ export class Jays extends Entity implements IDrawable {
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		// Draw body
-		ctx.drawImage(IMAGE_BANK.pic[this.sprite_filename],
+		ctx.drawImage(IMAGE_BANK.pictures[this.sprite_filename],
 			this.current_sprite.src_x, this.current_sprite.src_y, this.current_sprite.src_width, this.current_sprite.src_height,
 			this.position.x, this.position.y + Jays.head_height, Jays.body_width, Jays.body_height);
 
 		// Draw head
-		ctx.drawImage(IMAGE_BANK.pic[this.sprite_filename],
+		ctx.drawImage(IMAGE_BANK.pictures[this.sprite_filename],
 			this.head.current_sprite.src_x, this.head.current_sprite.src_y, this.head.current_sprite.src_width, this.head.current_sprite.src_height,
 			this.position.x, this.position.y, Jays.head_width, Jays.head_height);
 	}
