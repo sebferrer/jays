@@ -22,7 +22,7 @@ export const key_mapper = new KeyMapper();
 window.onload = () => {
 	IMAGE_BANK.load_images().then(() => {
 		gameState = new GameState();
-		renderer.scale(1);
+		renderer.autoScale();
 		Settings.init();
 		gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 		gameState.update();

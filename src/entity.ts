@@ -54,7 +54,7 @@ export abstract class Entity implements IPositionable {
 		const collision_map = this.collision_map(direction, next_position);
 		if (collision_map.is_collision) {
 			if (collision_map.delta_x !== 0) { this.position.x += collision_map.delta_x; }
-			if (collision_map.delta_y !== 0) { this.position.y += collision_map.delta_y; }
+			if (collision_map.delta_y !== 0) { this.position.y += collision_map.delta_y - this.speed; }
 			this.on_collision_map();
 		} else {
 			this.position.x = next_position.x;
@@ -88,10 +88,10 @@ export abstract class Entity implements IPositionable {
 
 	private get_collision_delta(direction: Direction, position: Point) {
 		switch (direction) {
-			case Direction.UP: return new CollisionDelta(true, 0, this.position.y - position.y);
-			case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.position.y));
-			case Direction.LEFT: return new CollisionDelta(true, this.position.x - position.x, 0);
-			case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.position.x), 0);
+			case Direction.UP: return new CollisionDelta(true, 0, this.position.y - position.y - this.speed);
+			case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.position.y - this.speed));
+			case Direction.LEFT: return new CollisionDelta(true, this.position.x - position.x - this.speed, 0);
+			case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.position.x - this.speed), 0);
 		}
 	}
 

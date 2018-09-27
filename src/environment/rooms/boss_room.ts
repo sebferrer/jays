@@ -46,7 +46,9 @@ export class BossRoom extends RoomMap implements ICustomRoom {
 		const side_sprite = new WallSprite(new Point(60, 0), new Point(120, 60), "assets/img/walls/floor_one.png");
 		const open_door_sprite = new WallSprite(new Point(120, 0), new Point(180, 60), "assets/img/walls/floor_one.png");
 		const closed_door_sprite = new WallSprite(new Point(240, 0), new Point(300, 60), "assets/img/walls/floor_one.png");
-		const cracks = new WallSprite(new Point(180, 0), new Point(240, 60), "assets/img/walls/floor_one.png");
+		const leaves = new WallSprite(new Point(180, 0), new Point(240, 60), "assets/img/walls/floor_one.png");
+		const cracks = new WallSprite(new Point(300, 0), new Point(360, 60), "assets/img/walls/floor_one.png");
+
 
 		const side_walls = [
 			new SideWall(Direction.UP, side_sprite),
@@ -65,8 +67,9 @@ export class BossRoom extends RoomMap implements ICustomRoom {
 		const doors = door_placement.map(placement => new Door(placement, open_door_sprite, closed_door_sprite));
 
 		const custom_elements = [
-			new CustomWallElement(Direction.RIGHT, cracks, new Point(canvas_W - 60, 60 * 4)),
-			new CustomWallElement(Direction.RIGHT, cracks, new Point(canvas_W - 60, 60 * 6))
+			new CustomWallElement(Direction.RIGHT, leaves, new Point(canvas_W - 60, 60 * 4)),
+			new CustomWallElement(Direction.RIGHT, leaves, new Point(canvas_W - 60, 60 * 6)),
+			new CustomWallElement(Direction.LEFT, cracks, new Point(0, 60))
 		];
 
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
