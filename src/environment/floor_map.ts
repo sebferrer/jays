@@ -10,16 +10,17 @@ import { renderer, IMAGE_BANK } from "../main";
 import { IMiniMapColorConfig, IMiniMapConfiguration, IMiniMapSizeConfig } from "./iminimap_configuration";
 import { BossRoom } from "./rooms/boss_room";
 import { ICustomRoom, isCustomRoom } from "./iicon_room";
+import { TreasureRoom } from "./rooms/treasure_room";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapColorConfig>{
-		visited_border: "#aaaaaa",
-		visited_fill: "#ffffff55",
+		visited_border: "#000000aa",
+		visited_fill: "#ffffff99",
 
 		not_visited_border: "#aaaaaa",
-		not_visited_fill: "#000000",
+		not_visited_fill: "#00000099",
 
-		active_border: "#ffffffaa",
+		active_border: "cyan",
 		active_fill: "#ffffff"
 	},
 	sizes: <IMiniMapSizeConfig>{
@@ -56,12 +57,11 @@ export class FloorMap implements IDrawable {
 
 		this.maps_grid[3][2] = new WaterLeftRightRoom([Direction.UP]);
 		this.maps_grid[2][1] = new EmptyGrassRoom([Direction.RIGHT, Direction.UP, Direction.LEFT]);
-		this.maps_grid[2][0] = new DeadEndRightRoom([Direction.RIGHT]);
+		this.maps_grid[2][0] = new TreasureRoom([Direction.RIGHT]);
 		this.maps_grid[1][1] = new WaterLeftRightRoom([Direction.DOWN]);
 	}
 
 	public draw(context: CanvasRenderingContext2D, config: IMiniMapConfiguration = MINIMAP_CONFIG): void {
-
 		for (let x = 0; x < this.maps_grid.length; ++x) {
 			for (let y = 0; y < this.maps_grid[x].length; ++y) {
 				const room = this.maps_grid[y][x];
@@ -100,7 +100,7 @@ export class FloorMap implements IDrawable {
 		}
 
 		const destination = new Point(
-			(config.sizes.room_width + config.sizes.room_margin) * position.x + config.sizes.room_margin,
+			context.canvas.width - ((config.sizes.room_width + config.sizes.room_margin) * (this.max_floor_map_width - position.x) + config.sizes.room_margin),
 			(config.sizes.room_height + config.sizes.room_margin) * position.y + config.sizes.room_margin,
 		);
 
@@ -115,7 +115,7 @@ export class FloorMap implements IDrawable {
 		position: Point
 	) {
 		const destination = new Point(
-			(base_config.sizes.room_width + base_config.sizes.room_margin) * position.x + base_config.sizes.room_margin,
+			context.canvas.width - ((base_config.sizes.room_width + base_config.sizes.room_margin) * (this.max_floor_map_width - position.x) + base_config.sizes.room_margin),
 			(base_config.sizes.room_height + base_config.sizes.room_margin) * position.y + base_config.sizes.room_margin,
 		);
 
