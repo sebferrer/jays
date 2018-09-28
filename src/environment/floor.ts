@@ -22,7 +22,7 @@ export class Floor {
 
 	public initialize(): void {
 		// Draw minimap
-		this.floor_map.current_room.has_been_visited = true;
+		this.floor_map.next_room();
 		renderer.update_minimap(this.floor_map);
 	}
 
@@ -37,27 +37,26 @@ export class Floor {
 
 		switch (door.direction) {
 			case Direction.LEFT:
-				this.floor_map.current_position.y--;
 				gameState.jays.position = new Point(canvas_W - 60 - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
 				break;
 			case Direction.RIGHT:
-				this.floor_map.current_position.y++;
 				gameState.jays.position = new Point(60 + gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
 				break;
 			case Direction.UP:
-				this.floor_map.current_position.x--;
 				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), canvas_H - 60 - gameState.jays.height / 2);
 				break;
 			case Direction.DOWN:
-				this.floor_map.current_position.x++;
 				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), 60 + gameState.jays.height / 2);
 				break;
 		}
 
-		gameState.current_map = this.floor_map.current_room;
-		gameState.current_map.has_been_visited = true;
+		gameState.current_map = this.floor_map.next_room(door.direction);
 
 		// Re-draw minimap
 		renderer.update_minimap(this.floor_map);
+	}
+
+	private glimpse(): void {
+		const position = this.floor_map.current_position;
 	}
 }

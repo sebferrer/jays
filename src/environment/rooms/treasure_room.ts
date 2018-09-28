@@ -75,10 +75,9 @@ export class TreasureRoom extends RoomMap implements ICustomRoom {
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
 
 		this.color_configuration = <IMiniMapColorConfig>{
-			not_visited_border: "#feda00",
 			visited_border: "#feda00",
-			active_fill: "#feda00",
-			active_border: "#ffffff"
+			visited_fill: "#feda00aa",
+			glimpsed_border: "#feda00"
 		};
 
 		this.icon = new WallSprite(new Point(22, 0), new Point(44, 22), "assets/img/minimap_icons.png");

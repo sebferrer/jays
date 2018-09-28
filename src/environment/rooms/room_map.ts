@@ -35,6 +35,18 @@ export abstract class RoomMap implements IDrawable {
 		this._has_been_visited = value;
 	}
 
+	private _has_been_glimpsed: boolean = false;
+	public get has_been_glimpsed(): boolean { return this._has_been_glimpsed; }
+	public set has_been_glimpsed(value: boolean) {
+		if (value == null) {
+			throw new Error("Property 'has_been_glimpsed' can not be null");
+		}
+		if (value === false) {
+			throw new Error("Cannot un-glimpse a room");
+		}
+		this._has_been_glimpsed = value;
+	}
+
 	constructor(raw_map: IRawMap, wall: RoomWalls) {
 		if (raw_map == null) {
 			throw new Error("parameter `raw_map` cannot be null");

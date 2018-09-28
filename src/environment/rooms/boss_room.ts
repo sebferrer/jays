@@ -75,7 +75,9 @@ export class BossRoom extends RoomMap implements ICustomRoom {
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
 
 		this.color_configuration = <IMiniMapColorConfig>{
-
+			visited_border: "#ff0000",
+			visited_fill: "#ff0000aa",
+			glimpsed_border: "#ff0000"
 		};
 
 		this.icon = new WallSprite(new Point(0, 0), new Point(22, 22), "assets/img/minimap_icons.png");
