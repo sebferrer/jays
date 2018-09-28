@@ -86,6 +86,8 @@ export class FloorMap implements IDrawable {
 
 		this.maps_grid[2][2] = new FourFireRoom([Direction.LEFT, Direction.DOWN, Direction.RIGHT]);
 		this.maps_grid[2][3] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT]);
+		this.maps_grid[2][3].room_walls.doors.find(d => d.direction === Direction.RIGHT).is_open = false;
+
 		this.maps_grid[2][4] = new BossRoom([Direction.LEFT]);
 
 		this.maps_grid[3][2] = new WaterLeftRightRoom([Direction.UP, Direction.DOWN]);
@@ -93,6 +95,7 @@ export class FloorMap implements IDrawable {
 		this.maps_grid[2][1] = new EmptyGrassRoom([Direction.RIGHT, Direction.UP, Direction.LEFT]);
 		this.maps_grid[2][0] = new TreasureRoom([Direction.RIGHT]);
 		this.maps_grid[1][1] = new WaterLeftRightRoom([Direction.DOWN, Direction.UP]);
+		this.maps_grid[1][1].room_walls.doors.find(d => d.direction === Direction.UP).is_open = false;
 		this.maps_grid[0][1] = new TreasureRoom([Direction.DOWN]);
 	}
 
