@@ -32,9 +32,20 @@ body {
 }
 
 canvas {
-    background-color: white;       
     image-rendering: -moz-crisp-edges;    /* Firefox */
     image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
     image-rendering: pixelated;           /* Chrome */
     pointer-events: none;
+}
+
+#canvas {
+    background-color: white;       
+    z-index: 1;
+}
+
+#minimap-canvas {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
 }

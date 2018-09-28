@@ -1,6 +1,6 @@
-import { canvas_W, canvas_H, ctx, renderer } from "./main";
+import { canvas_W, canvas_H, ctx, renderer, minimap_ctx, IMAGE_BANK } from "./main";
 import { TearBasic, Tear } from "./character/tear";
-import { RoomMap } from "./environment/room_map";
+import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
@@ -12,6 +12,7 @@ import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
 import { Joystick, Circle } from "./joystick";
+import { ImageBank } from "./image_bank";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -25,8 +26,12 @@ export class GameState {
 	public touches: TouchList;
 	public timer_joysticks: Timer;
 
-	constructor(map: RoomMap) {
-		this.current_map = map;
+	constructor() {
+		// IMAGE_BANK.load_images().then(() => {
+		this.current_floor = new Floor(1, "", "");
+		this.current_floor.initialize();
+		this.current_map = this.current_floor.floor_map.current_room;
+
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
@@ -169,11 +174,7 @@ export class GameState {
 		this.jays.update();
 		this.tears_update();
 
-		try {
-			this.jays.draw(ctx);
-		} catch (err) {
-			// console.error(err);
-		}
+		this.jays.draw(ctx);
 
 		//this.joysticks_update();
 		this.touch_move();
@@ -195,10 +196,12 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				this.tears.push(new TearBasic(
-					new Point(this.jays.head.pos.x + this.jays.head.width / 2,
-						this.jays.head.pos.y + this.jays.head.height / 2),
-					this.attack_direction_event.directions[0]));
+				this.tears.push(
+					new TearBasic(
+						new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
+						this.attack_direction_event.directions[0]
+					)
+				);
 			}
 		} else {
 			timer_tear.reset();

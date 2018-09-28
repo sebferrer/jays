@@ -31,5 +31,10 @@ export class Point {
 		x += distance * Math.sin(angle);
 		y += distance * Math.cos(angle);
 		return new Point(x, y);
+
+	}
+	
+	public static copy(point: Point): Point {
+		return point == null ? new Point() : new Point(point.x, point.y);
 	}
 }

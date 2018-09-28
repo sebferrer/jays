@@ -2,8 +2,37 @@ import { Tile } from "./environment/tile";
 import { Entity } from "./entity";
 import { Point } from "./point";
 
+
+export class Rectangle {
+
+	public get width(): number { return this.bottom_right.x - this.top_left.x; }
+	public get height(): number { return this.bottom_right.y - this.top_left.y; }
+
+	public top_left: Point;
+	public bottom_right: Point;
+
+	constructor(top_left: Point, bottom_right: Point) {
+		this.top_left = Point.copy(top_left);
+		this.bottom_right = Point.copy(bottom_right);
+	}
+}
+
 export class Collision {
 	private constructor() { }
+
+	public static is_collision_rectangle(entity: Entity, object: Rectangle, next_position: Point = null): boolean {
+		if (object == null) {
+			return false;
+		}
+		if (next_position == null) {
+			next_position = entity.position;
+		}
+
+		return Collision.is_collision(
+			next_position.x, next_position.y, next_position.x + entity.width, next_position.y + entity.height,
+			object.top_left.x, object.top_left.y, object.bottom_right.x, object.bottom_right.y
+		);
+	}
 
 	public static is_collision(collisioner_x1: number, collisioner_y1: number, collisioner_x2: number, collisioner_y2: number,
 		collisionee_x1: number, collisionee_y1: number, collisionee_x2: number, collisionee_y2: number): boolean {
@@ -12,7 +41,7 @@ export class Collision {
 	}
 
 	public static is_collision_entity_tile(entity: Entity, tile: Tile): boolean {
-		return Collision.is_collision(entity.pos.x, entity.pos.y, entity.pos.x + entity.width, entity.pos.y + entity.height,
+		return Collision.is_collision(entity.position.x, entity.position.y, entity.position.x + entity.width, entity.position.y + entity.height,
 			tile.pos.x, tile.pos.y, tile.pos.x + tile.width, tile.pos.y + tile.height);
 	}
 

@@ -1,10 +1,8 @@
-import { Warp } from "../warp";
-import { IRawMap } from "./maps";
-import { Tile, TILE_TYPES, TILE_REF } from "./tile";
-import { Point } from "../point";
-import { IDrawable } from "../idrawable";
-import { bank } from "../main";
-import { RoomWalls } from "./room_walls";
+import { Warp } from "../../warp";
+import { Tile, TILE_TYPES, TILE_REF } from "../tile";
+import { IDrawable } from "../../idrawable";
+import { RoomWalls } from "../walls/room_walls";
+import { IRawMap } from "../irawmap";
 
 export abstract class RoomMap implements IDrawable {
 
@@ -24,6 +22,30 @@ export abstract class RoomMap implements IDrawable {
 	public get tile_width(): number { return this._tiles[0][0].width; }
 
 	public warps: Warp[];
+
+	private _has_been_visited: boolean = false;
+	public get has_been_visited(): boolean { return this._has_been_visited; }
+	public set has_been_visited(value: boolean) {
+		if (value == null) {
+			throw new Error("Property 'has_been_visited' can not be null");
+		}
+		if (value === false) {
+			throw new Error("Cannot un-visit a room");
+		}
+		this._has_been_visited = value;
+	}
+
+	private _has_been_glimpsed: boolean = false;
+	public get has_been_glimpsed(): boolean { return this._has_been_glimpsed; }
+	public set has_been_glimpsed(value: boolean) {
+		if (value == null) {
+			throw new Error("Property 'has_been_glimpsed' can not be null");
+		}
+		if (value === false) {
+			throw new Error("Cannot un-glimpse a room");
+		}
+		this._has_been_glimpsed = value;
+	}
 
 	constructor(raw_map: IRawMap, wall: RoomWalls) {
 		if (raw_map == null) {
@@ -49,8 +71,8 @@ export abstract class RoomMap implements IDrawable {
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
-			tile.pos.x = tile.coord_x * tile.width + room_walls.side_sprite.width;
-			tile.pos.y = tile.coord_y * tile.height + room_walls.side_sprite.height;
+			tile.pos.x = tile.coord_x * tile.width + room_walls.wall_width;
+			tile.pos.y = tile.coord_y * tile.height + room_walls.wall_height;
 			tile_coord_x++;
 
 			line.push(tile);
@@ -64,28 +86,14 @@ export abstract class RoomMap implements IDrawable {
 		return result;
 	}
 
-	/**
-	 * TODO fix this shit
-	 * Remove warpmap.ts & warpdesc.ts if necessary
-	 */
-	public get_warp(): any {
-		return null;
-		// I wanted to return a WarpMap using itself a WarpDesc...
-		// return WARPS.find(warp => warp.map_id === this.mapId) || null;
-	}
-
 	public static getTileById(id: number): Tile {
 		return TILE_TYPES[id] || TILE_REF;
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
-
 		// Draw room walls
 		this._room_walls.draw(ctx);
-
 		// Draw each tile
-		this.tiles.forEach(line =>
-			line.forEach(tile => tile.draw(ctx))
-		);
+		this.tiles.forEach(tile => tile.forEach(tile => tile.draw(ctx)));
 	}
 }
