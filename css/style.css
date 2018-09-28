@@ -49,3 +49,13 @@ canvas {
     right: 0;
     z-index: 2;
 }
+
+body {
+	margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.no-pointer-events {
+    pointer-events: none;
+}

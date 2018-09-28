@@ -5,13 +5,13 @@ import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { Direction } from "./enum";
+import { Direction, EventType } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
-import { Joystick, Circle } from "./joystick";
+import { Joystick } from "./joystick";
 import { ImageBank } from "./image_bank";
 
 export class GameState {
@@ -24,7 +24,8 @@ export class GameState {
 	public tears: Tear[];
 	public joysticks: Joystick[];
 	public touches: TouchList;
-	public timer_joysticks: Timer;
+	public mouse_pos: Point;
+	public event_type: EventType;
 
 	constructor() {
 		// IMAGE_BANK.load_images().then(() => {
@@ -36,38 +37,31 @@ export class GameState {
 		this.directions_keyDown = new Array<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.tears = new Array<Tear>();
+
 		this.joysticks = new Array<Joystick>();
-		this.timer_joysticks = this.get_timer("joysticks");
+		this.mouse_pos = new Point();
+		this.event_type = EventType.TOUCH;
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
 
-		/*document.onmousedown = event => this.touch_start(event.offsetX, event.offsetY);
-		document.onmouseup = event => this.touch_end();
-		document.onmousemove = event => this.touch_move(event.offsetX, event.offsetY);*/
-		
-		/*
-		document.ontouchstart = event => this.touch_start(event.touches);
-		document.ontouchend = event => this.touch_end();
-		document.ontouchmove = event => this.touch_move(event.touches);
-		*/
+		document.onmousedown = event => this.mouse_down(event.offsetX, event.offsetY);
+		document.onmouseup = event => this.mouse_up();
+		document.onmousemove = event => { this.mouse_pos.x = event.offsetX; this.mouse_pos.y = event.offsetY; };
 
 		document.ontouchstart = event => this.touch_start(event.touches);
 		document.ontouchend = event => this.touch_end();
-		document.ontouchmove = event => { if (this.timer_joysticks.next_tick()) { this.touches = event.touches; } };
+		document.ontouchmove = event => { this.touches = event.touches; };
 	}
 
 	public touch_start(touches): void {
-		this.get_timer("joysticks").enable();
 		this.touches = touches;
 		this.joysticks.push(new Joystick(	new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 40,
 											new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 20));
-		//console.log("start");
 	}
 
 	public touch_end(): void {
-		this.get_timer("joysticks").disable();
 		if (this.joysticks != null) {
 			this.joysticks.forEach(joystick => {
 				joystick.div_zone.remove();
@@ -77,22 +71,34 @@ export class GameState {
 		} else {
 			this.joysticks = new Array<Joystick>();
 		}
-		//console.log("end");
 	}
 
 	public touch_move(): void {
-		if (this.timer_joysticks.next_tick()) {
-			if (this.joysticks.length > 0) {
-				// TODO: setters
-				/*this.joysticks.forEach(joystick => {
-					joystick.move(x, y);
-					console.log("x: "+joystick.coeff_x+" | y: "+joystick.coeff_y);
-				});*/
-				for(let i = 0; i < this.joysticks.length; i++) {
-					this.joysticks[i].move(this.touches[i].pageX, this.touches[i].pageY);
-					//console.log("x: "+this.joysticks[i].coeff_x+" | y: "+this.joysticks[i].coeff_y);
-				}
+		if (this.joysticks.length > 0) {
+			for(let i = 0; i < this.joysticks.length; i++) {
+				this.joysticks[i].move(this.touches[i].pageX, this.touches[i].pageY);
 			}
+		}
+	}
+
+	public mouse_down(x: number, y: number): void {
+		this.joysticks.push(new Joystick(	new Point(x, y), 40,
+											new Point(x, y), 20));
+	}
+
+	public mouse_up(): void {
+		if (this.joysticks != null) {
+			this.joysticks[0].div_zone.remove();
+			this.joysticks[0].div_controller.remove();
+			this.joysticks.splice(0, this.joysticks.length);
+		} else {
+			this.joysticks = new Array<Joystick>();
+		}
+	}
+
+	public mouse_move(): void {
+		if (this.joysticks.length > 0) {
+			this.joysticks[0].move(this.mouse_pos.x, this.mouse_pos.y);
 		}
 	}
 
@@ -176,8 +182,14 @@ export class GameState {
 
 		this.jays.draw(ctx);
 
-		//this.joysticks_update();
-		this.touch_move();
+		switch(this.event_type) {
+			case EventType.TOUCH:
+				this.touch_move();
+				break;
+			case EventType.MOUSE:
+				this.mouse_move();
+				break;
+		}
 
 		ctx.restore();
 
