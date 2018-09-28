@@ -1,7 +1,7 @@
 export class ImageBank {
 
 	public buffer: any;
-	public pictures: { [key: string]: HTMLCanvasElement };
+	public pictures: { [key: string]: HTMLImageElement };
 	public unload: number;
 
 	private _loaded: boolean;
@@ -30,13 +30,7 @@ export class ImageBank {
 			new Promise<HTMLImageElement>((resolve, reject) => {
 				const image = new Image();
 				image.addEventListener("load", e => {
-					const canvas = document.createElement("canvas");
-					canvas.height = image.height;
-					canvas.width = image.width;
-					const context = canvas.getContext("2d");
-					context.drawImage(image, 0, 0);
-
-					this.pictures[path] = canvas;
+					this.pictures[path] = image;
 					resolve();
 				});
 				image.addEventListener("error", e => reject(new Error(`Failed to load image '${path}'`)));

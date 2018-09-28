@@ -15,12 +15,12 @@ import { TreasureRoom } from "./rooms/treasure_room";
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapColorConfig>{
 		visited_border: "#000000aa",
-		visited_fill: "#ffffff99",
+		visited_fill: "#ffffff77",
 
 		not_visited_border: "#aaaaaa",
 		not_visited_fill: "#00000099",
 
-		active_border: "cyan",
+		active_border: "#ffffff",
 		active_fill: "#ffffff"
 	},
 	sizes: <IMiniMapSizeConfig>{
@@ -88,7 +88,7 @@ export class FloorMap implements IDrawable {
 		if (room === this.current_room) {
 			context.strokeStyle = config.colors.active_border;
 			context.fillStyle = config.colors.active_fill;
-			context.lineWidth = 2;
+			context.lineWidth = 8;
 		} else if (room.has_been_visited) {
 			context.strokeStyle = config.colors.visited_border;
 			context.fillStyle = config.colors.visited_fill;

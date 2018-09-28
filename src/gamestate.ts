@@ -24,18 +24,18 @@ export class GameState {
 
 	constructor() {
 		// IMAGE_BANK.load_images().then(() => {
-			this.current_floor = new Floor(1, "", "");
-			this.current_floor.initialize();
-			this.current_map = this.current_floor.floor_map.current_room;
+		this.current_floor = new Floor(1, "", "");
+		this.current_floor.initialize();
+		this.current_map = this.current_floor.floor_map.current_room;
 
-			this.direction_event = new DirectionEvent();
-			this.directions_keyDown = new Array<Direction>();
-			this.attack_direction_event = new AttackDirectionEvent();
-			this.tears = new Array<Tear>();
+		this.direction_event = new DirectionEvent();
+		this.directions_keyDown = new Array<Direction>();
+		this.attack_direction_event = new AttackDirectionEvent();
+		this.tears = new Array<Tear>();
 
-			this.jays = new Jays();
-			document.onkeyup = event => this.key_up(event.key);
-			document.onkeydown = event => this.key_down(event.key);
+		this.jays = new Jays();
+		document.onkeyup = event => this.key_up(event.key);
+		document.onkeydown = event => this.key_down(event.key);
 		// });
 	}
 
@@ -117,11 +117,7 @@ export class GameState {
 		this.jays.update();
 		this.tears_update();
 
-		try {
-			this.jays.draw(ctx);
-		} catch (err) {
-			// console.error(err);
-		}
+		this.jays.draw(ctx);
 
 		ctx.restore();
 
