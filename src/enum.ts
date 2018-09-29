@@ -27,11 +27,6 @@ export enum KeyboardType {
 	QWERTY = "QWERTY"
 }
 
-export enum EventType {
-	TOUCH = "TOUCH",
-	MOUSE = "MOUSE"
-}
-
 /**
  * Not sure to keep these mappings here
  * Maybe Direction should be a class with getters instead of these shitty Maps...

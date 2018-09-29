@@ -5,7 +5,7 @@ import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { Direction, EventType } from "./enum";
+import { Direction } from "./enum";
 import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
@@ -25,7 +25,6 @@ export class GameState {
 	public joysticks: Joystick[];
 	public touches: TouchList;
 	public mouse_pos: Point;
-	public event_type: EventType;
 
 	constructor() {
 		// IMAGE_BANK.load_images().then(() => {
@@ -40,15 +39,10 @@ export class GameState {
 
 		this.joysticks = new Array<Joystick>();
 		this.mouse_pos = new Point();
-		this.event_type = EventType.TOUCH;
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
-
-		document.onmousedown = event => this.mouse_down(event.offsetX, event.offsetY);
-		document.onmouseup = event => this.mouse_up();
-		document.onmousemove = event => { this.mouse_pos.x = event.offsetX; this.mouse_pos.y = event.offsetY; };
 
 		document.ontouchstart = event => this.touch_start(event.touches);
 		document.ontouchend = event => this.touch_end();
@@ -182,14 +176,7 @@ export class GameState {
 
 		this.jays.draw(ctx);
 
-		switch(this.event_type) {
-			case EventType.TOUCH:
-				this.touch_move();
-				break;
-			case EventType.MOUSE:
-				this.mouse_move();
-				break;
-		}
+		this.touch_move();
 
 		ctx.restore();
 
