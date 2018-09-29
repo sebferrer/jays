@@ -1,4 +1,4 @@
-import { canvas_W, canvas_H, ctx, renderer, minimap_ctx, IMAGE_BANK } from "./main";
+import { canvas_W, canvas_H, ctx, renderer, minimap_ctx, IMAGE_BANK, window_W } from "./main";
 import { TearBasic, Tear } from "./character/tear";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
@@ -24,7 +24,8 @@ export class GameState {
 	public tears: Tear[];
 	public joysticks: Joystick[];
 	public touches: TouchList;
-	public mouse_pos: Point;
+	public last_touch_left: any;
+	public last_touch_right: any;
 
 	constructor() {
 		// IMAGE_BANK.load_images().then(() => {
@@ -38,7 +39,6 @@ export class GameState {
 		this.tears = new Array<Tear>();
 
 		this.joysticks = new Array<Joystick>();
-		this.mouse_pos = new Point();
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
@@ -51,10 +51,25 @@ export class GameState {
 
 	public touch_start(touches): void {
 		this.touches = touches;
-		this.joysticks.push(new Joystick(	new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 40,
-											new Point(touches[touches.length-1].pageX, touches[touches.length-1].pageY), 20));
+		const touch_x = touches[touches.length-1].pageX;
+		const touch_y = touches[touches.length-1].pageY;
+		if(touch_x < (window_W/2)) {
+			if(!this.joysticks.find(joystick => joystick.id === "LEFT")) {
+				this.joysticks.push(new Joystick("LEFT", new Point(touch_x, touch_y), 40,
+									new Point(touch_x, touch_y), 20));
+			}
+		}
+		else {
+			if(!this.joysticks.find(joystick => joystick.id === "RIGHT")) {
+				this.joysticks.push(new Joystick("RIGHT", new Point(touch_x, touch_y), 40,
+									new Point(touch_x, touch_y), 20));
+			}
+		}
 	}
 
+	/**
+	 * TODO find a way to figure out which joystick has been ended
+	 */
 	public touch_end(): void {
 		if (this.joysticks != null) {
 			this.joysticks.forEach(joystick => {
@@ -67,32 +82,61 @@ export class GameState {
 		}
 	}
 
+	// This is ugly and VERY temporary.
 	public touch_move(): void {
 		if (this.joysticks.length > 0) {
 			for(let i = 0; i < this.joysticks.length; i++) {
-				this.joysticks[i].move(this.touches[i].pageX, this.touches[i].pageY);
+				const joystick = this.joysticks[i];
+				joystick.move(this.touches[i].pageX, this.touches[i].pageY);
+				switch (joystick.id) {
+					case "LEFT":
+						this.last_touch_left = this.touches[i];
+						if(joystick.coeff_x < -0.5) {
+							this.key_down("q");
+						}
+						else if(joystick.coeff_x > 0.5) {
+							this.key_down("d");
+						}
+						else {
+							this.key_up("q");
+							this.key_up("d");
+						}
+						if(joystick.coeff_y < -0.5) {
+							this.key_down("s");
+						}
+						else if(joystick.coeff_y > 0.5) {
+							this.key_down("z");
+						}
+						else {
+							this.key_up("s");
+							this.key_up("z");
+						}
+						break;
+					case "RIGHT":
+						this.last_touch_right = this.touches[i];
+						if(joystick.coeff_x < -0.5) {
+							this.key_down("ArrowLeft");
+						}
+						else if(joystick.coeff_x > 0.5) {
+							this.key_down("ArrowRight");
+						}
+						else {
+							this.key_up("ArrowLeft");
+							this.key_up("ArrowRight");
+						}
+						if(joystick.coeff_y < -0.5) {
+							this.key_down("ArrowDown");
+						}
+						else if(joystick.coeff_y > 0.5) {
+							this.key_down("ArrowUp");
+						}
+						else {
+							this.key_up("ArrowDown");
+							this.key_up("ArrowUp");
+						}
+						break;
+				}
 			}
-		}
-	}
-
-	public mouse_down(x: number, y: number): void {
-		this.joysticks.push(new Joystick(	new Point(x, y), 40,
-											new Point(x, y), 20));
-	}
-
-	public mouse_up(): void {
-		if (this.joysticks != null) {
-			this.joysticks[0].div_zone.remove();
-			this.joysticks[0].div_controller.remove();
-			this.joysticks.splice(0, this.joysticks.length);
-		} else {
-			this.joysticks = new Array<Joystick>();
-		}
-	}
-
-	public mouse_move(): void {
-		if (this.joysticks.length > 0) {
-			this.joysticks[0].move(this.mouse_pos.x, this.mouse_pos.y);
 		}
 	}
 
@@ -183,12 +227,6 @@ export class GameState {
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
 	}
-/*
-	public joysticks_update() {
-		this.joysticks.forEach(joystick => {
-			joystick.update();
-		});
-	}*/
 
 	public tears_update(): void {
 		const timer_tear = this.get_timer("tear");

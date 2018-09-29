@@ -4,6 +4,9 @@ import { GameState } from "./gamestate";
 import { Settings } from "./settings/settings";
 import { KeyMapper } from "./settings/keymapper";
 
+export const window_W = window.innerWidth;
+export const window_H = window.innerHeight;
+
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 export const canvas_W = 660;
 export const canvas_H = 480;

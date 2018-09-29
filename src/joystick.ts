@@ -3,6 +3,7 @@ import { Circle } from "./circle";
 import { Rect } from "./rect";
 
 export class Joystick {
+	public id: string;
 	public zone: JoystickCircle;
 	public controller: JoystickCircle;
 	public coeff_x: number;
@@ -13,7 +14,8 @@ export class Joystick {
 	public rect_controller: Rect;
 	public next_circle: Circle;
 
-	constructor(zonePos: Point, zoneRadius: number, controllerPos: Point, controllerRadius: number) {
+	constructor(id: string, zonePos: Point, zoneRadius: number, controllerPos: Point, controllerRadius: number) {
+		this.id = id;
 		this.zone = new JoystickCircle(zonePos, zoneRadius, "rgba(18, 65, 145, 0.5)");
 		this.controller = new JoystickCircle(controllerPos, controllerRadius, "rgba(18, 65, 145, 0.8)");
 		this.rect_zone = new Rect();
