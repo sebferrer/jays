@@ -161,10 +161,9 @@ export class GameState {
 	}
 
 	public key_down(keyName: string): void {
-
 		const direction = key_mapper.current_keyboard.get(keyName);
 		if (direction != null) {
-			if (ArrayUtil.remove_from_array(this.directions_keyDown, direction)) {
+			if (ArrayUtil.add_first_no_duplicate(this.directions_keyDown, direction)) {
 				this.get_timer("jays_sprites").restart();
 			}
 			this.direction_event.move_up = direction === Direction.UP || this.direction_event.move_up;
