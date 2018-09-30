@@ -13,10 +13,10 @@ export class AttackDirectionEvent {
 	}
 
 	public add(direction: Direction) {
-		ArrayUtil.addFirstNoDuplicate(this.directions, direction);
+		ArrayUtil.add_first_no_duplicate(this.directions, direction);
 	}
 
 	public remove(direction: Direction) {
-		ArrayUtil.removeFromArray(this.directions, direction);
+		ArrayUtil.remove_from_array(this.directions, direction);
 	}
 }

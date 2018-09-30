@@ -6,7 +6,7 @@ import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction } from "./enum";
-import { ArrayUtil } from "./util";
+import { ArrayUtil, MathUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
 import { Point } from "./point";
@@ -24,8 +24,6 @@ export class GameState {
 	public tears: Tear[];
 	public joysticks: Joystick[];
 	public touches: TouchList;
-	public last_touch_left: any;
-	public last_touch_right: any;
 
 	constructor() {
 		// IMAGE_BANK.load_images().then(() => {
@@ -45,66 +43,89 @@ export class GameState {
 		document.onkeydown = event => this.key_down(event.key);
 
 		document.ontouchstart = event => this.touch_start(event.touches);
-		document.ontouchend = event => this.touch_end();
+		document.ontouchend = event => this.touch_end(event.touches);
 		document.ontouchmove = event => { this.touches = event.touches; };
 	}
 
 	public touch_start(touches): void {
+		const touches_array = ArrayUtil.touchlist_to_id_array(this.touches);
+		const new_touches_array = ArrayUtil.touchlist_to_id_array(touches);
+		const new_touch = ArrayUtil.get_touch_by_identifier(touches, ArrayUtil.diff(new_touches_array, touches_array)[0]);
+		
 		this.touches = touches;
-		const touch_x = touches[touches.length-1].pageX;
-		const touch_y = touches[touches.length-1].pageY;
-		if(touch_x < (window_W/2)) {
-			if(!this.joysticks.find(joystick => joystick.id === "LEFT")) {
+		const touch_x = new_touch.pageX;
+		const touch_y = new_touch.pageY;
+		if (touch_x < (window_W / 2)) {
+			if (!this.joysticks.find(joystick => joystick.id === "LEFT")) {
 				this.joysticks.push(new Joystick("LEFT", new Point(touch_x, touch_y), 40,
-									new Point(touch_x, touch_y), 20));
+					new Point(touch_x, touch_y), 20, new_touch.identifier));
 			}
 		}
 		else {
-			if(!this.joysticks.find(joystick => joystick.id === "RIGHT")) {
+			if (!this.joysticks.find(joystick => joystick.id === "RIGHT")) {
 				this.joysticks.push(new Joystick("RIGHT", new Point(touch_x, touch_y), 40,
-									new Point(touch_x, touch_y), 20));
+					new Point(touch_x, touch_y), 20, new_touch.identifier));
 			}
 		}
 	}
 
-	/**
-	 * TODO find a way to figure out which joystick has been ended
-	 */
-	public touch_end(): void {
-		if (this.joysticks != null) {
-			this.joysticks.forEach(joystick => {
-				joystick.div_zone.remove();
-				joystick.div_controller.remove();
-			});
-			this.joysticks.splice(0, this.joysticks.length);
-		} else {
-			this.joysticks = new Array<Joystick>();
-		}
+	public touch_end(touches): void {
+		this.touches = touches;
+
+		const joysticks_to_remove = new Array<Joystick>();
+		const touches_array = ArrayUtil.touchlist_to_array(touches);
+		this.joysticks.forEach(joystick => {
+			if (!touches_array.find(touch => MathUtil.approx_eq(touch.pageX, joystick.center.x + joystick.force.x, 100) &&
+					MathUtil.approx_eq(touch.pageY, joystick.center.y + joystick.force.y, 100))) {
+				joysticks_to_remove.push(joystick);
+			}
+		});
+
+		joysticks_to_remove.forEach(joystick => {
+			joystick.div_zone.remove();
+			joystick.div_controller.remove();
+			ArrayUtil.remove_from_array(this.joysticks, joystick);
+			switch (joystick.id) {
+				case "LEFT":
+					// Ugly 
+					this.key_up("z");
+					this.key_up("q");
+					this.key_up("s");
+					this.key_up("d");
+					break;
+				case "RIGHT":
+					this.key_up("ArrowUp");
+					this.key_up("ArrowLeft");
+					this.key_up("ArrowDown");
+					this.key_up("ArrowRight");
+					break;
+			}
+		});
 	}
 
 	// This is ugly and VERY temporary.
 	public touch_move(): void {
 		if (this.joysticks.length > 0) {
-			for(let i = 0; i < this.joysticks.length; i++) {
+			for (let i = 0; i < this.joysticks.length; i++) {
 				const joystick = this.joysticks[i];
-				joystick.move(this.touches[i].pageX, this.touches[i].pageY);
+				const touch = ArrayUtil.get_touch_by_identifier(this.touches, joystick.touch_identifier);
+				joystick.move(touch.pageX, touch.pageY);
 				switch (joystick.id) {
 					case "LEFT":
-						this.last_touch_left = this.touches[i];
-						if(joystick.coeff_x < -0.5) {
+						if (joystick.coeff_x < -0.5) {
 							this.key_down("q");
 						}
-						else if(joystick.coeff_x > 0.5) {
+						else if (joystick.coeff_x > 0.5) {
 							this.key_down("d");
 						}
 						else {
 							this.key_up("q");
 							this.key_up("d");
 						}
-						if(joystick.coeff_y < -0.5) {
+						if (joystick.coeff_y < -0.5) {
 							this.key_down("s");
 						}
-						else if(joystick.coeff_y > 0.5) {
+						else if (joystick.coeff_y > 0.5) {
 							this.key_down("z");
 						}
 						else {
@@ -113,21 +134,20 @@ export class GameState {
 						}
 						break;
 					case "RIGHT":
-						this.last_touch_right = this.touches[i];
-						if(joystick.coeff_x < -0.5) {
+						if (joystick.coeff_x < -0.5) {
 							this.key_down("ArrowLeft");
 						}
-						else if(joystick.coeff_x > 0.5) {
+						else if (joystick.coeff_x > 0.5) {
 							this.key_down("ArrowRight");
 						}
 						else {
 							this.key_up("ArrowLeft");
 							this.key_up("ArrowRight");
 						}
-						if(joystick.coeff_y < -0.5) {
+						if (joystick.coeff_y < -0.5) {
 							this.key_down("ArrowDown");
 						}
-						else if(joystick.coeff_y > 0.5) {
+						else if (joystick.coeff_y > 0.5) {
 							this.key_down("ArrowUp");
 						}
 						else {
@@ -144,7 +164,7 @@ export class GameState {
 
 		const direction = key_mapper.current_keyboard.get(keyName);
 		if (direction != null) {
-			if (ArrayUtil.addFirstNoDuplicate(this.directions_keyDown, direction)) {
+			if (ArrayUtil.remove_from_array(this.directions_keyDown, direction)) {
 				this.get_timer("jays_sprites").restart();
 			}
 			this.direction_event.move_up = direction === Direction.UP || this.direction_event.move_up;
@@ -193,7 +213,7 @@ export class GameState {
 		const direction = key_mapper.current_keyboard.get(keyName);
 
 		if (direction != null) {
-			ArrayUtil.removeFromArray(this.directions_keyDown, direction);
+			ArrayUtil.remove_from_array(this.directions_keyDown, direction);
 			this.direction_event.setDirection(direction, false);
 			this.jays.direction_key_up(direction);
 		}

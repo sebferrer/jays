@@ -27,7 +27,7 @@ export abstract class Tear extends Entity implements IDrawable {
 	}
 
 	public on_out_of_range() {
-		ArrayUtil.removeFromArray(gameState.tears, this);
+		ArrayUtil.remove_from_array(gameState.tears, this);
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
@@ -50,6 +50,6 @@ export class TearBasic extends Tear {
 	}
 
 	public on_collision_map(): void {
-		ArrayUtil.removeFromArray(gameState.tears, this);
+		ArrayUtil.remove_from_array(gameState.tears, this);
 	}
 }
