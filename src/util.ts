@@ -1,3 +1,5 @@
+import { Joystick } from "./joystick";
+
 export class ArrayUtil {
 	/**
 	 * TODO: I'd like to type array as Array<any>, but I get the following error:

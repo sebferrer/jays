@@ -26,7 +26,6 @@ export class GameState {
 	public touches: TouchList;
 
 	constructor() {
-		// IMAGE_BANK.load_images().then(() => {
 		this.current_floor = new Floor(1, "", "");
 		this.current_floor.initialize();
 		this.current_map = this.current_floor.floor_map.current_room;
@@ -70,16 +69,20 @@ export class GameState {
 	}
 
 	public touch_end(touches): void {
-		this.touches = touches;
+		const touches_array = ArrayUtil.touchlist_to_id_array(this.touches);
+		const new_touches_array = ArrayUtil.touchlist_to_id_array(touches);
+		const touches_removed = ArrayUtil.diff(touches_array, new_touches_array);
 
 		const joysticks_to_remove = new Array<Joystick>();
-		const touches_array = ArrayUtil.touchlist_to_array(touches);
-		this.joysticks.forEach(joystick => {
-			if (!touches_array.find(touch => MathUtil.approx_eq(touch.pageX, joystick.center.x + joystick.force.x, 100) &&
-					MathUtil.approx_eq(touch.pageY, joystick.center.y + joystick.force.y, 100))) {
-				joysticks_to_remove.push(joystick);
+
+		touches_removed.forEach(touch_identifier => {
+			const joystick_to_remove = this.joysticks.find(joystick => joystick.touch_identifier === touch_identifier);
+			if(joystick_to_remove != null) {
+				joysticks_to_remove.push(joystick_to_remove);
 			}
 		});
+
+		this.touches = touches;
 
 		joysticks_to_remove.forEach(joystick => {
 			joystick.div_zone.remove();
@@ -109,52 +112,62 @@ export class GameState {
 			for (let i = 0; i < this.joysticks.length; i++) {
 				const joystick = this.joysticks[i];
 				const touch = ArrayUtil.get_touch_by_identifier(this.touches, joystick.touch_identifier);
-				joystick.move(touch.pageX, touch.pageY);
-				switch (joystick.id) {
-					case "LEFT":
-						if (joystick.coeff_x < -0.5) {
-							this.key_down("q");
-						}
-						else if (joystick.coeff_x > 0.5) {
-							this.key_down("d");
-						}
-						else {
-							this.key_up("q");
-							this.key_up("d");
-						}
-						if (joystick.coeff_y < -0.5) {
-							this.key_down("s");
-						}
-						else if (joystick.coeff_y > 0.5) {
-							this.key_down("z");
-						}
-						else {
-							this.key_up("s");
-							this.key_up("z");
-						}
-						break;
-					case "RIGHT":
-						if (joystick.coeff_x < -0.5) {
-							this.key_down("ArrowLeft");
-						}
-						else if (joystick.coeff_x > 0.5) {
-							this.key_down("ArrowRight");
-						}
-						else {
-							this.key_up("ArrowLeft");
-							this.key_up("ArrowRight");
-						}
-						if (joystick.coeff_y < -0.5) {
-							this.key_down("ArrowDown");
-						}
-						else if (joystick.coeff_y > 0.5) {
-							this.key_down("ArrowUp");
-						}
-						else {
-							this.key_up("ArrowDown");
-							this.key_up("ArrowUp");
-						}
-						break;
+				if(touch != null) {
+					joystick.move(touch.pageX, touch.pageY);
+					switch (joystick.id) {
+						case "LEFT":
+							if (joystick.coeff_x < -0.5) {
+								this.key_down("q");
+								this.key_up("d");
+							}
+							else if (joystick.coeff_x > 0.5) {
+								this.key_down("d");
+								this.key_up("q");
+							}
+							else {
+								this.key_up("q");
+								this.key_up("d");
+							}
+							if (joystick.coeff_y < -0.5) {
+								this.key_down("s");
+								this.key_up("z");
+							}
+							else if (joystick.coeff_y > 0.5) {
+								this.key_down("z");
+								this.key_up("s");
+							}
+							else {
+								this.key_up("s");
+								this.key_up("z");
+							}
+							break;
+						case "RIGHT":
+							if (joystick.coeff_x < -0.5) {
+								this.key_down("ArrowLeft");
+								this.key_up("ArrowRight");
+							}
+							else if (joystick.coeff_x > 0.5) {
+								this.key_down("ArrowRight");
+								this.key_up("ArrowLeft");
+							}
+							else {
+								this.key_up("ArrowLeft");
+								this.key_up("ArrowRight");
+							}
+							if (joystick.coeff_y < -0.5) {
+								this.key_down("ArrowDown");
+								this.key_up("ArrowUp");
+							}
+							else if (joystick.coeff_y > 0.5) {
+								this.key_down("ArrowUp");
+								this.key_up("ArrowDown");
+							}
+							else {
+								this.key_up("ArrowDown");
+								this.key_up("ArrowUp");
+							}
+							break;
+					}
 				}
 			}
 		}
