@@ -4,8 +4,9 @@ import { WarpInfo } from "./../warp_info";
 import { Point } from "./../point";
 import { IDrawable } from "./../idrawable";
 import { IMAGE_BANK } from "../main";
+import { IPositionable, PositionAccessor } from "./positions_accessor";
 
-export class Tile implements IDrawable {
+export class Tile implements IDrawable, IPositionable {
 
 	public width: number;
 	public height: number;
@@ -14,11 +15,14 @@ export class Tile implements IDrawable {
 	public src: Point;
 	public coord_x: number;
 	public coord_y: number;
-	public pos: Point;
+	public position: Point;
 	public has_collision: boolean;
 	public warp_info: WarpInfo;
 	public type: TileType;
 	public anim: number[]; // IDs of the tiles dedicated to animation
+
+	private _positions_accessor: PositionAccessor;
+	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
 
 	constructor(id: number, desc: string, src: Point, has_collision: boolean) {
 		this.width = 20;
@@ -26,9 +30,10 @@ export class Tile implements IDrawable {
 		this.id = id;
 		this.desc = desc;
 		this.src = new Point(src.x, src.y);
-		this.pos = new Point();
+		this.position = new Point();
 		this.has_collision = has_collision;
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
+		this._positions_accessor = new PositionAccessor(this);
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
@@ -36,7 +41,7 @@ export class Tile implements IDrawable {
 		ctx.drawImage(IMAGE_BANK.pictures["assets/img/tiles.png"],
 			this.src.x * this.height, this.src.y * this.width,
 			this.width, this.height,
-			this.pos.x, this.pos.y,
+			this.position.x, this.position.y,
 			this.width, this.height);
 	}
 }

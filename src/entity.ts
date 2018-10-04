@@ -53,8 +53,8 @@ export abstract class Entity implements IPositionable {
 		const next_position = this.next_position(direction);
 		const collision_map = this.collision_map(direction, next_position);
 		if (collision_map.is_collision) {
-			if (collision_map.delta_x !== 0) { this.position.x += collision_map.delta_x; }
-			if (collision_map.delta_y !== 0) { this.position.y += collision_map.delta_y - this.speed; }
+			this.position.x += collision_map.delta_x;
+			this.position.y += collision_map.delta_y;
 			this.on_collision_map();
 		} else {
 			this.position.x = next_position.x;
@@ -69,7 +69,7 @@ export abstract class Entity implements IPositionable {
 			.get_walls_collisions_rectangles()
 			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position));
 		if (collision_rectangle != null) {
-			return this.get_collision_delta(direction, position);
+			return this.get_collision_delta(direction, collision_rectangle);
 		}
 
 		// Collision with tiles
@@ -79,19 +79,21 @@ export abstract class Entity implements IPositionable {
 				if (!current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile)) {
 					continue;
 				}
-				return this.get_collision_delta(direction, position);
+				return this.get_collision_delta(direction, current_tile);
 			}
 		}
 
 		return new CollisionDelta(false);
 	}
 
-	private get_collision_delta(direction: Direction, position: Point) {
+	private get_collision_delta(direction: Direction, obstacle: IPositionable) {
 		switch (direction) {
-			case Direction.UP: return new CollisionDelta(true, 0, this.position.y - position.y - this.speed);
-			case Direction.DOWN: return new CollisionDelta(true, 0, -(position.y - this.position.y - this.speed));
-			case Direction.LEFT: return new CollisionDelta(true, this.position.x - position.x - this.speed, 0);
-			case Direction.RIGHT: return new CollisionDelta(true, -(position.x - this.position.x - this.speed), 0);
+			case Direction.UP: return new CollisionDelta(true, 0, obstacle.positions_accessor.bottom_y - this.positions_accessor.top_y);
+			case Direction.DOWN: return new CollisionDelta(true, 0, obstacle.positions_accessor.top_y - this.positions_accessor.bottom_y);
+			case Direction.LEFT: return new CollisionDelta(true, obstacle.positions_accessor.right_x - this.positions_accessor.left_x, 0);
+			case Direction.RIGHT: return new CollisionDelta(true, obstacle.positions_accessor.left_x - this.positions_accessor.right_x, 0);
+			default:
+				throw new Error(`Unexpected direction '${direction}'`);
 		}
 	}
 

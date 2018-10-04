@@ -35,7 +35,7 @@ export class Jays extends Entity implements IDrawable {
 		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20),
 			Jays.body_width, Jays.body_height + Jays.head_height);
 		this.sprite_filename = "assets/img/jays.png";
-		this.speed = 4;
+		this.speed = 3;
 		this._tear_delay = 480;
 		this.range = 8;
 		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.position.x, this.position.y - 20), Jays.head_width, Jays.head_height);

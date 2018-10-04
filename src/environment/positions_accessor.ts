@@ -5,6 +5,7 @@ export interface IPositionable {
 	height: number;
 	/** Top left */
 	position: Point;
+	positions_accessor: PositionAccessor;
 }
 
 /** Helper class used to easily retrieve the top corner points of a positionable object */
@@ -22,19 +23,19 @@ export class PositionAccessor {
 		this._target = target;
 	}
 
-	public get top_left(): Point {
-		return new Point(this._target.position.x, this._target.position.y);
-	}
+	public get left_x(): number { return this._target.position.x; }
 
-	public get top_right(): Point {
-		return new Point(this._target.position.x + this._target.width, this._target.position.y);
-	}
+	public get right_x(): number { return this._target.position.x + this._target.width; }
 
-	public get bottom_left(): Point {
-		return new Point(this._target.position.x, this._target.position.y + this._target.height);
-	}
+	public get top_y(): number { return this._target.position.y; }
 
-	public get bottom_right(): Point {
-		return new Point(this._target.position.x + this._target.width, this._target.position.y + this._target.height);
-	}
+	public get bottom_y(): number { return this._target.position.y + this._target.height; }
+
+	public get top_left(): Point { return new Point(this._target.position.x, this._target.position.y); }
+
+	public get top_right(): Point { return new Point(this._target.position.x + this._target.width, this._target.position.y); }
+
+	public get bottom_left(): Point { return new Point(this._target.position.x, this._target.position.y + this._target.height); }
+
+	public get bottom_right(): Point { return new Point(this._target.position.x + this._target.width, this._target.position.y + this._target.height); }
 }
