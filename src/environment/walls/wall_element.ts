@@ -1,11 +1,10 @@
 
-import { WallSprite } from "./wall_sprite";
-import { IDrawable } from "../../idrawable";
-import { Point } from "../../point";
 import { Direction } from "../../enum";
+import { IDrawable } from "../../idrawable";
 import { IMAGE_BANK } from "../../main";
-import { IPositionable, PositionAccessor } from "../positions_accessor";
-import { RoomWalls } from "./room_walls";
+import { Point } from "../../point";
+import { IPositionable } from "../positions_accessor";
+import { WallSprite } from "./wall_sprite";
 
 export abstract class WallElement implements IDrawable, IPositionable {
 	protected _direction: Direction;
@@ -26,9 +25,6 @@ export abstract class WallElement implements IDrawable, IPositionable {
 
 	protected _rotation_angle: number;
 
-	protected _positions_accessor: PositionAccessor;
-	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
-
 	constructor(
 		direction: Direction,
 		sprite: WallSprite,
@@ -42,7 +38,6 @@ export abstract class WallElement implements IDrawable, IPositionable {
 		this._rotation_angle = this.get_rotation(direction);
 		this._width = width == null ? sprite.width : width;
 		this._height = height == null ? sprite.height : height;
-		this._positions_accessor = new PositionAccessor(this);
 	}
 
 	protected abstract get_position(direction: Direction, sprite: WallSprite): Point;

@@ -71,8 +71,8 @@ export abstract class RoomMap implements IDrawable {
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
-			tile.pos.x = tile.coord_x * tile.width + room_walls.wall_width;
-			tile.pos.y = tile.coord_y * tile.height + room_walls.wall_height;
+			tile.position.x = tile.coord_x * tile.width + room_walls.wall_width;
+			tile.position.y = tile.coord_y * tile.height + room_walls.wall_height;
 			tile_coord_x++;
 
 			line.push(tile);

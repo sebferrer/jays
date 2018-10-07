@@ -1,8 +1,8 @@
-import { WallElement } from "./wall_element";
-import { WallSprite } from "./wall_sprite";
 import { Direction } from "../../enum";
 import { canvas_H, canvas_W, IMAGE_BANK } from "../../main";
 import { Point } from "../../point";
+import { WallElement } from "./wall_element";
+import { WallSprite } from "./wall_sprite";
 
 /** Represents a whole portion of a wall */
 export class SideWall extends WallElement {

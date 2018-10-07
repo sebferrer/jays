@@ -1,10 +1,8 @@
-import { Door } from "./walls/door";
-import { RoomMap } from "./rooms/room_map";
-import { Point } from "../point";
-import { FourFireRoom } from "./rooms/four_fire_room";
 import { Direction } from "../enum";
-import { gameState, canvas_H, canvas_W, renderer } from "../main";
+import { canvas_H, canvas_W, gameState, renderer } from "../main";
+import { Point } from "../point";
 import { FloorMap } from "./floor_map";
+import { Door } from "./walls/door";
 
 export class Floor {
 	public id: number;
