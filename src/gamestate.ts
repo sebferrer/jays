@@ -89,17 +89,16 @@ export class GameState {
 			ArrayUtil.remove_from_array(this.joysticks, joystick);
 			switch (joystick.id) {
 				case "LEFT":
-					// Ugly 
-					this.key_up("z");
-					this.key_up("q");
-					this.key_up("s");
-					this.key_up("d");
+					this.remove_direction_event(Direction.LEFT);
+					this.remove_direction_event(Direction.RIGHT);
+					this.remove_direction_event(Direction.DOWN);
+					this.remove_direction_event(Direction.UP);
 					break;
 				case "RIGHT":
-					this.key_up("ArrowUp");
-					this.key_up("ArrowLeft");
-					this.key_up("ArrowDown");
-					this.key_up("ArrowRight");
+					this.remove_attack_event(Direction.LEFT);
+					this.remove_attack_event(Direction.RIGHT);
+					this.remove_attack_event(Direction.DOWN);
+					this.remove_attack_event(Direction.UP);
 					break;
 			}
 		});
