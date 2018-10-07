@@ -1,11 +1,11 @@
-import { gameState } from "./../main";
-import { TileType } from "./../enum";
-import { WarpInfo } from "./../warp_info";
-import { Point } from "./../point";
-import { IDrawable } from "./../idrawable";
 import { IMAGE_BANK } from "../main";
+import { TileType } from "./../enum";
+import { IDrawable } from "./../idrawable";
+import { Point } from "./../point";
+import { WarpInfo } from "./../warp_info";
+import { IPositionable } from "./positions_accessor";
 
-export class Tile implements IDrawable {
+export class Tile implements IDrawable, IPositionable {
 
 	public width: number;
 	public height: number;
@@ -14,7 +14,7 @@ export class Tile implements IDrawable {
 	public src: Point;
 	public coord_x: number;
 	public coord_y: number;
-	public pos: Point;
+	public position: Point;
 	public has_collision: boolean;
 	public warp_info: WarpInfo;
 	public type: TileType;
@@ -26,17 +26,17 @@ export class Tile implements IDrawable {
 		this.id = id;
 		this.desc = desc;
 		this.src = new Point(src.x, src.y);
-		this.pos = new Point();
+		this.position = new Point();
 		this.has_collision = has_collision;
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
 		//TODO: "assets/img/tiles.png" should be an attribute, so we can use whatever sprite sheet we want
-		ctx.drawImage(IMAGE_BANK.pic["assets/img/tiles.png"],
+		ctx.drawImage(IMAGE_BANK.pictures["assets/img/tiles.png"],
 			this.src.x * this.height, this.src.y * this.width,
 			this.width, this.height,
-			this.pos.x, this.pos.y,
+			this.position.x, this.position.y,
 			this.width, this.height);
 	}
 }

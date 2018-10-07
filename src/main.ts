@@ -4,27 +4,27 @@ import { GameState } from "./gamestate";
 import { Settings } from "./settings/settings";
 import { KeyMapper } from "./settings/keymapper";
 
-export const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+export const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 export const canvas_W = 660;
 export const canvas_H = 480;
-export const ctx = canvas.getContext("2d");
+export const ctx = canvas.getContext("2d", { alpha: false });
+
+export const minimap_canvas = document.getElementById("minimap-canvas") as HTMLCanvasElement;
+export const minimap_ctx = minimap_canvas.getContext("2d", { alpha: true });
+
 export const IMAGE_BANK = new ImageBank();
 export const renderer = new Renderer();
-export const gameState = new GameState();
+export let gameState: GameState;
 
 //TODO: add a localstorage service to retrieve the value the user wants to use
 export const key_mapper = new KeyMapper();
 
 window.onload = () => {
-	main();
+	IMAGE_BANK.load_images().then(() => {
+		gameState = new GameState();
+		renderer.autoScale();
+		Settings.init();
+		gameState.get_timer("tear").interval = gameState.jays.tear_delay;
+		gameState.update();
+	});
 };
-
-function main(): void {
-	renderer.scale(1);
-
-	Settings.init();
-
-	gameState.get_timer("tear").interval = gameState.jays.tear_delay;
-	IMAGE_BANK.preload(gameState);
-	gameState.update();
-}

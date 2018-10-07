@@ -1,9 +1,10 @@
-import { Direction } from "../../enum";
-import { Point } from "../../point";
-import { canvas_W, canvas_H } from "../../main";
-import { WallSprite } from "./wall_sprite";
-import { WallElement } from "./wall_element";
 import { Rectangle } from "../../collision";
+import { Direction } from "../../enum";
+import { canvas_H, canvas_W } from "../../main";
+import { Point } from "../../point";
+import { PositionAccessor } from "../positions_accessor";
+import { WallElement } from "./wall_element";
+import { WallSprite } from "./wall_sprite";
 
 /** Represents a whole portion of a wall */
 export class Door extends WallElement {
@@ -52,16 +53,16 @@ export class Door extends WallElement {
 		}
 		switch (this.direction) {
 			case Direction.UP:
-				this._exit_rectangle = new Rectangle(this._positions_accessor.top_left, this._positions_accessor.top_right);
+				this._exit_rectangle = new Rectangle(PositionAccessor.top_left(this), PositionAccessor.top_right(this));
 				break;
 			case Direction.DOWN:
-				this._exit_rectangle = new Rectangle(this._positions_accessor.bottom_left, this._positions_accessor.bottom_right);
+				this._exit_rectangle = new Rectangle(PositionAccessor.bottom_left(this), PositionAccessor.bottom_right(this));
 				break;
 			case Direction.LEFT:
-				this._exit_rectangle = new Rectangle(this._positions_accessor.top_left, this._positions_accessor.bottom_left);
+				this._exit_rectangle = new Rectangle(PositionAccessor.top_left(this), PositionAccessor.bottom_left(this));
 				break;
 			case Direction.RIGHT:
-				this._exit_rectangle = new Rectangle(this._positions_accessor.top_right, this._positions_accessor.bottom_right);
+				this._exit_rectangle = new Rectangle(PositionAccessor.top_right(this), PositionAccessor.bottom_right(this));
 				break;
 			default:
 				throw new Error(`Unknown or invalid direction '${this.direction}'`);

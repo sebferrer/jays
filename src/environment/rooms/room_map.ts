@@ -23,6 +23,30 @@ export abstract class RoomMap implements IDrawable {
 
 	public warps: Warp[];
 
+	private _has_been_visited: boolean = false;
+	public get has_been_visited(): boolean { return this._has_been_visited; }
+	public set has_been_visited(value: boolean) {
+		if (value == null) {
+			throw new Error("Property 'has_been_visited' can not be null");
+		}
+		if (value === false) {
+			throw new Error("Cannot un-visit a room");
+		}
+		this._has_been_visited = value;
+	}
+
+	private _has_been_glimpsed: boolean = false;
+	public get has_been_glimpsed(): boolean { return this._has_been_glimpsed; }
+	public set has_been_glimpsed(value: boolean) {
+		if (value == null) {
+			throw new Error("Property 'has_been_glimpsed' can not be null");
+		}
+		if (value === false) {
+			throw new Error("Cannot un-glimpse a room");
+		}
+		this._has_been_glimpsed = value;
+	}
+
 	constructor(raw_map: IRawMap, wall: RoomWalls) {
 		if (raw_map == null) {
 			throw new Error("parameter `raw_map` cannot be null");
@@ -47,8 +71,8 @@ export abstract class RoomMap implements IDrawable {
 			const tile = new Tile(tile_ref.id, tile_ref.desc, tile_ref.src, tile_ref.has_collision);
 			tile.coord_x = tile_coord_x;
 			tile.coord_y = tile_coord_y;
-			tile.pos.x = tile.coord_x * tile.width + room_walls.wall_width;
-			tile.pos.y = tile.coord_y * tile.height + room_walls.wall_height;
+			tile.position.x = tile.coord_x * tile.width + room_walls.wall_width;
+			tile.position.y = tile.coord_y * tile.height + room_walls.wall_height;
 			tile_coord_x++;
 
 			line.push(tile);
