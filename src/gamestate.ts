@@ -1,18 +1,17 @@
-import { canvas_W, canvas_H, ctx, renderer, minimap_ctx, IMAGE_BANK, window_W } from "./main";
+import { canvas_W, canvas_H, ctx, renderer, window_W } from "./main";
 import { TearBasic, Tear } from "./character/tear";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
 import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { Direction } from "./enum";
-import { ArrayUtil, MathUtil } from "./util";
+import { Direction, Arrow_Direction } from "./enum";
+import { ArrayUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
 import { Joystick } from "./joystick";
-import { ImageBank } from "./image_bank";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -50,7 +49,7 @@ export class GameState {
 		const touches_array = ArrayUtil.touchlist_to_id_array(this.touches);
 		const new_touches_array = ArrayUtil.touchlist_to_id_array(touches);
 		const new_touch = ArrayUtil.get_touch_by_identifier(touches, ArrayUtil.diff(new_touches_array, touches_array)[0]);
-		
+
 		this.touches = touches;
 		const touch_x = new_touch.pageX;
 		const touch_y = new_touch.pageY;
@@ -77,7 +76,7 @@ export class GameState {
 
 		touches_removed.forEach(touch_identifier => {
 			const joystick_to_remove = this.joysticks.find(joystick => joystick.touch_identifier === touch_identifier);
-			if(joystick_to_remove != null) {
+			if (joystick_to_remove != null) {
 				joysticks_to_remove.push(joystick_to_remove);
 			}
 		});
@@ -106,65 +105,64 @@ export class GameState {
 		});
 	}
 
-	// This is ugly and VERY temporary.
 	public touch_move(): void {
 		if (this.joysticks.length > 0) {
 			for (let i = 0; i < this.joysticks.length; i++) {
 				const joystick = this.joysticks[i];
 				const touch = ArrayUtil.get_touch_by_identifier(this.touches, joystick.touch_identifier);
-				if(touch != null) {
+				if (touch != null) {
 					joystick.move(touch.pageX, touch.pageY);
 					switch (joystick.id) {
 						case "LEFT":
 							if (joystick.coeff_x < -0.5) {
-								this.key_down("q");
-								this.key_up("d");
+								this.add_direction_event(Direction.LEFT);
+								this.remove_direction_event(Direction.RIGHT);
 							}
 							else if (joystick.coeff_x > 0.5) {
-								this.key_down("d");
-								this.key_up("q");
+								this.add_direction_event(Direction.RIGHT);
+								this.remove_direction_event(Direction.LEFT);
 							}
 							else {
-								this.key_up("q");
-								this.key_up("d");
+								this.remove_direction_event(Direction.LEFT);
+								this.remove_direction_event(Direction.RIGHT);
 							}
 							if (joystick.coeff_y < -0.5) {
-								this.key_down("s");
-								this.key_up("z");
+								this.add_direction_event(Direction.DOWN);
+								this.remove_direction_event(Direction.UP);
 							}
 							else if (joystick.coeff_y > 0.5) {
-								this.key_down("z");
-								this.key_up("s");
+								this.add_direction_event(Direction.UP);
+								this.remove_direction_event(Direction.DOWN);
 							}
 							else {
-								this.key_up("s");
-								this.key_up("z");
+								this.remove_direction_event(Direction.DOWN);
+								this.remove_direction_event(Direction.UP);
 							}
 							break;
 						case "RIGHT":
 							if (joystick.coeff_x < -0.5) {
-								this.key_down("ArrowLeft");
-								this.key_up("ArrowRight");
+								this.add_attack_event(Direction.LEFT);
+								this.remove_attack_event(Direction.RIGHT);
 							}
 							else if (joystick.coeff_x > 0.5) {
-								this.key_down("ArrowRight");
-								this.key_up("ArrowLeft");
+								this.add_attack_event(Direction.RIGHT);
+								this.remove_attack_event(Direction.LEFT);
 							}
 							else {
-								this.key_up("ArrowLeft");
-								this.key_up("ArrowRight");
+								this.remove_attack_event(Direction.LEFT);
+								this.remove_attack_event(Direction.RIGHT);
 							}
 							if (joystick.coeff_y < -0.5) {
-								this.key_down("ArrowDown");
-								this.key_up("ArrowUp");
+								this.add_attack_event(Direction.DOWN);
+								this.remove_attack_event(Direction.UP);
 							}
 							else if (joystick.coeff_y > 0.5) {
-								this.key_down("ArrowUp");
-								this.key_up("ArrowDown");
+								this.add_attack_event(Direction.UP);
+								this.remove_attack_event(Direction.DOWN);
 							}
 							else {
-								this.key_up("ArrowDown");
-								this.key_up("ArrowUp");
+								this.remove_attack_event(Direction.DOWN);
+								this.remove_attack_event(Direction.UP);
 							}
 							break;
 					}
@@ -173,8 +171,7 @@ export class GameState {
 		}
 	}
 
-	public key_down(keyName: string): void {
-		const direction = key_mapper.current_keyboard.get(keyName);
+	public add_direction_event(direction: Direction): void {
 		if (direction != null) {
 			if (ArrayUtil.add_first_no_duplicate(this.directions_keyDown, direction)) {
 				this.get_timer("jays_sprites").restart();
@@ -185,21 +182,37 @@ export class GameState {
 			this.direction_event.move_right = direction === Direction.RIGHT || this.direction_event.move_right;
 			return;
 		}
+	}
+
+	public remove_direction_event(direction: Direction): void {
+		if (direction != null) {
+			if (ArrayUtil.remove_from_array(this.directions_keyDown, direction)) {
+				this.direction_event.setDirection(direction, false);
+				this.jays.direction_key_up(direction);
+			}
+		}
+	}
+
+	public add_attack_event(direction: Direction): void {
+		if (direction != null) {
+			this.attack_direction_event.add(direction);
+		}
+	}
+
+	public remove_attack_event(direction: Direction): void {
+		if (direction != null) {
+			this.attack_direction_event.remove(direction);
+		}
+	}
+
+	public key_down(keyName: string): void {
+		const direction = key_mapper.current_keyboard.get(keyName);
+		this.add_direction_event(direction);
+
+		const arrow_direction = Arrow_Direction.get(keyName);
+		this.add_attack_event(arrow_direction);
 
 		switch (keyName) {
-			case "ArrowUp":
-				this.attack_direction_event.add(Direction.UP);
-				break;
-			case "ArrowDown":
-				this.attack_direction_event.add(Direction.DOWN);
-				break;
-			case "ArrowLeft":
-				this.attack_direction_event.add(Direction.LEFT);
-				break;
-			case "ArrowRight":
-				this.attack_direction_event.add(Direction.RIGHT);
-				break;
-
 			case "f":
 				renderer.scale();
 				break;
@@ -207,28 +220,11 @@ export class GameState {
 	}
 
 	public key_up(keyName: string): void {
-		switch (keyName) {
-			case "ArrowUp":
-				this.attack_direction_event.remove(Direction.UP);
-				break;
-			case "ArrowDown":
-				this.attack_direction_event.remove(Direction.DOWN);
-				break;
-			case "ArrowLeft":
-				this.attack_direction_event.remove(Direction.LEFT);
-				break;
-			case "ArrowRight":
-				this.attack_direction_event.remove(Direction.RIGHT);
-				break;
-		}
-
 		const direction = key_mapper.current_keyboard.get(keyName);
+		this.remove_direction_event(direction);
 
-		if (direction != null) {
-			ArrayUtil.remove_from_array(this.directions_keyDown, direction);
-			this.direction_event.setDirection(direction, false);
-			this.jays.direction_key_up(direction);
-		}
+		const arrow_direction = Arrow_Direction.get(keyName);
+		this.remove_attack_event(arrow_direction);
 	}
 
 	public update(): void {
@@ -237,11 +233,7 @@ export class GameState {
 
 		TIMERS.forEach(timer => timer.run());
 
-		try {
-			this.current_map.draw(ctx);
-		} catch (err) {
-			// console.error(err);
-		}
+		this.current_map.draw(ctx);
 
 		this.tears.forEach(tear => {
 			tear.draw(ctx);
