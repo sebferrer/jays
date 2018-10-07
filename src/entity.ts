@@ -1,11 +1,11 @@
 import { Collision } from "./collision";
-import { gameState } from "./main";
-import { Direction } from "./enum";
-import { Point } from "./point";
 import { CollisionDelta } from "./collision_delta";
+import { Direction } from "./enum";
+import { IPositionable, PositionAccessor } from "./environment/positions_accessor";
+import { gameState } from "./main";
+import { Point } from "./point";
 import { Sprite } from "./sprite";
 import { SpriteHelper } from "./sprite_helper";
-import { PositionAccessor, IPositionable } from "./environment/positions_accessor";
 
 export abstract class Entity implements IPositionable {
 
@@ -25,17 +25,13 @@ export abstract class Entity implements IPositionable {
 
 	public position: Point;
 
-	protected _positions_accessor: PositionAccessor;
-	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
-
 	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
 		this._id = id;
 		this.current_sprite = current_sprite;
 		this.position = new Point(pos.x, pos.y);
 		this._width = width;
 		this._height = height;
-		this.sprite_collecs = SpriteHelper.getCollecs(this.id);
-		this._positions_accessor = new PositionAccessor(this);
+		this.sprite_collecs = SpriteHelper.get_collecs(this.id);
 	}
 
 	public next_position(direction: Direction): Point {
@@ -88,10 +84,10 @@ export abstract class Entity implements IPositionable {
 
 	private get_collision_delta(direction: Direction, obstacle: IPositionable) {
 		switch (direction) {
-			case Direction.UP: return new CollisionDelta(true, 0, obstacle.positions_accessor.bottom_y - this.positions_accessor.top_y);
-			case Direction.DOWN: return new CollisionDelta(true, 0, obstacle.positions_accessor.top_y - this.positions_accessor.bottom_y);
-			case Direction.LEFT: return new CollisionDelta(true, obstacle.positions_accessor.right_x - this.positions_accessor.left_x, 0);
-			case Direction.RIGHT: return new CollisionDelta(true, obstacle.positions_accessor.left_x - this.positions_accessor.right_x, 0);
+			case Direction.UP: return new CollisionDelta(true, 0, PositionAccessor.bottom_y(obstacle) - PositionAccessor.top_y(this));
+			case Direction.DOWN: return new CollisionDelta(true, 0, PositionAccessor.top_y(obstacle) - PositionAccessor.bottom_y(this));
+			case Direction.LEFT: return new CollisionDelta(true, PositionAccessor.right_x(obstacle) - PositionAccessor.left_x(this), 0);
+			case Direction.RIGHT: return new CollisionDelta(true, PositionAccessor.left_x(obstacle) - PositionAccessor.right_x(this), 0);
 			default:
 				throw new Error(`Unexpected direction '${direction}'`);
 		}

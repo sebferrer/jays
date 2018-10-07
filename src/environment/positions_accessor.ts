@@ -5,37 +5,16 @@ export interface IPositionable {
 	height: number;
 	/** Top left */
 	position: Point;
-	positions_accessor: PositionAccessor;
 }
 
 /** Helper class used to easily retrieve the top corner points of a positionable object */
 export class PositionAccessor {
-
-	private _target: IPositionable;
-
-	constructor(target: IPositionable) {
-		if (target == null) {
-			throw new Error("target cannot be null");
-		}
-
-		// IPositionable is an object, so passed by reference: even if its width/height/position change,
-		// this helper will always return the right value (as long as the object's reference is still right)
-		this._target = target;
-	}
-
-	public get left_x(): number { return this._target.position.x; }
-
-	public get right_x(): number { return this._target.position.x + this._target.width; }
-
-	public get top_y(): number { return this._target.position.y; }
-
-	public get bottom_y(): number { return this._target.position.y + this._target.height; }
-
-	public get top_left(): Point { return new Point(this._target.position.x, this._target.position.y); }
-
-	public get top_right(): Point { return new Point(this._target.position.x + this._target.width, this._target.position.y); }
-
-	public get bottom_left(): Point { return new Point(this._target.position.x, this._target.position.y + this._target.height); }
-
-	public get bottom_right(): Point { return new Point(this._target.position.x + this._target.width, this._target.position.y + this._target.height); }
+	public static left_x(target: IPositionable): number { return target.position.x; }
+	public static right_x(target: IPositionable): number { return target.position.x + target.width; }
+	public static top_y(target: IPositionable): number { return target.position.y; }
+	public static bottom_y(target: IPositionable): number { return target.position.y + target.height; }
+	public static top_left(target: IPositionable): Point { return new Point(target.position.x, target.position.y); }
+	public static top_right(target: IPositionable): Point { return new Point(target.position.x + target.width, target.position.y); }
+	public static bottom_left(target: IPositionable): Point { return new Point(target.position.x, target.position.y + target.height); }
+	public static bottom_right(target: IPositionable): Point { return new Point(target.position.x + target.width, target.position.y + target.height); }
 }

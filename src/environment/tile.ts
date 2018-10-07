@@ -1,10 +1,9 @@
-import { gameState } from "./../main";
-import { TileType } from "./../enum";
-import { WarpInfo } from "./../warp_info";
-import { Point } from "./../point";
-import { IDrawable } from "./../idrawable";
 import { IMAGE_BANK } from "../main";
-import { IPositionable, PositionAccessor } from "./positions_accessor";
+import { TileType } from "./../enum";
+import { IDrawable } from "./../idrawable";
+import { Point } from "./../point";
+import { WarpInfo } from "./../warp_info";
+import { IPositionable } from "./positions_accessor";
 
 export class Tile implements IDrawable, IPositionable {
 
@@ -21,9 +20,6 @@ export class Tile implements IDrawable, IPositionable {
 	public type: TileType;
 	public anim: number[]; // IDs of the tiles dedicated to animation
 
-	private _positions_accessor: PositionAccessor;
-	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
-
 	constructor(id: number, desc: string, src: Point, has_collision: boolean) {
 		this.width = 20;
 		this.height = 20;
@@ -33,7 +29,6 @@ export class Tile implements IDrawable, IPositionable {
 		this.position = new Point();
 		this.has_collision = has_collision;
 		this.anim = new Array<number>(); // If primary, contains all the animated tiles IDs
-		this._positions_accessor = new PositionAccessor(this);
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {

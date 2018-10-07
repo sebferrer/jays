@@ -1,16 +1,15 @@
-import { IDrawable } from "../idrawable";
-import { Point } from "../point";
-import { RoomMap } from "./rooms/room_map";
 import { Direction } from "../enum";
-import { FourFireRoom } from "./rooms/four_fire_room";
-import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
-import { EmptyGrassRoom } from "./rooms/empty_grass_room";
-import { DeadEndRightRoom } from "./rooms/dead_end_right_room";
-import { renderer, IMAGE_BANK } from "../main";
+import { IDrawable } from "../idrawable";
+import { IMAGE_BANK, renderer } from "../main";
+import { Point } from "../point";
+import { ICustomRoom, isCustomRoom } from "./iicon_room";
 import { IMiniMapColorConfig, IMiniMapConfiguration, IMiniMapSizeConfig } from "./iminimap_configuration";
 import { BossRoom } from "./rooms/boss_room";
-import { ICustomRoom, isCustomRoom } from "./iicon_room";
+import { EmptyGrassRoom } from "./rooms/empty_grass_room";
+import { FourFireRoom } from "./rooms/four_fire_room";
+import { RoomMap } from "./rooms/room_map";
 import { TreasureRoom } from "./rooms/treasure_room";
+import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapColorConfig>{

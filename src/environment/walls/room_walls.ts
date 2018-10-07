@@ -5,6 +5,7 @@ import { Door } from "./door";
 import { WallElement } from "./wall_element";
 import { Rectangle } from "../../collision";
 import { Direction } from "../../enum";
+import { PositionAccessor } from "../positions_accessor";
 
 export class RoomWalls implements IDrawable {
 	protected _corner_walls: RoomCornerWall[];
@@ -60,13 +61,13 @@ export class RoomWalls implements IDrawable {
 		this.side_walls.map(wall => { return { wall, door: this.doors.find(door => door.direction === wall.direction) }; })
 			.forEach(wd => {
 				if (wd.door == null || !wd.door.is_open) {
-					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.wall.positions_accessor.bottom_right));
+					this._walls_collisions_rectangle.push(new Rectangle(PositionAccessor.top_left(wd.wall), PositionAccessor.bottom_right(wd.wall)));
 				} else if (wd.door.direction === Direction.LEFT || wd.door.direction === Direction.RIGHT) {
-					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.top_right));
-					this._walls_collisions_rectangle.push(new Rectangle(wd.door.positions_accessor.bottom_left, wd.wall.positions_accessor.bottom_right));
+					this._walls_collisions_rectangle.push(new Rectangle(PositionAccessor.top_left(wd.wall), PositionAccessor.top_right(wd.door)));
+					this._walls_collisions_rectangle.push(new Rectangle(PositionAccessor.bottom_left(wd.door), PositionAccessor.bottom_right(wd.wall)));
 				} else {
-					this._walls_collisions_rectangle.push(new Rectangle(wd.wall.positions_accessor.top_left, wd.door.positions_accessor.bottom_left));
-					this._walls_collisions_rectangle.push(new Rectangle(wd.door.positions_accessor.top_right, wd.wall.positions_accessor.bottom_right));
+					this._walls_collisions_rectangle.push(new Rectangle(PositionAccessor.top_left(wd.wall), PositionAccessor.bottom_left(wd.door)));
+					this._walls_collisions_rectangle.push(new Rectangle(PositionAccessor.top_right(wd.door), PositionAccessor.bottom_right(wd.wall)));
 				}
 			});
 

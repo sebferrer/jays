@@ -1,25 +1,20 @@
-import { Tile } from "./environment/tile";
 import { Entity } from "./entity";
+import { IPositionable } from "./environment/positions_accessor";
+import { Tile } from "./environment/tile";
 import { Point } from "./point";
-import { IPositionable, PositionAccessor } from "./environment/positions_accessor";
-
 
 export class Rectangle implements IPositionable {
 
 	public get width(): number { return this.bottom_right.x - this.top_left.x; }
 	public get height(): number { return this.bottom_right.y - this.top_left.y; }
-	public get position(): Point { return this.top_left;}
+	public get position(): Point { return this.top_left; }
 
 	public top_left: Point;
 	public bottom_right: Point;
 
-	private _positions_accessor: PositionAccessor;
-	public get positions_accessor(): PositionAccessor { return this._positions_accessor; }
-
 	constructor(top_left: Point, bottom_right: Point) {
 		this.top_left = Point.copy(top_left);
 		this.bottom_right = Point.copy(bottom_right);
-		this._positions_accessor = new PositionAccessor(this); 
 	}
 }
 
