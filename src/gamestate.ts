@@ -12,6 +12,7 @@ import { Floor } from "./environment/floor";
 import { Point } from "./point";
 import { key_mapper } from "./main";
 import { Joystick } from "./joystick";
+import { TouchHelper } from "./touch_helper";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -45,10 +46,10 @@ export class GameState {
 		document.ontouchmove = event => { this.touches = event.touches; };
 	}
 
-	public touch_start(touches): void {
-		const touches_array = ArrayUtil.touchlist_to_id_array(this.touches);
-		const new_touches_array = ArrayUtil.touchlist_to_id_array(touches);
-		const new_touch = ArrayUtil.get_touch_by_identifier(touches, ArrayUtil.diff(new_touches_array, touches_array)[0]);
+	public touch_start(touches: TouchList): void {
+		const touches_array = TouchHelper.touchlist_to_id_array(this.touches);
+		const new_touches_array = TouchHelper.touchlist_to_id_array(touches);
+		const new_touch = TouchHelper.get_touch_by_identifier(touches, ArrayUtil.diff(new_touches_array, touches_array)[0]);
 
 		this.touches = touches;
 		const touch_x = new_touch.pageX;
@@ -67,9 +68,9 @@ export class GameState {
 		}
 	}
 
-	public touch_end(touches): void {
-		const touches_array = ArrayUtil.touchlist_to_id_array(this.touches);
-		const new_touches_array = ArrayUtil.touchlist_to_id_array(touches);
+	public touch_end(touches: TouchList): void {
+		const touches_array = TouchHelper.touchlist_to_id_array(this.touches);
+		const new_touches_array = TouchHelper.touchlist_to_id_array(touches);
 		const touches_removed = ArrayUtil.diff(touches_array, new_touches_array);
 
 		const joysticks_to_remove = new Array<Joystick>();
@@ -108,7 +109,7 @@ export class GameState {
 		if (this.joysticks.length > 0) {
 			for (let i = 0; i < this.joysticks.length; i++) {
 				const joystick = this.joysticks[i];
-				const touch = ArrayUtil.get_touch_by_identifier(this.touches, joystick.touch_identifier);
+				const touch = TouchHelper.get_touch_by_identifier(this.touches, joystick.touch_identifier);
 				if (touch != null) {
 					joystick.move(touch.pageX, touch.pageY);
 					switch (joystick.id) {
@@ -270,7 +271,6 @@ export class GameState {
 		this.tears.forEach(tear => tear.move());
 	}
 
-	/** Removes all the tear which are currently displayed */
 	public clear_tears(): void {
 		if (this.tears != null) {
 			this.tears.splice(0, this.tears.length);
