@@ -13,16 +13,16 @@ import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapColorConfig>{
-		visited_border: "#000000aa",
-		visited_fill: "#ffffff77",
+		visited_border: "#000",
+		visited_fill: "#ffffff",
 
-		not_visited_border: "transparent",
-		not_visited_fill: "transparent",
+		not_visited_border: "#000",
+		not_visited_fill: "#ffffff",
 
-		glimpsed_border: "#aaaaaa",
-		glimpsed_fill: "#00000099",
+		glimpsed_border: "#000",
+		glimpsed_fill: "#fff",
 
-		active_border: "#ffffff",
+		active_border: "#000",
 		active_fill: "#ffffff"
 	},
 	sizes: <IMiniMapSizeConfig>{
@@ -70,8 +70,8 @@ export class FloorMap implements IDrawable {
 	/** Position on the current map */
 	public current_position: Point;
 
-	private max_floor_map_height = 5;
-	private max_floor_map_width = 5;
+	private max_floor_map_height = 10;
+	private max_floor_map_width = 10;
 
 	constructor() {
 		// Generate a static map, for now
@@ -82,20 +82,22 @@ export class FloorMap implements IDrawable {
 		}
 
 		this.current_position = new Point(2, 2);
+		this.maps_grid[2][2] = new EmptyGrassRoom();
 
-		this.maps_grid[2][2] = new FourFireRoom([Direction.LEFT, Direction.DOWN, Direction.RIGHT]);
-		this.maps_grid[2][3] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT]);
-		this.maps_grid[2][3].room_walls.doors.find(d => d.direction === Direction.RIGHT).is_open = false;
-
-		this.maps_grid[2][4] = new BossRoom([Direction.LEFT]);
-
-		this.maps_grid[3][2] = new WaterLeftRightRoom([Direction.UP, Direction.DOWN]);
-		this.maps_grid[4][2] = new TreasureRoom([Direction.UP]);
-		this.maps_grid[2][1] = new EmptyGrassRoom([Direction.RIGHT, Direction.UP, Direction.LEFT]);
-		this.maps_grid[2][0] = new TreasureRoom([Direction.RIGHT]);
-		this.maps_grid[1][1] = new WaterLeftRightRoom([Direction.DOWN, Direction.UP]);
-		this.maps_grid[1][1].room_walls.doors.find(d => d.direction === Direction.UP).is_open = false;
-		this.maps_grid[0][1] = new TreasureRoom([Direction.DOWN]);
+		let cur = new Point(2, 2);
+		for(let i = 0; i < 10; ++i) {
+			const rand = Math.random();
+			if(rand < 0.25) {
+				cur = new Point(cur.x + 1, cur.y);
+			} else if(rand >= 0.25 && rand < 0.5){
+				cur = new Point(cur.x - 1, cur.y);
+			} else if(rand >= 0.5 && rand < 0.75) {
+				cur = new Point(cur.x, cur.y + 1);
+			} else {
+				cur = new Point(cur.x, cur.y - 1);
+			}
+			this.maps_grid[cur.x][cur.y] = new EmptyGrassRoom();
+		}
 	}
 
 	public next_room(direction: Direction = null): RoomMap {
