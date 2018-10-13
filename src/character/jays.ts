@@ -79,7 +79,7 @@ export class Jays extends Entity implements IDrawable {
 	}
 
 	public direction_key_up(direction: Direction): void {
-		if (gameState.directions_keyDown.length > 0) {
+		if (gameState.directions_keyDown.size > 0) {
 			gameState.get_timer("jays_sprites").restart();
 			return;
 		}

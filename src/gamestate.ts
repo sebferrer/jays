@@ -6,7 +6,7 @@ import { Timer } from "./timer";
 import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
 import { Direction, Arrow_Direction } from "./enum";
-import { ArrayUtil } from "./util";
+import { ArrayUtil, SetUtil } from "./util";
 import { TIMERS } from "./timers";
 import { Floor } from "./environment/floor";
 import { Point } from "./point";
@@ -20,7 +20,7 @@ export class GameState {
 	public current_floor: Floor;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
-	public directions_keyDown: Direction[];
+	public directions_keyDown: Set<Direction>;
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
 	public joysticks: Joysticks;
@@ -32,7 +32,7 @@ export class GameState {
 		this.current_map = this.current_floor.floor_map.current_room;
 
 		this.direction_event = new DirectionEvent();
-		this.directions_keyDown = new Array<Direction>();
+		this.directions_keyDown = new Set<Direction>();
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.tears = new Array<Tear>();
 
@@ -162,7 +162,7 @@ export class GameState {
 
 	public add_direction_event(direction: Direction): void {
 		if (direction != null) {
-			if (ArrayUtil.add_first_no_duplicate(this.directions_keyDown, direction)) {
+			if (SetUtil.add_first_no_duplicate(this.directions_keyDown, direction)) {
 				this.get_timer("jays_sprites").restart();
 			}
 			this.direction_event.move_up = direction === Direction.UP || this.direction_event.move_up;
@@ -174,7 +174,7 @@ export class GameState {
 	}
 
 	public remove_direction_event(direction: Direction): void {
-		if (direction != null && ArrayUtil.remove_from_array(this.directions_keyDown, direction)) {
+		if (direction != null && SetUtil.remove_from_array(this.directions_keyDown, direction)) {
 			this.direction_event.setDirection(direction, false);
 			this.jays.direction_key_up(direction);
 		}
