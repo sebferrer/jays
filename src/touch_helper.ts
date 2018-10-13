@@ -21,8 +21,8 @@ export class TouchHelper {
 
 	public static get_touch_by_identifier(touchlist: TouchList, identifier: number): Touch {
 		for(let i = 0; i < touchlist.length; i++) {
-			if(touchlist[i].identifier === identifier) {
-				return touchlist[i];
+			if(touchlist.item(i).identifier === identifier) {
+				return touchlist.item(i);
 			}
 		}
 	}

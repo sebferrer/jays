@@ -19,4 +19,8 @@ export class AttackDirectionEvent {
 	public remove(direction: Direction) {
 		ArrayUtil.remove_from_array(this.directions, direction);
 	}
+
+	public clear() {
+		this.directions = [];
+	}
 }

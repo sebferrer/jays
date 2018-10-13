@@ -16,8 +16,9 @@ export class Joystick {
 	public next_circle: Circle;
 	public force: Point;
 	public touch_identifier: number;
+	public remove_events_callback: Function;
 
-	constructor(id: string, zonePos: Point, zoneRadius: number, controllerPos: Point, controllerRadius: number, touch_identifier: number) {
+	constructor(id: string, zonePos: Point, zoneRadius: number, controllerPos: Point, controllerRadius: number, touch_identifier: number, remove_events_callback: Function) {
 		this.id = id;
 		this.zone = new JoystickCircle(zonePos, zoneRadius, "rgba(18, 65, 145, 0.5)");
 		this.controller = new JoystickCircle(controllerPos, controllerRadius, "rgba(18, 65, 145, 0.8)");
@@ -29,6 +30,7 @@ export class Joystick {
 								(this.rect_zone.y+(this.rect_zone.y+this.rect_zone.height))/2);
 		this.force = new Point();
 		this.touch_identifier = touch_identifier;
+		this.remove_events_callback = remove_events_callback;
 	}
 
 	public createDivs() {
@@ -60,13 +62,18 @@ export class Joystick {
 			this.next_circle.pos = this.next_circle.pos.translateFromPoint(angle, this.zone.circle.radius, this.zone.circle.pos);
 		}
 
-		this.coeff_x = (this.zone.circle.pos.x - this.next_circle.pos.x) * (-1) / this.zone.circle.radius;
+		this.coeff_x = (this.next_circle.pos.x - this.zone.circle.pos.x) / this.zone.circle.radius;
 		this.coeff_x = Math.round(this.coeff_x * 100) / 100;
 		this.coeff_y = (this.zone.circle.pos.y - this.next_circle.pos.y) / this.zone.circle.radius;
 		this.coeff_y = Math.round(this.coeff_y * 100) / 100;
 
 		this.div_controller.style.left = (this.next_circle.pos.x - this.controller.circle.radius) + "px";
 		this.div_controller.style.top = (this.next_circle.pos.y - this.controller.circle.radius) + "px";
+	}
+
+	public destroy() {
+		this.div_zone.remove();
+		this.div_controller.remove();
 	}
 }
 

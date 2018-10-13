@@ -1,4 +1,4 @@
-import { canvas_W, canvas_H, ctx, renderer, window_W } from "./main";
+import { canvas_W, canvas_H, ctx, renderer } from "./main";
 import { TearBasic, Tear } from "./character/tear";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Jays } from "./character/jays";
@@ -13,6 +13,7 @@ import { Point } from "./point";
 import { key_mapper } from "./main";
 import { Joystick } from "./joystick";
 import { TouchHelper } from "./touch_helper";
+import { Joysticks } from "./joysticks";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -22,7 +23,7 @@ export class GameState {
 	public directions_keyDown: Direction[];
 	public attack_direction_event: AttackDirectionEvent;
 	public tears: Tear[];
-	public joysticks: Joystick[];
+	public joysticks: Joysticks;
 	public touches: TouchList;
 
 	constructor() {
@@ -35,7 +36,7 @@ export class GameState {
 		this.attack_direction_event = new AttackDirectionEvent();
 		this.tears = new Array<Tear>();
 
-		this.joysticks = new Array<Joystick>();
+		this.joysticks = new Joysticks();
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
@@ -54,17 +55,13 @@ export class GameState {
 		this.touches = touches;
 		const touch_x = new_touch.pageX;
 		const touch_y = new_touch.pageY;
-		if (touch_x < (window_W / 2)) {
-			if (!this.joysticks.find(joystick => joystick.id === "LEFT")) {
-				this.joysticks.push(new Joystick("LEFT", new Point(touch_x, touch_y), 40,
-					new Point(touch_x, touch_y), 20, new_touch.identifier));
-			}
+		if (touch_x < (window.innerWidth / 2)) {
+			this.joysticks.left = new Joystick("LEFT", new Point(touch_x, touch_y), 40,
+				new Point(touch_x, touch_y), 20, new_touch.identifier, () => { this.clear_direction_event(); });
 		}
 		else {
-			if (!this.joysticks.find(joystick => joystick.id === "RIGHT")) {
-				this.joysticks.push(new Joystick("RIGHT", new Point(touch_x, touch_y), 40,
-					new Point(touch_x, touch_y), 20, new_touch.identifier));
-			}
+			this.joysticks.right = new Joystick("RIGHT", new Point(touch_x, touch_y), 40,
+				new Point(touch_x, touch_y), 20, new_touch.identifier, () => { this.attack_direction_event.clear(); });
 		}
 	}
 
@@ -73,100 +70,92 @@ export class GameState {
 		const new_touches_array = TouchHelper.touchlist_to_id_array(touches);
 		const touches_removed = ArrayUtil.diff(touches_array, new_touches_array);
 
-		const joysticks_to_remove = new Array<Joystick>();
-
-		touches_removed.forEach(touch_identifier => {
-			const joystick_to_remove = this.joysticks.find(joystick => joystick.touch_identifier === touch_identifier);
-			if (joystick_to_remove != null) {
-				joysticks_to_remove.push(joystick_to_remove);
-			}
-		});
+		const current_joysticks = Array<Joystick>();
+		if (this.joysticks.left != null) {
+			current_joysticks.push(this.joysticks.left);
+		}
+		if (this.joysticks.right != null) {
+			current_joysticks.push(this.joysticks.right);
+		}
+		const joysticks_to_remove = current_joysticks.filter(joystick => touches_removed.indexOf(joystick.touch_identifier) > -1);
 
 		this.touches = touches;
 
 		joysticks_to_remove.forEach(joystick => {
-			joystick.div_zone.remove();
-			joystick.div_controller.remove();
-			ArrayUtil.remove_from_array(this.joysticks, joystick);
-			switch (joystick.id) {
-				case "LEFT":
-					this.remove_direction_event(Direction.LEFT);
-					this.remove_direction_event(Direction.RIGHT);
-					this.remove_direction_event(Direction.DOWN);
-					this.remove_direction_event(Direction.UP);
-					break;
-				case "RIGHT":
-					this.remove_attack_event(Direction.LEFT);
-					this.remove_attack_event(Direction.RIGHT);
-					this.remove_attack_event(Direction.DOWN);
-					this.remove_attack_event(Direction.UP);
-					break;
-			}
+			joystick.destroy();
+			joystick.remove_events_callback();
+			this.joysticks.remove(joystick);
 		});
 	}
 
 	public touch_move(): void {
-		if (this.joysticks.length > 0) {
-			for (let i = 0; i < this.joysticks.length; i++) {
-				const joystick = this.joysticks[i];
-				const touch = TouchHelper.get_touch_by_identifier(this.touches, joystick.touch_identifier);
-				if (touch != null) {
-					joystick.move(touch.pageX, touch.pageY);
-					switch (joystick.id) {
-						case "LEFT":
-							if (joystick.coeff_x < -0.5) {
-								this.add_direction_event(Direction.LEFT);
-								this.remove_direction_event(Direction.RIGHT);
-							}
-							else if (joystick.coeff_x > 0.5) {
-								this.add_direction_event(Direction.RIGHT);
-								this.remove_direction_event(Direction.LEFT);
-							}
-							else {
-								this.remove_direction_event(Direction.LEFT);
-								this.remove_direction_event(Direction.RIGHT);
-							}
-							if (joystick.coeff_y < -0.5) {
-								this.add_direction_event(Direction.DOWN);
-								this.remove_direction_event(Direction.UP);
-							}
-							else if (joystick.coeff_y > 0.5) {
-								this.add_direction_event(Direction.UP);
-								this.remove_direction_event(Direction.DOWN);
-							}
-							else {
-								this.remove_direction_event(Direction.DOWN);
-								this.remove_direction_event(Direction.UP);
-							}
-							break;
-						case "RIGHT":
-							if (joystick.coeff_x < -0.5) {
-								this.add_attack_event(Direction.LEFT);
-								this.remove_attack_event(Direction.RIGHT);
-							}
-							else if (joystick.coeff_x > 0.5) {
-								this.add_attack_event(Direction.RIGHT);
-								this.remove_attack_event(Direction.LEFT);
-							}
-							else {
-								this.remove_attack_event(Direction.LEFT);
-								this.remove_attack_event(Direction.RIGHT);
-							}
-							if (joystick.coeff_y < -0.5) {
-								this.add_attack_event(Direction.DOWN);
-								this.remove_attack_event(Direction.UP);
-							}
-							else if (joystick.coeff_y > 0.5) {
-								this.add_attack_event(Direction.UP);
-								this.remove_attack_event(Direction.DOWN);
-							}
-							else {
-								this.remove_attack_event(Direction.DOWN);
-								this.remove_attack_event(Direction.UP);
-							}
-							break;
-					}
-				}
+		if (this.joysticks.is_empty()) {
+			return;
+		}
+
+		const joystick_left = this.joysticks.left;
+		if (joystick_left != null) {
+			const touch_left = TouchHelper.get_touch_by_identifier(this.touches, joystick_left.touch_identifier);
+			if (touch_left == null) {
+				return;
+			}
+			joystick_left.move(touch_left.pageX, touch_left.pageY);
+			if (joystick_left.coeff_x < -0.5) {
+				this.add_direction_event(Direction.LEFT);
+				this.remove_direction_event(Direction.RIGHT);
+			}
+			else if (joystick_left.coeff_x > 0.5) {
+				this.add_direction_event(Direction.RIGHT);
+				this.remove_direction_event(Direction.LEFT);
+			}
+			else {
+				this.remove_direction_event(Direction.LEFT);
+				this.remove_direction_event(Direction.RIGHT);
+			}
+			if (joystick_left.coeff_y < -0.5) {
+				this.add_direction_event(Direction.DOWN);
+				this.remove_direction_event(Direction.UP);
+			}
+			else if (joystick_left.coeff_y > 0.5) {
+				this.add_direction_event(Direction.UP);
+				this.remove_direction_event(Direction.DOWN);
+			}
+			else {
+				this.remove_direction_event(Direction.DOWN);
+				this.remove_direction_event(Direction.UP);
+			}
+		}
+
+		const joystick_right = this.joysticks.right;
+		if (joystick_right != null) {
+			const touch_right = TouchHelper.get_touch_by_identifier(this.touches, joystick_right.touch_identifier);
+			if (touch_right == null) {
+				return;
+			}
+			joystick_right.move(touch_right.pageX, touch_right.pageY);
+			if (joystick_right.coeff_x < -0.5) {
+				this.add_attack_event(Direction.LEFT);
+				this.remove_attack_event(Direction.RIGHT);
+			}
+			else if (joystick_right.coeff_x > 0.5) {
+				this.add_attack_event(Direction.RIGHT);
+				this.remove_attack_event(Direction.LEFT);
+			}
+			else {
+				this.remove_attack_event(Direction.LEFT);
+				this.remove_attack_event(Direction.RIGHT);
+			}
+			if (joystick_right.coeff_y < -0.5) {
+				this.add_attack_event(Direction.DOWN);
+				this.remove_attack_event(Direction.UP);
+			}
+			else if (joystick_right.coeff_y > 0.5) {
+				this.add_attack_event(Direction.UP);
+				this.remove_attack_event(Direction.DOWN);
+			}
+			else {
+				this.remove_attack_event(Direction.DOWN);
+				this.remove_attack_event(Direction.UP);
 			}
 		}
 	}
@@ -185,12 +174,17 @@ export class GameState {
 	}
 
 	public remove_direction_event(direction: Direction): void {
-		if (direction != null) {
-			if (ArrayUtil.remove_from_array(this.directions_keyDown, direction)) {
-				this.direction_event.setDirection(direction, false);
-				this.jays.direction_key_up(direction);
-			}
+		if (direction != null && ArrayUtil.remove_from_array(this.directions_keyDown, direction)) {
+			this.direction_event.setDirection(direction, false);
+			this.jays.direction_key_up(direction);
 		}
+	}
+
+	public clear_direction_event(): void {
+		this.remove_direction_event(Direction.UP);
+		this.remove_direction_event(Direction.LEFT);
+		this.remove_direction_event(Direction.DOWN);
+		this.remove_direction_event(Direction.RIGHT);
 	}
 
 	public add_attack_event(direction: Direction): void {
