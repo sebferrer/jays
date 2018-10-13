@@ -69,22 +69,16 @@ export class GameState {
 		const new_touches_array = TouchHelper.touchlist_to_id_array(touches);
 		const touches_removed = ArrayUtil.diff(touches_array, new_touches_array);
 
-		const current_joysticks = Array<Joystick>();
-		if (this.joysticks.left != null) {
-			current_joysticks.push(this.joysticks.left);
-		}
-		if (this.joysticks.right != null) {
-			current_joysticks.push(this.joysticks.right);
-		}
-		const joysticks_to_remove = current_joysticks.filter(joystick => touches_removed.indexOf(joystick.touch_identifier) > -1);
+		const joysticks_to_remove = [this.joysticks.left, this.joysticks.right].filter(j => j != null && touches_removed.indexOf(j.touch_identifier) > -1);
 
 		this.touches = touches;
 
-		joysticks_to_remove.forEach(joystick => {
-			joystick.destroy();
-			joystick.remove_events_callback();
-			this.joysticks.remove(joystick);
-		});
+		for(let i = 0; i < joysticks_to_remove.length; ++i) {
+			joysticks_to_remove[i].remove_events_callback();
+			joysticks_to_remove[i].destroy();
+			this.joysticks.remove(joysticks_to_remove[i]);
+			delete joysticks_to_remove[i];
+		}
 	}
 
 	public touch_move(): void {

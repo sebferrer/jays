@@ -33,7 +33,7 @@ export class Joystick {
 		this.remove_events_callback = remove_events_callback;
 	}
 
-	public createDivs() {
+	public createDivs(): void {
 		this.rect_zone.x = (this.zone.circle.pos.x - this.zone.circle.radius);
 		this.rect_zone.y = (this.zone.circle.pos.y - this.zone.circle.radius);
 		this.rect_zone.width = this.zone.circle.radius * 2;
@@ -71,7 +71,7 @@ export class Joystick {
 		this.div_controller.style.top = (this.next_circle.pos.y - this.controller.circle.radius) + "px";
 	}
 
-	public destroy() {
+	public destroy(): void {
 		this.div_zone.remove();
 		this.div_controller.remove();
 	}
@@ -85,7 +85,7 @@ class JoystickCircle {
 		this.color = color;
 	}
 
-	public createDiv(rect: Rect, color: string) {
+	public createDiv(rect: Rect, color: string): HTMLDivElement {
 		const div = document.createElement("div");
 		div.style.width = rect.width + "px";
 		div.style.height = rect.height + "px";

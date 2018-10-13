@@ -49,7 +49,7 @@ export class SetUtil {
 		return false;
 	}
 
-	public static isSuperset(set, subset) {
+	public static isSuperset(set: Set<{}>, subset: Set<{}>): boolean {
 		for (const elem of subset) {
 			if (!set.has(elem)) {
 				return false;
@@ -58,7 +58,7 @@ export class SetUtil {
 		return true;
 	}
 	
-	public static union(setA, setB) {
+	public static union(setA: Set<{}>, setB: Set<{}>): Set<{}> {
 		const union = new Set(setA);
 		for (const elem of setB) {
 			union.add(elem);
@@ -66,7 +66,7 @@ export class SetUtil {
 		return union;
 	}
 	
-	public static intersection(setA, setB) {
+	public static intersection(setA: Set<{}>, setB: Set<{}>): Set<{}> {
 		const intersection = new Set();
 		for (const elem of setB) {
 			if (setA.has(elem)) {
@@ -76,7 +76,7 @@ export class SetUtil {
 		return intersection;
 	}
 	
-	public static difference(setA, setB) {
+	public static difference(setA: Set<{}>, setB: Set<{}>): Set<{}> {
 		const difference = new Set(setA);
 		for (const elem of setB) {
 			difference.delete(elem);
