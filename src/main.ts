@@ -1,8 +1,8 @@
+import { GameState } from "./gamestate";
 import { ImageBank } from "./image_bank";
 import { Renderer } from "./renderer";
-import { GameState } from "./gamestate";
-import { Settings } from "./settings/settings";
 import { KeyMapper } from "./settings/keymapper";
+import { Settings } from "./settings/settings";
 
 export const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 export const canvas_W = 660;

@@ -45,3 +45,10 @@ export const Direction_String = new Map<Direction, string>([
 	[Direction.LEFT, "LEFT"],
 	[Direction.RIGHT, "RIGHT"]
 ]);
+
+export const Arrow_Direction = new Map<string, Direction>([
+	["ArrowUp", Direction.UP],
+	["ArrowDown", Direction.DOWN],
+	["ArrowLeft", Direction.LEFT],
+	["ArrowRight", Direction.RIGHT]
+]);
