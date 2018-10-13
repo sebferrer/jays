@@ -1,19 +1,18 @@
-import { canvas_W, canvas_H, ctx, renderer } from "./main";
-import { TearBasic, Tear } from "./character/tear";
-import { RoomMap } from "./environment/rooms/room_map";
-import { Jays } from "./character/jays";
-import { Timer } from "./timer";
-import { DirectionEvent } from "./direction_event";
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { Direction, Arrow_Direction } from "./enum";
-import { ArrayUtil, SetUtil } from "./util";
-import { TIMERS } from "./timers";
+import { Jays } from "./character/jays";
+import { Tear, TearBasic } from "./character/tear";
+import { DirectionEvent } from "./direction_event";
+import { Arrow_Direction, Direction } from "./enum";
 import { Floor } from "./environment/floor";
-import { Point } from "./point";
-import { key_mapper } from "./main";
+import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
-import { TouchHelper } from "./touch_helper";
 import { Joysticks } from "./joysticks";
+import { canvas_H, canvas_W, ctx, key_mapper, renderer } from "./main";
+import { Point } from "./point";
+import { Timer } from "./timer";
+import { TIMERS } from "./timers";
+import { TouchHelper } from "./touch_helper";
+import { ArrayUtil, SetUtil } from "./util";
 
 export class GameState {
 	public current_map: RoomMap;

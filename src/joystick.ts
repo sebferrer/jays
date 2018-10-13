@@ -1,5 +1,5 @@
-import { Point } from "./point";
 import { Circle } from "./circle";
+import { Point } from "./point";
 import { Rect } from "./rect";
 
 export class Joystick {

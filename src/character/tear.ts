@@ -1,10 +1,10 @@
-import { ArrayUtil } from "./../util";
-import { gameState, IMAGE_BANK } from "./../main";
+import { IDrawable } from "../idrawable";
 import { Entity } from "./../entity";
 import { Direction } from "./../enum";
-import { Sprite } from "./../sprite";
+import { gameState, IMAGE_BANK } from "./../main";
 import { Point } from "./../point";
-import { IDrawable } from "../idrawable";
+import { Sprite } from "./../sprite";
+import { ArrayUtil } from "./../util";
 
 export abstract class Tear extends Entity implements IDrawable {
 	public direction: Direction;

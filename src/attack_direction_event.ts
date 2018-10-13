@@ -1,5 +1,5 @@
-import { ArrayUtil } from "./util";
 import { Direction } from "./enum";
+import { ArrayUtil } from "./util";
 
 export class AttackDirectionEvent {
 	public directions: Direction[];
