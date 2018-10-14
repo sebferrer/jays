@@ -1,3 +1,5 @@
+import { Point } from "./point";
+
 export class ArrayUtil {
 
 	/**
@@ -28,6 +30,24 @@ export class ArrayUtil {
 		if (!array.includes(obj)) {
 			array.unshift(obj);
 			return true;
+		}
+		return false;
+	}
+}
+
+export class MathUtil {
+	public static getRandomInt(max) {
+		return Math.floor(Math.random() * Math.floor(max));
+	}
+}
+
+export class PointUtil {
+	public static removeFromArray(array: any, point: Point): boolean {
+		for(let i = 0; i < array.length; i++) {
+			if(array[i].x === point.x && array[i].y === point.y) {
+				array.splice(ArrayUtil.getIndex(array, point), 1);
+				return true;
+			}
 		}
 		return false;
 	}
