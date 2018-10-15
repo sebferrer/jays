@@ -16,13 +16,13 @@ const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapColorConfig>{
 		visited_border: "#000",
 		visited_fill: "#ffffff",
-
+		
 		not_visited_border: "#000",
 		not_visited_fill: "#ffffff",
-
+		
 		glimpsed_border: "#000",
 		glimpsed_fill: "#fff",
-
+		
 		active_border: "#000",
 		active_fill: "#ffffff"
 	},
@@ -35,9 +35,9 @@ const MINIMAP_CONFIG: IMiniMapConfiguration = {
 
 export class FloorMap implements IDrawable {
 	public maps_grid: Array<RoomMap[]>;
-
+	
 	public get current_room(): RoomMap { return this.maps_grid[this.current_position.y][this.current_position.x]; }
-
+	
 	public get room_to_top(): RoomMap {
 		if (this.current_position.y < (this.max_floor_map_height - 1) && this.maps_grid[this.current_position.y + 1][this.current_position.x] != null) {
 			return this.maps_grid[this.current_position.y + 1][this.current_position.x];
@@ -50,7 +50,7 @@ export class FloorMap implements IDrawable {
 		}
 		return null;
 	}
-
+	
 	public get room_to_right(): RoomMap {
 		if (this.current_position.x < (this.max_floor_map_width - 1) && this.maps_grid[this.current_position.y][this.current_position.x + 1] != null) {
 			return this.maps_grid[this.current_position.y][this.current_position.x + 1];
@@ -63,39 +63,39 @@ export class FloorMap implements IDrawable {
 		}
 		return null;
 	}
-
+	
 	public get adjacent_rooms(): RoomMap[] {
 		return [this.room_to_top, this.room_to_bottom, this.room_to_left, this.room_to_right].filter(r => r != null);
 	}
-
+	
 	/** Position on the current map */
 	public current_position: Point;
-
+	
 	private max_floor_map_height = 10;
 	private max_floor_map_width = 10;
-
+	
 	private path: Array<Point>;
-
+	
 	constructor() {
 		// Generate a static map, for now
-
+		
 		//this.path = new Array<Point>();
-
+		
 		let connected = false;
 		while(!connected/* && this.path.length < 20*/) {
 			//console.log(this.path.length);
 			this.generate_maps_grid();
 			connected = this.is_connected();
 		}
-
+		
 		//console.log(this.path.length);
 		//this.update_path();
-
+		
 		console.log(">> "+this.findNumberConnected(2, 2, this.maps_grid_to_boolean()));
 		//console.log(boolean_map);
 		console.log(this.path.length);
 		//console.log(">> " + this.is_connected());
-
+		
 		/*for(let i = 0; i < 10; i++) {
 			for(let j = 0; j < 10; j++) {
 				if(this.maps_grid[i][j] == null) {
@@ -104,44 +104,43 @@ export class FloorMap implements IDrawable {
 			}
 		}*/
 	}
-
+	
 	public generate_maps_grid() {
 		this.maps_grid = new Array<RoomMap[]>(this.max_floor_map_height);
 		for (let i = 0; i < this.max_floor_map_height; ++i) {
 			this.maps_grid[i] = new Array<RoomMap>(this.max_floor_map_width);
 		}
-
+		
 		this.current_position = new Point(2, 2);
-
+		
 		const first_path = new Array<Point>();
-		this.path = new Array<Point>();
-
-
+		this.path = new Array<Point>();			
 		let cur = new Point(this.current_position.x, this.current_position.y);
 		this.maps_grid[this.current_position.x][this.current_position.y] = new EmptyGrassRoom();
-
-
-		for (let i = 0; i < 10; ++i) {
-			cur = this.next_point(cur);
-			if (cur.x >= 0 && cur.x < this.max_floor_map_width && cur.y >= 0 && cur.y < this.max_floor_map_height && this.maps_grid[cur.x][cur.y] == null) {
-				this.maps_grid[cur.x][cur.y] = new BossRoom([Direction.LEFT]);
+		
+		for (let i = 0; i < 5; ++i) {
+			const possible_directions = this.get_possible_directions(cur, this.maps_grid);
+			cur = this.next_point2(cur, possible_directions).point;
+			if (this.maps_grid[cur.y][cur.x] == null) {
+				this.maps_grid[cur.y][cur.x] = new BossRoom([Direction.LEFT]);
 				first_path.push(new Point(cur.x, cur.y));
 				this.path.push(new Point(cur.x, cur.y));
 			}
 		}
-
+		
 		for (let i = 0; i < first_path.length; ++i) {
 			cur = new Point(first_path[i].x, first_path[i].y);
-			for (let i = 0; i < 6; ++i) {
-				cur = this.next_point(cur);
-				if (cur.x >= 0 && cur.x < this.max_floor_map_width && cur.y >= 0 && cur.y < this.max_floor_map_height && this.maps_grid[cur.x][cur.y] == null) {
-					this.maps_grid[cur.x][cur.y] = new EmptyGrassRoom();
+			for (let j = 0; j < 6; ++j) {
+				const possible_directions = this.get_possible_directions(cur, this.maps_grid);
+				cur = this.next_point2(cur, possible_directions).point;
+				if (this.maps_grid[cur.y][cur.x] == null) {
+					this.maps_grid[cur.y][cur.x] = new EmptyGrassRoom();
 					this.path.push(new Point(cur.x, cur.y));
 				}
 			}
 		}
 		this.path.push(new Point(this.current_position.x, this.current_position.y));
-
+		
 		for (let i = 0; i < this.path.length; i++) {
 			//console.log(this.get_nb_surrounding(this.maps_grid, second_path[i]) + " --> "+second_path[i].x+" -- "+second_path[i].y);
 			const surrounding = this.get_surrounding(this.maps_grid, this.path[i]);
@@ -150,18 +149,18 @@ export class FloorMap implements IDrawable {
 					// TODO check is not twice the same rand
 					const rand = MathUtil.getRandomInt(surrounding.length);
 					if (surrounding[rand].x !== this.current_position.x && surrounding[rand].y !== this.current_position.y) {
-						this.maps_grid[surrounding[rand].x][surrounding[rand].y] = null;
-						PointUtil.removeFromArray(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
+						this.maps_grid[surrounding[rand].y][surrounding[rand].x] = null;
+						PointUtil.removeFromArray(this.path, new Point(surrounding[rand].y, surrounding[rand].x));
 					}
 				}
 			}
 		}
 	}
-
+	
 	public is_connected(): boolean {
 		return this.path.length === this.findNumberConnected(this.current_position.x, this.current_position.y, this.maps_grid_to_boolean());
 	}
-
+	
 	public maps_grid_to_boolean(): Array<Array<number>> {
 		const boolean_map = new Array<Array<number>>();
 		for(let i = 0; i < 10; i++) {
@@ -178,7 +177,7 @@ export class FloorMap implements IDrawable {
 		}
 		return boolean_map;
 	}
-
+	
 	// Can do a +1 mistake
 	// I use it to check is the graph is connected
 	public findNumberConnected(a: number, b: number, z: Array<Array<number>>): number {
@@ -186,16 +185,16 @@ export class FloorMap implements IDrawable {
 		const canDown = (a + 1 < z.length);
 		const canRight = (b + 1 < z[0].length);
 		const canLeft = (b - 1 >= 0);
-
+		
 		const value = z[a][b];
-
+		
 		let up = 0;
 		let down = 0;
 		let right = 0;
 		let left = 0;
-
+		
 		z[a][b] = 2;
-
+		
 		if (canUp && z[a - 1][b] === value) {
 			up = this.findNumberConnected(a - 1, b, z);
 		}
@@ -208,10 +207,39 @@ export class FloorMap implements IDrawable {
 		if (canRight && z[a][b + 1] === value) {
 			right = this.findNumberConnected(a, b + 1, z);
 		}
-
+		
 		return up + left + right + down + 1;
 	}
-
+	
+	public next_point2(cur: Point, possible_directions: Direction[]): { point: Point, direction: Direction } {
+		const direction = possible_directions[MathUtil.getRandomInt(possible_directions.length)];
+		let point: Point;
+		switch(direction) {
+			case Direction.LEFT: point = new Point(cur.x - 1, cur.y); break;
+			case Direction.RIGHT: point = new Point(cur.x + 1, cur.y); break;
+			case Direction.DOWN: point = new Point(cur.x - 1, cur.y + 1); break;
+			case Direction.UP: point = new Point(cur.x - 1, cur.y - 1); break;
+		}
+		return { point, direction };
+	}
+	
+	public get_possible_directions(cur: Point, grid: Array<RoomMap[]>): Direction[] {
+		const result = new Array<Direction>();
+		if(cur.x > 0) {
+			result.push(Direction.LEFT);
+		}
+		if(cur.x < grid[cur.y].length - 1) {
+			result.push(Direction.RIGHT);
+		}
+		if(cur.y > 0) {
+			result.push(Direction.UP);
+		}
+		if(cur.y < grid.length - 1) {
+			result.push(Direction.DOWN);
+		}
+		return result;
+	}
+	
 	public next_point(cur: Point): Point {
 		const rand = Math.random();
 		if (rand < 0.25) {
@@ -225,13 +253,13 @@ export class FloorMap implements IDrawable {
 		}
 		return cur;
 	}
-
+	
 	public get_surrounding(array: Array<RoomMap[]>, p: Point): Array<Point> {
 		const surrounding = new Array<Point>();
-
+		
 		const rowLimit = array.length - 1;
 		const columnLimit = array[0].length - 1;
-
+		
 		for (var x = Math.max(0, p.x - 1); x <= Math.min(p.x + 1, rowLimit); x++) {
 			for (var y = Math.max(0, p.y - 1); y <= Math.min(p.y + 1, columnLimit); y++) {
 				if ((x !== p.x || y !== p.y) && array[x][y] != null) {
@@ -241,7 +269,7 @@ export class FloorMap implements IDrawable {
 		}
 		return surrounding;
 	}
-
+	
 	public next_room(direction: Direction = null): RoomMap {
 		if (direction != null) {
 			switch (direction) {
@@ -252,16 +280,16 @@ export class FloorMap implements IDrawable {
 				default: throw new Error(`Unknown or invalid direction ${direction}`);
 			}
 		}
-
+		
 		// Visited
 		this.current_room.has_been_visited = true;
-
+		
 		// Glimpse
 		this.adjacent_rooms.forEach(room => room.has_been_glimpsed = true);
-
+		
 		return this.current_room;
 	}
-
+	
 	public draw(context: CanvasRenderingContext2D, config: IMiniMapConfiguration = MINIMAP_CONFIG): void {
 		for (let x = 0; x < this.maps_grid.length; ++x) {
 			for (let y = 0; y < this.maps_grid[x].length; ++y) {
@@ -269,7 +297,7 @@ export class FloorMap implements IDrawable {
 				if (room == null) {
 					continue;
 				}
-
+				
 				const position = new Point(x, y);
 				if (isCustomRoom(room)) {
 					this.draw_custom_room(context, room, config, position);
@@ -279,77 +307,77 @@ export class FloorMap implements IDrawable {
 			}
 		}
 	}
-
+	
 	private draw_standard_room(
 		context: CanvasRenderingContext2D,
 		room: RoomMap,
 		config: IMiniMapConfiguration,
 		position: Point
-	) {
-		if (room === this.current_room) {
-			context.strokeStyle = config.colors.active_border;
-			context.fillStyle = config.colors.active_fill;
-			context.lineWidth = 8;
-		} else if (room.has_been_visited) {
-			context.strokeStyle = config.colors.visited_border;
-			context.fillStyle = config.colors.visited_fill;
-			context.lineWidth = 1;
-		} else if (room.has_been_glimpsed) {
-			context.strokeStyle = config.colors.glimpsed_border;
-			context.fillStyle = config.colors.glimpsed_fill;
-			context.lineWidth = 1;
-		} else {
-			context.strokeStyle = config.colors.not_visited_border;
-			context.fillStyle = config.colors.not_visited_fill;
-			context.lineWidth = 1;
-		}
-
-		const destination = new Point(
-			context.canvas.width - ((config.sizes.room_width + config.sizes.room_margin) * (this.max_floor_map_width - position.x) + config.sizes.room_margin),
-			(config.sizes.room_height + config.sizes.room_margin) * position.y + config.sizes.room_margin,
-		);
-
-		renderer.fill_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
-		renderer.stroke_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
-	}
-
-	private draw_custom_room(
-		context: CanvasRenderingContext2D,
-		room: RoomMap & ICustomRoom,
-		base_config: IMiniMapConfiguration,
-		position: Point
-	) {
-		const destination = new Point(
-			context.canvas.width - ((base_config.sizes.room_width + base_config.sizes.room_margin) * (this.max_floor_map_width - position.x) + base_config.sizes.room_margin),
-			(base_config.sizes.room_height + base_config.sizes.room_margin) * position.y + base_config.sizes.room_margin,
-		);
-
-		const config = this.merge_color_config(base_config, room.color_configuration);
-
-		this.draw_standard_room(context, room, config, position);
-
-		if (/*room.has_been_visited || room.has_been_glimpsed*/ true) {
-			const icon_room = room as ICustomRoom;
-			context.drawImage(
-				IMAGE_BANK.pictures[icon_room.icon.sprite_sheet_path],
-				icon_room.icon.top_left.x, icon_room.icon.top_left.y,
-				icon_room.icon.width, icon_room.icon.height,
-				destination.x + (base_config.sizes.room_width - icon_room.icon.width) / 2,
-				destination.y + (base_config.sizes.room_height - icon_room.icon.height) / 2,
-				icon_room.icon.width, icon_room.icon.height
-			);
-		}
-	}
-
-	private merge_color_config(
-		base_config: IMiniMapConfiguration,
-		color_configuration: IMiniMapColorConfig
-	): IMiniMapConfiguration {
-		const result = <IMiniMapConfiguration>{ sizes: {}, colors: {} };
-		Object.keys(base_config.sizes).forEach(object_key => result.sizes[object_key] = base_config.sizes[object_key]);
-		Object.keys(base_config.colors).forEach(key => {
-			result.colors[key] = color_configuration[key] != null ? color_configuration[key] : base_config.colors[key];
-		});
-		return result;
-	}
-}
+		) {
+			if (room === this.current_room) {
+				context.strokeStyle = config.colors.active_border;
+				context.fillStyle = config.colors.active_fill;
+				context.lineWidth = 8;
+			} else if (room.has_been_visited) {
+				context.strokeStyle = config.colors.visited_border;
+				context.fillStyle = config.colors.visited_fill;
+				context.lineWidth = 1;
+			} else if (room.has_been_glimpsed) {
+				context.strokeStyle = config.colors.glimpsed_border;
+				context.fillStyle = config.colors.glimpsed_fill;
+				context.lineWidth = 1;
+			} else {
+				context.strokeStyle = config.colors.not_visited_border;
+				context.fillStyle = config.colors.not_visited_fill;
+				context.lineWidth = 1;
+			}
+			
+			const destination = new Point(
+				context.canvas.width - ((config.sizes.room_width + config.sizes.room_margin) * (this.max_floor_map_width - position.x) + config.sizes.room_margin),
+				(config.sizes.room_height + config.sizes.room_margin) * position.y + config.sizes.room_margin,
+				);
+				
+				renderer.fill_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
+				renderer.stroke_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
+			}
+			
+			private draw_custom_room(
+				context: CanvasRenderingContext2D,
+				room: RoomMap & ICustomRoom,
+				base_config: IMiniMapConfiguration,
+				position: Point
+				) {
+					const destination = new Point(
+						context.canvas.width - ((base_config.sizes.room_width + base_config.sizes.room_margin) * (this.max_floor_map_width - position.x) + base_config.sizes.room_margin),
+						(base_config.sizes.room_height + base_config.sizes.room_margin) * position.y + base_config.sizes.room_margin,
+						);
+						
+						const config = this.merge_color_config(base_config, room.color_configuration);
+						
+						this.draw_standard_room(context, room, config, position);
+						
+						if (/*room.has_been_visited || room.has_been_glimpsed*/ true) {
+							const icon_room = room as ICustomRoom;
+							context.drawImage(
+								IMAGE_BANK.pictures[icon_room.icon.sprite_sheet_path],
+								icon_room.icon.top_left.x, icon_room.icon.top_left.y,
+								icon_room.icon.width, icon_room.icon.height,
+								destination.x + (base_config.sizes.room_width - icon_room.icon.width) / 2,
+								destination.y + (base_config.sizes.room_height - icon_room.icon.height) / 2,
+								icon_room.icon.width, icon_room.icon.height
+								);
+							}
+						}
+						
+						private merge_color_config(
+							base_config: IMiniMapConfiguration,
+							color_configuration: IMiniMapColorConfig
+							): IMiniMapConfiguration {
+								const result = <IMiniMapConfiguration>{ sizes: {}, colors: {} };
+								Object.keys(base_config.sizes).forEach(object_key => result.sizes[object_key] = base_config.sizes[object_key]);
+								Object.keys(base_config.colors).forEach(key => {
+									result.colors[key] = color_configuration[key] != null ? color_configuration[key] : base_config.colors[key];
+								});
+								return result;
+							}
+						}
