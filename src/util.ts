@@ -42,13 +42,7 @@ export class MathUtil {
 }
 
 export class PointUtil {
-	public static removeFromArray(array: any, point: Point): boolean {
-		for(let i = 0; i < array.length; i++) {
-			if(array[i].x === point.x && array[i].y === point.y) {
-				array.splice(ArrayUtil.getIndex(array, point), 1);
-				return true;
-			}
-		}
-		return false;
+	public static removeFromArray(array: any, point: Point): any {
+		return array.filter(p => !p.equals(point));
 	}
 }

@@ -14,4 +14,8 @@ export class Point {
 	public static copy(point: Point): Point {
 		return point == null ? new Point() : new Point(point.x, point.y);
 	}
+
+	public equals(point: Point): boolean {
+		return this.x === point.x && this.y === point.y;
+	}
 }

@@ -81,19 +81,20 @@ export class FloorMap implements IDrawable {
 		
 		//this.path = new Array<Point>();
 		
-		let connected = false;
-		while(!connected/* && this.path.length < 20*/) {
+		/*let connected = false;
+		while(!connected) {
 			//console.log(this.path.length);
 			this.generate_maps_grid();
 			connected = this.is_connected();
-		}
-		
+		}*/
+		this.generate_maps_grid();
+
 		//console.log(this.path.length);
 		//this.update_path();
 		
-		console.log(">> "+this.findNumberConnected(2, 2, this.maps_grid_to_boolean()));
+		//console.log(">> "+this.find_nb_connected(2, 2, this.maps_grid_to_boolean()));
 		//console.log(boolean_map);
-		console.log(this.path.length);
+		//console.log(this.path.length);
 		//console.log(">> " + this.is_connected());
 		
 		/*for(let i = 0; i < 10; i++) {
@@ -104,7 +105,7 @@ export class FloorMap implements IDrawable {
 			}
 		}*/
 	}
-	
+
 	public generate_maps_grid() {
 		this.maps_grid = new Array<RoomMap[]>(this.max_floor_map_height);
 		for (let i = 0; i < this.max_floor_map_height; ++i) {
@@ -116,49 +117,65 @@ export class FloorMap implements IDrawable {
 		const first_path = new Array<Point>();
 		this.path = new Array<Point>();			
 		let cur = new Point(this.current_position.x, this.current_position.y);
-		this.maps_grid[this.current_position.x][this.current_position.y] = new EmptyGrassRoom();
+		this.maps_grid[this.current_position.y][this.current_position.x] = new EmptyGrassRoom();
+		this.path.push(new Point(this.current_position.x, this.current_position.y));
 		
+		// First rando path
 		for (let i = 0; i < 5; ++i) {
 			const possible_directions = this.get_possible_directions(cur, this.maps_grid);
-			cur = this.next_point2(cur, possible_directions).point;
+			cur = this.next_point(cur, possible_directions).point;
 			if (this.maps_grid[cur.y][cur.x] == null) {
-				this.maps_grid[cur.y][cur.x] = new BossRoom([Direction.LEFT]);
+				this.maps_grid[cur.y][cur.x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
 				first_path.push(new Point(cur.x, cur.y));
 				this.path.push(new Point(cur.x, cur.y));
 			}
 		}
 		
+		// Ramifications from the first random path
 		for (let i = 0; i < first_path.length; ++i) {
 			cur = new Point(first_path[i].x, first_path[i].y);
 			for (let j = 0; j < 6; ++j) {
 				const possible_directions = this.get_possible_directions(cur, this.maps_grid);
-				cur = this.next_point2(cur, possible_directions).point;
+				cur = this.next_point(cur, possible_directions).point;
 				if (this.maps_grid[cur.y][cur.x] == null) {
-					this.maps_grid[cur.y][cur.x] = new EmptyGrassRoom();
+					this.maps_grid[cur.y][cur.x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
 					this.path.push(new Point(cur.x, cur.y));
 				}
 			}
 		}
-		this.path.push(new Point(this.current_position.x, this.current_position.y));
 		
+		// When compact blocs detected, removes randomly 2 room_map from the center of the bloc,
+		// if it doesn't break the floor_map
 		for (let i = 0; i < this.path.length; i++) {
-			//console.log(this.get_nb_surrounding(this.maps_grid, second_path[i]) + " --> "+second_path[i].x+" -- "+second_path[i].y);
-			const surrounding = this.get_surrounding(this.maps_grid, this.path[i]);
-			if (surrounding.length >= 6) {
+			let surrounding = this.get_surrounding_removable(this.maps_grid, this.path[i]);
+			if (surrounding != null) {
 				for (let j = 0; j < 2; j++) {
-					// TODO check is not twice the same rand
 					const rand = MathUtil.getRandomInt(surrounding.length);
-					if (surrounding[rand].x !== this.current_position.x && surrounding[rand].y !== this.current_position.y) {
+					const bool_maps_grid_tmp = this.maps_grid_to_boolean();
+					bool_maps_grid_tmp[surrounding[rand].y][surrounding[rand].x] = 0;
+					// Issue: if it detects that if would break the floor_map, twice in a rom for example, it will do nothing
+					/** TODO fix that */
+					if(this.is_connected(bool_maps_grid_tmp)) {
 						this.maps_grid[surrounding[rand].y][surrounding[rand].x] = null;
-						PointUtil.removeFromArray(this.path, new Point(surrounding[rand].y, surrounding[rand].x));
+						this.path = PointUtil.removeFromArray(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
+						surrounding = this.path[i] == null ? null : this.get_surrounding_removable(this.maps_grid, this.path[i]);
+						if(surrounding == null) {
+							break;
+						}
 					}
+					/*else {
+						
+					}*/
 				}
 			}
 		}
+		//console.log(this.path);
 	}
 	
-	public is_connected(): boolean {
-		return this.path.length === this.findNumberConnected(this.current_position.x, this.current_position.y, this.maps_grid_to_boolean());
+	public is_connected(bool_array: Array<Array<number>>): boolean {
+		return this.path.length === this.find_nb_connected(this.current_position.x, this.current_position.y, bool_array);
+		//console.log(this.path.length+" -- "+this.find_nb_connected(this.current_position.y, this.current_position.x, this.maps_grid_to_boolean()));
+		return true;
 	}
 	
 	public maps_grid_to_boolean(): Array<Array<number>> {
@@ -180,7 +197,7 @@ export class FloorMap implements IDrawable {
 	
 	// Can do a +1 mistake
 	// I use it to check is the graph is connected
-	public findNumberConnected(a: number, b: number, z: Array<Array<number>>): number {
+	public find_nb_connected(a: number, b: number, z: Array<Array<number>>): number {
 		const canUp = (a - 1 >= 0);
 		const canDown = (a + 1 < z.length);
 		const canRight = (b + 1 < z[0].length);
@@ -196,29 +213,29 @@ export class FloorMap implements IDrawable {
 		z[a][b] = 2;
 		
 		if (canUp && z[a - 1][b] === value) {
-			up = this.findNumberConnected(a - 1, b, z);
+			up = this.find_nb_connected(a - 1, b, z);
 		}
 		if (canDown && z[a + 1][b] === value) {
-			down = this.findNumberConnected(a + 1, b, z);
+			down = this.find_nb_connected(a + 1, b, z);
 		}
 		if (canLeft && z[a][b - 1] === value) {
-			left = this.findNumberConnected(a, b - 1, z);
+			left = this.find_nb_connected(a, b - 1, z);
 		}
 		if (canRight && z[a][b + 1] === value) {
-			right = this.findNumberConnected(a, b + 1, z);
+			right = this.find_nb_connected(a, b + 1, z);
 		}
 		
 		return up + left + right + down + 1;
 	}
 	
-	public next_point2(cur: Point, possible_directions: Direction[]): { point: Point, direction: Direction } {
+	public next_point(cur: Point, possible_directions: Direction[]): { point: Point, direction: Direction } {
 		const direction = possible_directions[MathUtil.getRandomInt(possible_directions.length)];
 		let point: Point;
 		switch(direction) {
 			case Direction.LEFT: point = new Point(cur.x - 1, cur.y); break;
 			case Direction.RIGHT: point = new Point(cur.x + 1, cur.y); break;
-			case Direction.DOWN: point = new Point(cur.x - 1, cur.y + 1); break;
-			case Direction.UP: point = new Point(cur.x - 1, cur.y - 1); break;
+			case Direction.DOWN: point = new Point(cur.x, cur.y + 1); break;
+			case Direction.UP: point = new Point(cur.x, cur.y - 1); break;
 		}
 		return { point, direction };
 	}
@@ -240,20 +257,7 @@ export class FloorMap implements IDrawable {
 		return result;
 	}
 	
-	public next_point(cur: Point): Point {
-		const rand = Math.random();
-		if (rand < 0.25) {
-			cur = new Point(cur.x + 1, cur.y);
-		} else if (rand >= 0.25 && rand < 0.5) {
-			cur = new Point(cur.x - 1, cur.y);
-		} else if (rand >= 0.5 && rand < 0.75) {
-			cur = new Point(cur.x, cur.y + 1);
-		} else {
-			cur = new Point(cur.x, cur.y - 1);
-		}
-		return cur;
-	}
-	
+	// Pâté detector
 	public get_surrounding(array: Array<RoomMap[]>, p: Point): Array<Point> {
 		const surrounding = new Array<Point>();
 		
@@ -268,6 +272,19 @@ export class FloorMap implements IDrawable {
 			}
 		}
 		return surrounding;
+	}
+
+	public get_surrounding_removable(array: Array<RoomMap[]>, p: Point): Array<Point> {
+		let surrounding = this.get_surrounding(array, p);
+		if (surrounding.length >= 4) {
+			for(let j = 0; j < surrounding.length; j++) {
+				if ((surrounding[j].equals(this.current_position))) {
+					surrounding = PointUtil.removeFromArray(surrounding, new Point(surrounding[j].x, surrounding[j].y));
+				}
+			}
+			return surrounding;
+		}
+		return null;
 	}
 	
 	public next_room(direction: Direction = null): RoomMap {
