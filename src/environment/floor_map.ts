@@ -123,7 +123,7 @@ export class FloorMap implements IDrawable {
 				for (let j = 0; j < 2; j++) {
 					const rand = MathUtil.getRandomInt(surrounding.length);
 					const bool_maps_grid_tmp = this.maps_grid_to_boolean();
-
+					
 					bool_maps_grid_tmp[surrounding[rand].y][surrounding[rand].x] = 0;
 					let path_tmp = this.point_array_copy(this.path);
 					path_tmp = PointUtil.removeFromArray(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
@@ -137,8 +137,10 @@ export class FloorMap implements IDrawable {
 						}
 					}
 					else {
-						this.maps_grid[surrounding[rand].y][surrounding[rand].x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
 						surrounding = PointUtil.removeFromArray(surrounding, new Point(surrounding[rand].x, surrounding[rand].y));
+						if(surrounding.length === 0) {
+							break;
+						}
 						j--;
 					}
 				}
