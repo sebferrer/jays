@@ -33,32 +33,32 @@ export class ArrayUtil {
 		return array1.filter(item => array2.indexOf(item) < 0);
 	}
 
-	public static find_nb_connected(a: number, b: number, z: Array<Array<number>>): number {
-		const canUp = (a - 1 >= 0);
-		const canDown = (a + 1 < z.length);
-		const canRight = (b + 1 < z[0].length);
-		const canLeft = (b - 1 >= 0);
+	public static find_nb_connected(x: number, y: number, array: Array<Array<number>>): number {
+		const canUp = (x - 1 >= 0);
+		const canDown = (x + 1 < array.length);
+		const canRight = (y + 1 < array[0].length);
+		const canLeft = (y - 1 >= 0);
 
-		const value = z[a][b];
+		const value = array[x][y];
 
 		let up = 0;
 		let down = 0;
 		let right = 0;
 		let left = 0;
 
-		z[a][b] = 2;
+		array[x][y] = 2;
 
-		if (canUp && z[a - 1][b] === value) {
-			up = this.find_nb_connected(a - 1, b, z);
+		if (canUp && array[x - 1][y] === value) {
+			up = this.find_nb_connected(x - 1, y, array);
 		}
-		if (canDown && z[a + 1][b] === value) {
-			down = this.find_nb_connected(a + 1, b, z);
+		if (canDown && array[x + 1][y] === value) {
+			down = this.find_nb_connected(x + 1, y, array);
 		}
-		if (canLeft && z[a][b - 1] === value) {
-			left = this.find_nb_connected(a, b - 1, z);
+		if (canLeft && array[x][y - 1] === value) {
+			left = this.find_nb_connected(x, y - 1, array);
 		}
-		if (canRight && z[a][b + 1] === value) {
-			right = this.find_nb_connected(a, b + 1, z);
+		if (canRight && array[x][y + 1] === value) {
+			right = this.find_nb_connected(x, y + 1, array);
 		}
 
 		return up + left + right + down + 1;

@@ -149,7 +149,7 @@ export class FloorMap implements IDrawable {
 	}
 
 	public is_connected(path: Array<Point>, bool_array: Array<Array<number>>): boolean {
-		return path.length === ArrayUtil.find_nb_connected(this.current_position.x, this.current_position.y, bool_array);
+		return path.length === ArrayUtil.find_nb_connected(this.current_position.y, this.current_position.x, bool_array);
 	}
 
 	public maps_grid_to_boolean(): Array<Array<number>> {
