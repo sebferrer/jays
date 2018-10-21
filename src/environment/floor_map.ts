@@ -2,15 +2,11 @@ import { Direction } from "../enum";
 import { IDrawable } from "../idrawable";
 import { IMAGE_BANK, renderer } from "../main";
 import { Point } from "../point";
+import { MathUtil, PointUtil } from "../util";
 import { ICustomRoom, isCustomRoom } from "./iicon_room";
 import { IMiniMapColorConfig, IMiniMapConfiguration, IMiniMapSizeConfig } from "./iminimap_configuration";
-import { BossRoom } from "./rooms/boss_room";
 import { EmptyGrassRoom } from "./rooms/empty_grass_room";
-import { FourFireRoom } from "./rooms/four_fire_room";
 import { RoomMap } from "./rooms/room_map";
-import { TreasureRoom } from "./rooms/treasure_room";
-import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
-import { MathUtil, ArrayUtil, PointUtil } from "../util";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapColorConfig>{
@@ -77,33 +73,7 @@ export class FloorMap implements IDrawable {
 	private path: Array<Point>;
 	
 	constructor() {
-		// Generate a static map, for now
-		
-		//this.path = new Array<Point>();
-		
-		/*let connected = false;
-		while(!connected) {
-			//console.log(this.path.length);
-			this.generate_maps_grid();
-			connected = this.is_connected();
-		}*/
 		this.generate_maps_grid();
-
-		//console.log(this.path.length);
-		//this.update_path();
-		
-		//console.log(">> "+this.find_nb_connected(2, 2, this.maps_grid_to_boolean()));
-		//console.log(boolean_map);
-		//console.log(this.path.length);
-		//console.log(">> " + this.is_connected());
-		
-		/*for(let i = 0; i < 10; i++) {
-			for(let j = 0; j < 10; j++) {
-				if(this.maps_grid[i][j] == null) {
-					this.maps_grid[i][j] = new TreasureRoom([Direction.LEFT]);
-				}
-			}
-		}*/
 	}
 
 	public generate_maps_grid() {
@@ -117,7 +87,7 @@ export class FloorMap implements IDrawable {
 		const first_path = new Array<Point>();
 		this.path = new Array<Point>();			
 		let cur = new Point(this.current_position.x, this.current_position.y);
-		this.maps_grid[this.current_position.y][this.current_position.x] = new EmptyGrassRoom();
+		this.maps_grid[this.current_position.y][this.current_position.x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
 		this.path.push(new Point(this.current_position.x, this.current_position.y));
 		
 		// First rando path
@@ -149,13 +119,16 @@ export class FloorMap implements IDrawable {
 		for (let i = 0; i < this.path.length; i++) {
 			let surrounding = this.get_surrounding_removable(this.maps_grid, this.path[i]);
 			if (surrounding != null) {
+				this.maps_grid[this.path[i].y][this.path[i].x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
 				for (let j = 0; j < 2; j++) {
 					const rand = MathUtil.getRandomInt(surrounding.length);
 					const bool_maps_grid_tmp = this.maps_grid_to_boolean();
+
 					bool_maps_grid_tmp[surrounding[rand].y][surrounding[rand].x] = 0;
-					// Issue: if it detects that if would break the floor_map, twice in a rom for example, it will do nothing
-					/** TODO fix that */
-					if(this.is_connected(bool_maps_grid_tmp)) {
+					let path_tmp = this.point_array_copy(this.path);
+					path_tmp = PointUtil.removeFromArray(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
+
+					if(this.is_connected(path_tmp, bool_maps_grid_tmp)) {
 						this.maps_grid[surrounding[rand].y][surrounding[rand].x] = null;
 						this.path = PointUtil.removeFromArray(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
 						surrounding = this.path[i] == null ? null : this.get_surrounding_removable(this.maps_grid, this.path[i]);
@@ -163,19 +136,26 @@ export class FloorMap implements IDrawable {
 							break;
 						}
 					}
-					/*else {
-						
-					}*/
+					else {
+						this.maps_grid[surrounding[rand].y][surrounding[rand].x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
+						surrounding = PointUtil.removeFromArray(surrounding, new Point(surrounding[rand].x, surrounding[rand].y));
+						j--;
+					}
 				}
 			}
 		}
-		//console.log(this.path);
+	}
+
+	public point_array_copy(array1: Array<Point>): Array<Point> {
+		const array2 = new Array<Point>();
+		for(let i = 0; i < array1.length; i++) {
+			array2.push(array1[i]);
+		}
+		return array2;
 	}
 	
-	public is_connected(bool_array: Array<Array<number>>): boolean {
-		return this.path.length === this.find_nb_connected(this.current_position.x, this.current_position.y, bool_array);
-		//console.log(this.path.length+" -- "+this.find_nb_connected(this.current_position.y, this.current_position.x, this.maps_grid_to_boolean()));
-		return true;
+	public is_connected(path: Array<Point>, bool_array: Array<Array<number>>): boolean {
+		return path.length === this.find_nb_connected(this.current_position.x, this.current_position.y, bool_array);
 	}
 	
 	public maps_grid_to_boolean(): Array<Array<number>> {
@@ -195,8 +175,6 @@ export class FloorMap implements IDrawable {
 		return boolean_map;
 	}
 	
-	// Can do a +1 mistake
-	// I use it to check is the graph is connected
 	public find_nb_connected(a: number, b: number, z: Array<Array<number>>): number {
 		const canUp = (a - 1 >= 0);
 		const canDown = (a + 1 < z.length);
@@ -227,7 +205,7 @@ export class FloorMap implements IDrawable {
 		
 		return up + left + right + down + 1;
 	}
-	
+
 	public next_point(cur: Point, possible_directions: Direction[]): { point: Point, direction: Direction } {
 		const direction = possible_directions[MathUtil.getRandomInt(possible_directions.length)];
 		let point: Point;
@@ -266,7 +244,7 @@ export class FloorMap implements IDrawable {
 		
 		for (var x = Math.max(0, p.x - 1); x <= Math.min(p.x + 1, rowLimit); x++) {
 			for (var y = Math.max(0, p.y - 1); y <= Math.min(p.y + 1, columnLimit); y++) {
-				if ((x !== p.x || y !== p.y) && array[x][y] != null) {
+				if ((x !== p.x || y !== p.y) && array[y][x] != null) {
 					surrounding.push(new Point(x, y));
 				}
 			}
@@ -276,7 +254,7 @@ export class FloorMap implements IDrawable {
 
 	public get_surrounding_removable(array: Array<RoomMap[]>, p: Point): Array<Point> {
 		let surrounding = this.get_surrounding(array, p);
-		if (surrounding.length >= 4) {
+		if (surrounding.length >= 6) {
 			for(let j = 0; j < surrounding.length; j++) {
 				if ((surrounding[j].equals(this.current_position))) {
 					surrounding = PointUtil.removeFromArray(surrounding, new Point(surrounding[j].x, surrounding[j].y));
