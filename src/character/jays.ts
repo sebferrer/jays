@@ -1,10 +1,10 @@
-import { Entity } from "../entity";
-import { gameState, canvas_H, canvas_W, IMAGE_BANK } from "../main";
-import { Direction, Direction_Int, Direction_String } from "../enum";
-import { Sprite } from "../sprite";
-import { Point } from "../point";
-import { IDrawable } from "../idrawable";
 import { Collision } from "../collision";
+import { Entity } from "../entity";
+import { Direction, Direction_Int, Direction_String } from "../enum";
+import { IDrawable } from "../idrawable";
+import { canvas_H, canvas_W, gameState, IMAGE_BANK } from "../main";
+import { Point } from "../point";
+import { Sprite } from "../sprite";
 
 export class Jays extends Entity implements IDrawable {
 	private _tear_delay: number;
@@ -37,7 +37,7 @@ export class Jays extends Entity implements IDrawable {
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 3;
 		this._tear_delay = 480;
-		this.range = 8;
+		this.range = 16;
 		this.head = new JaysHead("jays_head", new Sprite(0, 0, 20, 20), new Point(this.position.x, this.position.y - 20), Jays.head_width, Jays.head_height);
 	}
 
@@ -79,7 +79,7 @@ export class Jays extends Entity implements IDrawable {
 	}
 
 	public direction_key_up(direction: Direction): void {
-		if (gameState.directions_keyDown.length > 0) {
+		if (gameState.directions_keyDown.size > 0) {
 			gameState.get_timer("jays_sprites").restart();
 			return;
 		}

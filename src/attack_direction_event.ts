@@ -1,5 +1,5 @@
-import { ArrayUtil } from "./util";
 import { Direction } from "./enum";
+import { ArrayUtil } from "./util";
 
 export class AttackDirectionEvent {
 	public directions: Direction[];
@@ -13,10 +13,14 @@ export class AttackDirectionEvent {
 	}
 
 	public add(direction: Direction) {
-		ArrayUtil.addFirstNoDuplicate(this.directions, direction);
+		ArrayUtil.add_first_no_duplicate(this.directions, direction);
 	}
 
 	public remove(direction: Direction) {
-		ArrayUtil.removeFromArray(this.directions, direction);
+		ArrayUtil.remove_from_array(this.directions, direction);
+	}
+
+	public clear() {
+		this.directions = [];
 	}
 }
