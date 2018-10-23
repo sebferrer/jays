@@ -1,4 +1,11 @@
-import { Point } from "./point";
+export class TrimResult {
+	constructor(
+		public top: number = 0,
+		public bottom: number = 0,
+		public left: number = 0,
+		public right: number = 0
+	) { }
+}
 
 export class ArrayUtil {
 	public static get_index<T>(array: Array<T>, obj: T): number {
@@ -65,33 +72,34 @@ export class ArrayUtil {
 	}
 
 	/** Trims a 2D array by removing all the falsy values on each side of the array */
-	public static trim<T>(array: T[][]): T[][] {
+	public static trim<T>(array: T[][]): TrimResult {
+		const result = new TrimResult();
+
 		// TOP
 		while (!array[0].find(cell => !!cell)) {
+			++result.top;
 			array.splice(0, 1);
 		}
 		// BOTTOM
 		while (!array[array.length - 1].find(cell => !!cell)) {
+			++result.bottom;
 			array.splice(array.length - 1, 1);
 		}
 		// LEFT
 		while (!array.find(line => !!line[0])) {
+			++result.left;
 			for (let y = 0; y < array.length; ++y) {
 				array[y].splice(0, 1);
 			}
 		}
 		// RIGHT
 		while (!array.find(line => !!line[line.length - 1])) {
+			++result.right;
 			for (let y = 0; y < array.length; ++y) {
 				array[y].splice(array[y].length - 1, 1);
 			}
 		}
-		return array;
-	}
-
-	public remove_row<T>(array: T[][], row_index: number): T[][] {
-		array.slice(row_index - 1, 1);
-		return array;
+		return result;
 	}
 }
 
@@ -158,19 +166,5 @@ export class MathUtil {
 
 	public static get_random_int(max) {
 		return Math.floor(Math.random() * Math.floor(max));
-	}
-}
-
-export class PointUtil {
-	public static remove_from_array(array: any, point: Point): any {
-		return array.filter(p => !p.equals(point));
-	}
-
-	public static point_array_copy(array1: Array<Point>): Array<Point> {
-		const array2 = new Array<Point>();
-		for (let i = 0; i < array1.length; i++) {
-			array2.push(array1[i]);
-		}
-		return array2;
 	}
 }
