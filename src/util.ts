@@ -63,6 +63,36 @@ export class ArrayUtil {
 
 		return up + left + right + down + 1;
 	}
+
+	/** Trims a 2D array by removing all the falsy values on each side of the array */
+	public static trim<T>(array: T[][]): T[][] {
+		// TOP
+		while (!array[0].find(cell => !!cell)) {
+			array.splice(0, 1);
+		}
+		// BOTTOM
+		while (!array[array.length - 1].find(cell => !!cell)) {
+			array.splice(array.length - 1, 1);
+		}
+		// LEFT
+		while (!array.find(line => !!line[0])) {
+			for (let y = 0; y < array.length; ++y) {
+				array[y].splice(0, 1);
+			}
+		}
+		// RIGHT
+		while (!array.find(line => !!line[line.length - 1])) {
+			for (let y = 0; y < array.length; ++y) {
+				array[y].splice(array[y].length - 1, 1);
+			}
+		}
+		return array;
+	}
+
+	public remove_row<T>(array: T[][], row_index: number): T[][] {
+		array.slice(row_index - 1, 1);
+		return array;
+	}
 }
 
 export class SetUtil {

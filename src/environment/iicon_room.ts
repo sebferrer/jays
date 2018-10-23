@@ -1,9 +1,9 @@
-import { IMiniMapColorConfig } from "./iminimap_configuration";
+import { IMiniMapRoomColorsConfig } from "./iminimap_configuration";
 import { WallSprite } from "./walls/wall_sprite";
 
 /** Identifies a room which has a custom icon on the minimap */
 export interface ICustomRoom {
-	color_configuration: IMiniMapColorConfig;
+	color_configuration: IMiniMapRoomColorsConfig;
 	icon: WallSprite;
 }
 

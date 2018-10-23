@@ -4,12 +4,13 @@ import { IMAGE_BANK, renderer } from "../main";
 import { Point } from "../point";
 import { MathUtil, PointUtil, ArrayUtil } from "../util";
 import { ICustomRoom, isCustomRoom } from "./iicon_room";
-import { IMiniMapColorConfig, IMiniMapConfiguration, IMiniMapSizeConfig } from "./iminimap_configuration";
+import { IMiniMapRoomColorsConfig, IMiniMapConfiguration, IMiniMapSizeConfig } from "./iminimap_configuration";
 import { EmptyGrassRoom } from "./rooms/empty_grass_room";
 import { RoomMap } from "./rooms/room_map";
+import { MapGenerator } from "../map_generator";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
-	colors: <IMiniMapColorConfig>{
+	colors: <IMiniMapRoomColorsConfig>{
 		visited_border: "#000",
 		visited_fill: "#ffffff",
 
@@ -19,14 +20,15 @@ const MINIMAP_CONFIG: IMiniMapConfiguration = {
 		glimpsed_border: "#000",
 		glimpsed_fill: "#fff",
 
-		active_border: "#000",
-		active_fill: "#ffffff"
+		active_border: "red",
+		active_fill: "red"
 	},
 	sizes: <IMiniMapSizeConfig>{
 		room_width: 30,
 		room_height: 30,
 		room_margin: 4
-	}
+	},
+	background: "#0000ff99"
 };
 
 export class FloorMap implements IDrawable {
@@ -73,159 +75,27 @@ export class FloorMap implements IDrawable {
 	private path: Array<Point>;
 
 	constructor() {
-		this.generate_maps_grid();
-	}
 
-	public generate_maps_grid() {
-		this.maps_grid = new Array<RoomMap[]>(this.max_floor_map_height);
-		for (let i = 0; i < this.max_floor_map_height; ++i) {
-			this.maps_grid[i] = new Array<RoomMap>(this.max_floor_map_width);
+		const array = new MapGenerator().generate_grid(this.max_floor_map_width, this.max_floor_map_height);
+		this.max_floor_map_height = array.length;
+		this.max_floor_map_width = array[0].length;
+
+		this.maps_grid = new Array<RoomMap[]>(array.length);
+
+		for (let y = 0; y < this.max_floor_map_height; ++y) {
+			console.log(array[y].map(r => r ? "X" : ".").join());
 		}
 
-		this.current_position = new Point(2, 2);
-
-		const first_path = new Array<Point>();
-		this.path = new Array<Point>();
-		let cur = new Point(this.current_position.x, this.current_position.y);
-		this.maps_grid[this.current_position.y][this.current_position.x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
-		this.path.push(new Point(this.current_position.x, this.current_position.y));
-
-		// First random path
-		for (let i = 0; i < 5; ++i) {
-			const possible_directions = this.get_possible_directions(cur, this.maps_grid);
-			cur = this.next_point(cur, possible_directions).point;
-			if (this.maps_grid[cur.y][cur.x] == null) {
-				this.maps_grid[cur.y][cur.x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
-				first_path.push(new Point(cur.x, cur.y));
-				this.path.push(new Point(cur.x, cur.y));
-			}
-		}
-
-		// Ramifications from the first random path
-		for (let i = 0; i < first_path.length; ++i) {
-			cur = new Point(first_path[i].x, first_path[i].y);
-			for (let j = 0; j < 6; ++j) {
-				const possible_directions = this.get_possible_directions(cur, this.maps_grid);
-				cur = this.next_point(cur, possible_directions).point;
-				if (this.maps_grid[cur.y][cur.x] == null) {
-					this.maps_grid[cur.y][cur.x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
-					this.path.push(new Point(cur.x, cur.y));
+		for (let y = 0; y < array.length; ++y) {
+			this.maps_grid[y] = new Array<RoomMap>(array[y].length);
+			for (let x = 0; x < array[y].length; ++x) {
+				if (array[y][x]) {
+					this.current_position = new Point(x, y);
+					this.maps_grid[y][x] = new EmptyGrassRoom([Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]);
 				}
 			}
 		}
-
-		// When compact blocs detected, removes randomly 2 room_map from the center of the bloc,
-		// if it doesn't break the floor_map
-		for (let i = 0; i < this.path.length; i++) {
-			let surrounding = this.get_surrounding_removable(this.maps_grid, this.path[i]);
-			if (surrounding != null) {
-				this.maps_grid[this.path[i].y][this.path[i].x] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT, Direction.DOWN, Direction.UP]);
-				for (let j = 0; j < 2; j++) {
-					const rand = MathUtil.get_random_int(surrounding.length);
-					const bool_maps_grid_tmp = this.maps_grid_to_boolean();
-
-					bool_maps_grid_tmp[surrounding[rand].y][surrounding[rand].x] = 0;
-					let path_tmp = PointUtil.point_array_copy(this.path);
-					path_tmp = PointUtil.remove_from_array(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
-
-					if (this.is_connected(path_tmp, bool_maps_grid_tmp)) {
-						this.maps_grid[surrounding[rand].y][surrounding[rand].x] = null;
-						this.path = PointUtil.remove_from_array(this.path, new Point(surrounding[rand].x, surrounding[rand].y));
-						surrounding = this.path[i] == null ? null : this.get_surrounding_removable(this.maps_grid, this.path[i]);
-						if (surrounding == null) {
-							break;
-						}
-					}
-					else {
-						surrounding = PointUtil.remove_from_array(surrounding, new Point(surrounding[rand].x, surrounding[rand].y));
-						if (surrounding.length === 0) {
-							break;
-						}
-						j--;
-					}
-				}
-			}
-		}
-	}
-
-	public is_connected(path: Array<Point>, bool_array: Array<Array<number>>): boolean {
-		return path.length === ArrayUtil.find_nb_connected(this.current_position.y, this.current_position.x, bool_array);
-	}
-
-	public maps_grid_to_boolean(): Array<Array<number>> {
-		const boolean_map = new Array<Array<number>>();
-		for (let i = 0; i < 10; i++) {
-			const line = new Array<number>();
-			for (let j = 0; j < 10; j++) {
-				if (this.maps_grid[i][j] == null) {
-					line.push(0);
-				}
-				else {
-					line.push(1);
-				}
-			}
-			boolean_map.push(line);
-		}
-		return boolean_map;
-	}
-
-	public next_point(cur: Point, possible_directions: Direction[]): { point: Point, direction: Direction } {
-		const direction = possible_directions[MathUtil.get_random_int(possible_directions.length)];
-		let point: Point;
-		switch (direction) {
-			case Direction.LEFT: point = new Point(cur.x - 1, cur.y); break;
-			case Direction.RIGHT: point = new Point(cur.x + 1, cur.y); break;
-			case Direction.DOWN: point = new Point(cur.x, cur.y + 1); break;
-			case Direction.UP: point = new Point(cur.x, cur.y - 1); break;
-		}
-		return { point, direction };
-	}
-
-	public get_possible_directions(cur: Point, grid: Array<RoomMap[]>): Direction[] {
-		const result = new Array<Direction>();
-		if (cur.x > 0) {
-			result.push(Direction.LEFT);
-		}
-		if (cur.x < grid[cur.y].length - 1) {
-			result.push(Direction.RIGHT);
-		}
-		if (cur.y > 0) {
-			result.push(Direction.UP);
-		}
-		if (cur.y < grid.length - 1) {
-			result.push(Direction.DOWN);
-		}
-		return result;
-	}
-
-	// Pâté detector
-	public get_surrounding(array: Array<RoomMap[]>, p: Point): Array<Point> {
-		const surrounding = new Array<Point>();
-
-		const rowLimit = array.length - 1;
-		const columnLimit = array[0].length - 1;
-
-		for (var x = Math.max(0, p.x - 1); x <= Math.min(p.x + 1, rowLimit); x++) {
-			for (var y = Math.max(0, p.y - 1); y <= Math.min(p.y + 1, columnLimit); y++) {
-				if ((x !== p.x || y !== p.y) && array[y][x] != null) {
-					surrounding.push(new Point(x, y));
-				}
-			}
-		}
-		return surrounding;
-	}
-
-	public get_surrounding_removable(array: Array<RoomMap[]>, p: Point): Array<Point> {
-		let surrounding = this.get_surrounding(array, p);
-		if (surrounding.length >= 6) {
-			for (let j = 0; j < surrounding.length; j++) {
-				if ((surrounding[j].equals(this.current_position))) {
-					surrounding = PointUtil.remove_from_array(surrounding, new Point(surrounding[j].x, surrounding[j].y));
-				}
-			}
-			return surrounding;
-		}
-		return null;
+		console.log(array);
 	}
 
 	public next_room(direction: Direction = null): RoomMap {
@@ -249,14 +119,26 @@ export class FloorMap implements IDrawable {
 	}
 
 	public draw(context: CanvasRenderingContext2D, config: IMiniMapConfiguration = MINIMAP_CONFIG): void {
-		for (let x = 0; x < this.maps_grid.length; ++x) {
-			for (let y = 0; y < this.maps_grid[x].length; ++y) {
+		// Draw minimap background
+		context.fillStyle = config.background;
+		renderer.fill_round_rect(context,
+			context.canvas.width - ((this.max_floor_map_width + 1) * (config.sizes.room_width + config.sizes.room_margin)),
+			0,
+			(this.max_floor_map_width + 1) * (config.sizes.room_width + config.sizes.room_margin),
+			(this.max_floor_map_height + 1) * (config.sizes.room_height + config.sizes.room_margin),
+			6
+		);
+
+		for (let y = 0; y < this.maps_grid.length; ++y) {
+			for (let x = 0; x < this.maps_grid[y].length; ++x) {
 				const room = this.maps_grid[y][x];
 				if (room == null) {
 					continue;
 				}
 
+				// TODO: check why the coordinates must be inverted for this to work...
 				const position = new Point(x, y);
+
 				if (isCustomRoom(room)) {
 					this.draw_custom_room(context, room, config, position);
 				} else {
@@ -329,7 +211,7 @@ export class FloorMap implements IDrawable {
 
 	private merge_color_config(
 		base_config: IMiniMapConfiguration,
-		color_configuration: IMiniMapColorConfig
+		color_configuration: IMiniMapRoomColorsConfig
 	): IMiniMapConfiguration {
 		const result = <IMiniMapConfiguration>{ sizes: {}, colors: {} };
 		Object.keys(base_config.sizes).forEach(object_key => result.sizes[object_key] = base_config.sizes[object_key]);

@@ -1,4 +1,4 @@
-export interface IMiniMapColorConfig {
+export interface IMiniMapRoomColorsConfig {
 	visited_border: string;
 	visited_fill: string;
 
@@ -21,6 +21,7 @@ export interface IMiniMapSizeConfig {
 }
 
 export interface IMiniMapConfiguration {
-	colors: IMiniMapColorConfig;
+	colors: IMiniMapRoomColorsConfig;
 	sizes: IMiniMapSizeConfig;
+	background: string;
 }
