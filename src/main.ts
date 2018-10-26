@@ -4,10 +4,19 @@ import { Renderer } from "./renderer";
 import { KeyMapper } from "./settings/keymapper";
 import { Settings } from "./settings/settings";
 
-export const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 export const canvas_W = 660;
 export const canvas_H = 480;
-export const ctx = canvas.getContext("2d", { alpha: false });
+
+export const static_canvas = document.getElementById("static-canvas") as HTMLCanvasElement;
+export const static_ctx = static_canvas.getContext("2d", { alpha: false });
+
+export const dynamic_canvas = document.getElementById("dynamic-canvas") as HTMLCanvasElement;
+export const dynamic_ctx = dynamic_canvas.getContext("2d", { alpha: true });
+
+export const main_layers: Array<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D }> = [
+	{ canvas: static_canvas, ctx: static_ctx },
+	{ canvas: dynamic_canvas, ctx: dynamic_ctx }
+];
 
 export const minimap_canvas = document.getElementById("minimap-canvas") as HTMLCanvasElement;
 export const minimap_ctx = minimap_canvas.getContext("2d", { alpha: true });

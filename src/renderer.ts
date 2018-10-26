@@ -1,5 +1,5 @@
-import { ctx, canvas, canvas_W, canvas_H, minimap_ctx } from "./main";
 import { IDrawable } from "./idrawable";
+import { canvas_H, canvas_W, main_layers, minimap_ctx } from "./main";
 
 export class Renderer {
 	public zoomScale: number;
@@ -11,25 +11,25 @@ export class Renderer {
 	}
 
 	public disableSmoothing(): void {
-		ctx.webkitImageSmoothingEnabled = false;
-		ctx.mozImageSmoothingEnabled = false;
-		ctx.imageSmoothingEnabled = false;
+		main_layers.forEach(layer => {
+			layer.ctx["webkitImageSmoothingEnabled"] = false;
+			layer.ctx["mozImageSmoothingEnabled"] = false;
+			layer.ctx.imageSmoothingEnabled = false;
+		});
 	}
 
 	public scale(zoomScale?: number): void {
 		this.zoomScale = zoomScale == null ? this.zoomScaleNext.get(this.zoomScale) : zoomScale;
-		canvas.width = canvas_W * this.zoomScale;
-		canvas.height = canvas_H * this.zoomScale;
-		ctx.scale(this.zoomScale, this.zoomScale);
+		main_layers.forEach(layer => {
+			layer.canvas.width = canvas_W * this.zoomScale;
+			layer.canvas.height = canvas_H * this.zoomScale;
+			layer.ctx.scale(this.zoomScale, this.zoomScale);
+		});
 		this.disableSmoothing();
 	}
 
 	public autoScale(): void {
-		const ratio = Math.round(window.innerHeight / canvas_H * 100) / 100;
-		canvas.width = canvas_W * ratio;
-		canvas.height = canvas_H * ratio;
-		ctx.scale(ratio, ratio);
-		this.disableSmoothing();
+		this.scale(Math.round(window.innerHeight / canvas_H * 100) / 100);
 	}
 
 	public update_minimap(drawable: IDrawable): void {

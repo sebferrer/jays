@@ -38,16 +38,21 @@ canvas {
     pointer-events: none;
 }
 
-#canvas {
-    background-color: white;       
+#static-canvas {
+    z-index: 0;
+
+    background-color: white;
+}
+#dynamic-canvas {
     z-index: 1;
 }
 
 #minimap-canvas {
+    z-index: 2;
+
     position: absolute;
     top: 0;
     right: 0;
-    z-index: 2;
 }
 
 body {
