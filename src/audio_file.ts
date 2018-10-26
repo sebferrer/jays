@@ -36,9 +36,7 @@ export class AudioFile {
 			node.onended = () => resolve();
 			node.onerror = () => reject();
 		}).then(() => {
-			console.log("ended");
 			ArrayUtil.remove_from_array(this.nodes_currently_playing, node);
-			console.log(this.nodes_currently_playing.length);
 		});
 		node.play();
 	}
