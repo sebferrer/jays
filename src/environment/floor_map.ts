@@ -3,37 +3,40 @@ import { IDrawable } from "../idrawable";
 import { IMAGE_BANK, renderer } from "../main";
 import { MapGenerator } from "../map_generator";
 import { Point } from "../point";
+import { Floor } from "./floors/floor";
 import { ICustomRoom, isCustomRoom } from "./iicon_room";
 import { IMiniMapConfiguration, IMiniMapRoomColorsConfig, IMiniMapSizeConfig } from "./iminimap_configuration";
-import { EmptyGrassRoom } from "./rooms/empty_grass_room";
 import { RoomMap } from "./rooms/room_map";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
 	colors: <IMiniMapRoomColorsConfig>{
-		visited_border: "#000",
+		visited_border: "#000000aa",
 		visited_fill: "#ffffff",
 
-		not_visited_border: "#000",
-		not_visited_fill: "#ffffff",
+		not_visited_border: "#aaaaaa",
+		not_visited_fill: "#00000099",
 
-		glimpsed_border: "#000",
-		glimpsed_fill: "#fff",
+		glimpsed_border: "#aaaaaa",
+		glimpsed_fill: "#00000099",
 
-		active_border: "red",
-		active_fill: "red"
+		active_border: "#00DDFD",
+		active_fill: "#001D5A"
 	},
 	sizes: <IMiniMapSizeConfig>{
 		room_width: 30,
 		room_height: 30,
 		room_margin: 4
 	},
-	background: "#0000ff99"
+	background: "#00000000"
 };
 
 export class FloorMap implements IDrawable {
 	public maps_grid: Array<RoomMap[]>;
 
 	public get current_room(): RoomMap { return this.maps_grid[this.current_position.y][this.current_position.x]; }
+
+	private _floor: Floor;
+	public get floor(): Floor { return this._floor; }
 
 	public get room_to_top(): RoomMap {
 		if (this.current_position.y < (this.max_floor_map_height - 1) && this.maps_grid[this.current_position.y + 1][this.current_position.x] != null) {
@@ -71,23 +74,19 @@ export class FloorMap implements IDrawable {
 	private max_floor_map_height = 10;
 	private max_floor_map_width = 10;
 
-	constructor() {
+	constructor(
+		floor: Floor
+	) {
+		if (floor == null) {
+			throw new Error("Parameter 'floor' cannot be null");
+		}
+		this._floor = floor;
 
-		const grid_generation_result = new MapGenerator().generate_grid(this.max_floor_map_width, this.max_floor_map_height);
+		const map_generator = new MapGenerator();
+		const grid_generation_result = map_generator.generate_grid(this.max_floor_map_width, this.max_floor_map_height);
 		this.max_floor_map_height = grid_generation_result.grid.length;
 		this.max_floor_map_width = grid_generation_result.grid[0].length;
-
-		this.maps_grid = new Array<RoomMap[]>(grid_generation_result.grid.length);
-
-		// TODO: generate rooms in MapGenerator
-		for (let y = 0; y < grid_generation_result.grid.length; ++y) {
-			this.maps_grid[y] = new Array<RoomMap>(grid_generation_result.grid[y].length);
-			for (let x = 0; x < grid_generation_result.grid[y].length; ++x) {
-				if (grid_generation_result.grid[y][x]) {
-					this.maps_grid[y][x] = new EmptyGrassRoom([Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]);
-				}
-			}
-		}
+		this.maps_grid = map_generator.generate_rooms(grid_generation_result.grid, this.floor);
 		this.current_position = grid_generation_result.init_point;
 	}
 

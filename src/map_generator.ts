@@ -1,8 +1,11 @@
 import { Direction } from "./enum";
+import { Floor } from "./environment/floors/floor";
+import { EmptyGrassRoom } from "./environment/rooms/empty_grass_room";
+import { RoomMap } from "./environment/rooms/room_map";
 import { Point } from "./point";
 import { ArrayUtil, MathUtil } from "./util";
-import { Floor } from "./environment/floor";
-import { RoomMap } from "./environment/rooms/room_map";
+import { FourFireRoom } from "./environment/rooms/four_fire_room";
+import { BossRoom } from "./environment/rooms/boss_room";
 
 export class GridGenerationResult {
 	constructor(public grid: boolean[][], public init_point: Point) { }
@@ -91,12 +94,45 @@ export class MapGenerator {
 	}
 
 	public generate_rooms(grid: boolean[][], floor: Floor): RoomMap[][] {
-		//TODO
-		return null;
+		const result = new Array<RoomMap[]>(grid.length);
+		for (let y = 0; y < grid.length; ++y) {
+			result[y] = new Array<RoomMap>(grid[y].length);
+			for (let x = 0; x < grid[y].length; ++x) {
+				if (grid[y][x]) {
+					const doors_directions = this.get_doors_directions(x, y, grid);
+
+					// TODO: instanciate a room in the rooms available for the given floor which can have doors with these positions
+					const rand = MathUtil.get_random_int(2);
+					if (rand === 0) {
+						result[y][x] = new EmptyGrassRoom(doors_directions);
+					} else if (rand === 1) {
+						result[y][x] = new FourFireRoom(doors_directions);
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	private is_connected(current_point: Point, path: Array<Point>, bool_array: Array<Array<number>>): boolean {
 		return path.length === ArrayUtil.find_nb_connected(current_point.y, current_point.x, bool_array);
+	}
+
+	private get_doors_directions(x: number, y: number, grid: boolean[][]): Direction[] {
+		const result = new Array<Direction>();
+		if (x > 0 && grid[y][x - 1]) {
+			result.push(Direction.LEFT);
+		}
+		if (x < grid[y].length - 1 && grid[y][x + 1]) {
+			result.push(Direction.RIGHT);
+		}
+		if (y > 0 && grid[y - 1][x]) {
+			result.push(Direction.UP);
+		}
+		if (y < grid.length - 1 && grid[y + 1][x]) {
+			result.push(Direction.DOWN);
+		}
+		return result;
 	}
 
 	private get_possible_directions(cur: Point, grid: Array<boolean[]>): Direction[] {

@@ -3,7 +3,7 @@ import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
 import { Arrow_Direction, Direction } from "./enum";
-import { Floor } from "./environment/floor";
+import { Floor } from "./environment/floors/floor";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
 import { Joysticks } from "./joysticks";
@@ -13,6 +13,7 @@ import { Timer } from "./timer";
 import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
+import { TempleFloor } from "./environment/floors/one/temple_floor";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -26,7 +27,7 @@ export class GameState {
 	public touches: TouchList;
 
 	constructor() {
-		this.current_floor = new Floor(1, "", "");
+		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
 		this.current_map = this.current_floor.floor_map.current_room;
 
