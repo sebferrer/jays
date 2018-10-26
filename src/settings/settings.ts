@@ -36,13 +36,13 @@ export class Settings {
 		key_mapper.current_keyboard_type = KeyboardType[type.toUpperCase()];
 	}
 
-	public static audio_is_playing = false;
+	public static enable_audio = false;
 	public static toggleAudio() {
-		if (this.audio_is_playing) {
+		if (this.enable_audio) {
 			gameState.current_floor.base_music.pause();
 		} else {
 			gameState.current_floor.base_music.play();
 		}
-		this.audio_is_playing = ! this.audio_is_playing;
+		this.enable_audio = ! this.enable_audio;
 	}
 }

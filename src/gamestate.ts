@@ -14,6 +14,7 @@ import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
 import { TempleFloor } from "./environment/floors/one/temple_floor";
+import { Settings } from "./settings/settings";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -247,7 +248,9 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				(this.tear_audio.cloneNode(true) as HTMLAudioElement).play();
+				if (Settings.enable_audio) {
+					(this.tear_audio.cloneNode(true) as HTMLAudioElement).play();
+				}
 
 				this.tears.push(
 					new TearBasic(
