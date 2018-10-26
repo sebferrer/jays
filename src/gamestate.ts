@@ -26,6 +26,8 @@ export class GameState {
 	public joysticks: Joysticks;
 	public touches: TouchList;
 
+	private tear_audio = new Audio("assets/sounds/pew.mp3");
+
 	constructor() {
 		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
@@ -245,6 +247,8 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
+				(this.tear_audio.cloneNode(true) as HTMLAudioElement).play();
+
 				this.tears.push(
 					new TearBasic(
 						new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
