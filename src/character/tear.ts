@@ -5,10 +5,12 @@ import { gameState, IMAGE_BANK } from "./../main";
 import { Point } from "./../point";
 import { Sprite } from "./../sprite";
 import { ArrayUtil } from "./../util";
+import { AudioFile } from "../audio_file";
 
 export abstract class Tear extends Entity implements IDrawable {
 	public direction: Direction;
 	public init_pos: Point;
+	public abstract get firing_sound(): AudioFile;
 	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
 		super(id, current_sprite, pos, width, height);
 		this.init_pos = new Point(pos.x, pos.y);
@@ -40,6 +42,10 @@ export abstract class Tear extends Entity implements IDrawable {
 export class TearBasic extends Tear {
 	public speed: number;
 	public range: number;
+
+	private static _basic_tear_firing_sound = new AudioFile("assets/sounds/pew.mp3");
+	public get firing_sound(): AudioFile { return TearBasic._basic_tear_firing_sound; }
+
 	constructor(pos: Point, direction: Direction, id?: string, current_sprite?: Sprite, width?: number, height?: number) {
 		super("tear_basic", new Sprite(0, 0, 10, 10), new Point(pos.x, pos.y), 10, 10);
 		this.position.x -= this.width / 2;

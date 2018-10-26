@@ -1,10 +1,10 @@
-import { Direction } from "./enum";
-import { Floor } from "./environment/floors/floor";
-import { EmptyGrassRoom } from "./environment/rooms/empty_grass_room";
-import { RoomMap } from "./environment/rooms/room_map";
-import { Point } from "./point";
-import { ArrayUtil, MathUtil } from "./util";
-import { FourFireRoom } from "./environment/rooms/four_fire_room";
+import { Direction } from "../enum";
+import { Floor } from "./floors/floor";
+import { EmptyGrassRoom } from "./rooms/empty_grass_room";
+import { RoomMap } from "./rooms/room_map";
+import { Point } from "../point";
+import { ArrayUtil, MathUtil } from "../util";
+import { FourFireRoom } from "./rooms/four_fire_room";
 
 export class GridGenerationResult {
 	constructor(public grid: boolean[][], public init_point: Point) { }

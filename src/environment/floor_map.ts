@@ -1,11 +1,11 @@
 import { Direction } from "../enum";
 import { IDrawable } from "../idrawable";
 import { IMAGE_BANK, renderer } from "../main";
-import { MapGenerator } from "../map_generator";
 import { Point } from "../point";
 import { Floor } from "./floors/floor";
 import { ICustomRoom, isCustomRoom } from "./iicon_room";
 import { IMiniMapConfiguration, IMiniMapRoomColorsConfig, IMiniMapSizeConfig } from "./iminimap_configuration";
+import { MapGenerator } from "./map_generator";
 import { RoomMap } from "./rooms/room_map";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {

@@ -24,8 +24,6 @@ export abstract class Floor {
 		// Draw minimap
 		this.floor_map.next_room();
 		renderer.update_minimap(this.floor_map);
-
-
 	}
 
 	public on_collision_warp(door: Door) {
@@ -33,22 +31,21 @@ export abstract class Floor {
 		// Remove tears
 		gameState.tears.splice(0, gameState.tears.length);
 
+		gameState.current_map = this.floor_map.next_room(door.direction);
 		switch (door.direction) {
 			case Direction.LEFT:
-				gameState.jays.position = new Point(canvas_W - 60 - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
+				gameState.jays.position = new Point(canvas_W - gameState.current_map.room_walls.wall_height - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
 				break;
 			case Direction.RIGHT:
-				gameState.jays.position = new Point(60 + gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
+				gameState.jays.position = new Point(60, (canvas_H / 2) - (gameState.jays.height / 2));
 				break;
 			case Direction.UP:
-				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), canvas_H - 60 - gameState.jays.height / 2);
+				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), canvas_H - gameState.current_map.room_walls.wall_height - gameState.jays.height);
 				break;
 			case Direction.DOWN:
-				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), 60 + gameState.jays.height / 2);
+				gameState.jays.position = new Point((canvas_W / 2) - (gameState.jays.width / 2), gameState.current_map.room_walls.wall_height);
 				break;
 		}
-
-		gameState.current_map = this.floor_map.next_room(door.direction);
 
 		// Re-draw minimap
 		renderer.update_minimap(this.floor_map);

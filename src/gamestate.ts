@@ -1,9 +1,11 @@
 import { AttackDirectionEvent } from "./attack_direction_event";
+import { AudioFile } from "./audio_file";
 import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
 import { Arrow_Direction, Direction } from "./enum";
 import { Floor } from "./environment/floors/floor";
+import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
 import { Joysticks } from "./joysticks";
@@ -13,8 +15,6 @@ import { Timer } from "./timer";
 import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
-import { TempleFloor } from "./environment/floors/one/temple_floor";
-import { Settings } from "./settings/settings";
 
 export class GameState {
 	public current_map: RoomMap;
@@ -26,8 +26,6 @@ export class GameState {
 	public tears: Tear[];
 	public joysticks: Joysticks;
 	public touches: TouchList;
-
-	private tear_audio = new Audio("assets/sounds/pew.mp3");
 
 	constructor() {
 		this.current_floor = new TempleFloor();
@@ -248,16 +246,12 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				if (Settings.enable_audio) {
-					(this.tear_audio.cloneNode(true) as HTMLAudioElement).play();
-				}
-
-				this.tears.push(
-					new TearBasic(
-						new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
-						this.attack_direction_event.directions[0]
-					)
+				const new_tear = new TearBasic(
+					new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
+					this.attack_direction_event.directions[0]
 				);
+				this.tears.push(new_tear);
+				new_tear.firing_sound.play();
 			}
 		} else {
 			timer_tear.reset();
