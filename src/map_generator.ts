@@ -5,7 +5,6 @@ import { RoomMap } from "./environment/rooms/room_map";
 import { Point } from "./point";
 import { ArrayUtil, MathUtil } from "./util";
 import { FourFireRoom } from "./environment/rooms/four_fire_room";
-import { BossRoom } from "./environment/rooms/boss_room";
 
 export class GridGenerationResult {
 	constructor(public grid: boolean[][], public init_point: Point) { }
@@ -99,7 +98,7 @@ export class MapGenerator {
 			result[y] = new Array<RoomMap>(grid[y].length);
 			for (let x = 0; x < grid[y].length; ++x) {
 				if (grid[y][x]) {
-					const doors_directions = this.get_doors_directions(x, y, grid);
+					const doors_directions = this.get_possible_directions(new Point(x, y), grid, true);
 
 					// TODO: instanciate a room in the rooms available for the given floor which can have doors with these positions
 					const rand = MathUtil.get_random_int(2);
@@ -118,35 +117,18 @@ export class MapGenerator {
 		return path.length === ArrayUtil.find_nb_connected(current_point.y, current_point.x, bool_array);
 	}
 
-	private get_doors_directions(x: number, y: number, grid: boolean[][]): Direction[] {
+	private get_possible_directions(cur: Point, grid: Array<boolean[]>, check_value = false): Direction[] {
 		const result = new Array<Direction>();
-		if (x > 0 && grid[y][x - 1]) {
+		if (cur.x > 0 && (!check_value || grid[cur.y][cur.x - 1])) {
 			result.push(Direction.LEFT);
 		}
-		if (x < grid[y].length - 1 && grid[y][x + 1]) {
+		if (cur.x < grid[cur.y].length - 1 && (!check_value || grid[cur.y][cur.x + 1])) {
 			result.push(Direction.RIGHT);
 		}
-		if (y > 0 && grid[y - 1][x]) {
+		if (cur.y > 0 && (!check_value || grid[cur.y - 1][cur.x])) {
 			result.push(Direction.UP);
 		}
-		if (y < grid.length - 1 && grid[y + 1][x]) {
-			result.push(Direction.DOWN);
-		}
-		return result;
-	}
-
-	private get_possible_directions(cur: Point, grid: Array<boolean[]>): Direction[] {
-		const result = new Array<Direction>();
-		if (cur.x > 0) {
-			result.push(Direction.LEFT);
-		}
-		if (cur.x < grid[cur.y].length - 1) {
-			result.push(Direction.RIGHT);
-		}
-		if (cur.y > 0) {
-			result.push(Direction.UP);
-		}
-		if (cur.y < grid.length - 1) {
+		if (cur.y < grid.length - 1 && (!check_value || grid[cur.y + 1][cur.x])) {
 			result.push(Direction.DOWN);
 		}
 		return result;
