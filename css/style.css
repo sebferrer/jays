@@ -38,6 +38,20 @@ canvas {
     pointer-events: none;
 }
 
+#main-layers {
+    position: fixed;
+    left: 50%;
+    outline: 1px solid red;
+}
+#main-layers canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, 0);
+    -ms-transform: translate(-50%, 0);
+    background: transparent;
+}
+
 #static-canvas {
     z-index: 0;
 

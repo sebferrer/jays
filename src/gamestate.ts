@@ -9,7 +9,7 @@ import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
 import { Joysticks } from "./joysticks";
-import { canvas_H, canvas_W, static_ctx, key_mapper, renderer } from "./main";
+import { canvas_H, canvas_W, static_ctx, key_mapper, renderer, dynamic_ctx } from "./main";
 import { Point } from "./point";
 import { Timer } from "./timer";
 import { TIMERS } from "./timers";
@@ -220,22 +220,26 @@ export class GameState {
 		static_ctx.save();
 		static_ctx.clearRect(0, 0, canvas_W, canvas_H);
 
+		dynamic_ctx.save();
+		dynamic_ctx.clearRect(0, 0, canvas_W, canvas_H);
+
 		TIMERS.forEach(timer => timer.run());
 
 		this.current_map.draw(static_ctx);
 
 		this.tears.forEach(tear => {
-			tear.draw(static_ctx);
+			tear.draw(dynamic_ctx);
 		});
 
 		this.jays.update();
 		this.tears_update();
 
-		this.jays.draw(static_ctx);
+		this.jays.draw(dynamic_ctx);
 
 		this.touch_move();
 
 		static_ctx.restore();
+		dynamic_ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
