@@ -3,6 +3,7 @@ import { canvas_H, canvas_W, gameState, renderer } from "../../main";
 import { Point } from "../../point";
 import { FloorMap } from "../floor_map";
 import { Door } from "../walls/door";
+import { AudioFile } from "../../audio_file";
 
 export abstract class Floor {
 	public abstract get level(): number;
@@ -10,7 +11,7 @@ export abstract class Floor {
 
 	// NB: music can't be played if the user hasn't interacted with the page. Otherwise: 
 	// DOMException: play() failed because the user didn’t interact with the document first
-	public abstract get base_music(): HTMLAudioElement;
+	public abstract get base_music(): AudioFile;
 	// public abstract get available_rooms(): RoomMap[];
 
 	protected _floor_map: FloorMap;

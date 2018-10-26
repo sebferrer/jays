@@ -39,10 +39,11 @@ export class Settings {
 	public static enable_audio = false;
 	public static toggleAudio() {
 		if (this.enable_audio) {
-			gameState.current_floor.base_music.pause();
+			this.enable_audio = false;
+			gameState.current_floor.base_music.stop();
 		} else {
+			this.enable_audio = true;
 			gameState.current_floor.base_music.play();
 		}
-		this.enable_audio = ! this.enable_audio;
 	}
 }
