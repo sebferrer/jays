@@ -1,9 +1,11 @@
 import { AttackDirectionEvent } from "./attack_direction_event";
+import { AudioFile } from "./audio_file";
 import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
 import { Arrow_Direction, Direction } from "./enum";
-import { Floor } from "./environment/floor";
+import { Floor } from "./environment/floors/floor";
+import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
 import { Joysticks } from "./joysticks";
@@ -26,7 +28,7 @@ export class GameState {
 	public touches: TouchList;
 
 	constructor() {
-		this.current_floor = new Floor(1, "", "");
+		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
 		this.current_map = this.current_floor.floor_map.current_room;
 
@@ -73,7 +75,7 @@ export class GameState {
 
 		this.touches = touches;
 
-		for(let i = 0; i < joysticks_to_remove.length; ++i) {
+		for (let i = 0; i < joysticks_to_remove.length; ++i) {
 			joysticks_to_remove[i].remove_events_callback();
 			joysticks_to_remove[i].destroy();
 			this.joysticks.remove(joysticks_to_remove[i]);
@@ -244,12 +246,12 @@ export class GameState {
 		if (this.attack_direction_event.directions.length > 0) {
 			timer_tear.enable();
 			if (timer_tear.next_tick()) {
-				this.tears.push(
-					new TearBasic(
-						new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
-						this.attack_direction_event.directions[0]
-					)
+				const new_tear = new TearBasic(
+					new Point(this.jays.position.x + this.jays.width / 2, this.jays.position.y + this.jays.height / 2),
+					this.attack_direction_event.directions[0]
 				);
+				this.tears.push(new_tear);
+				new_tear.firing_sound.play();
 			}
 		} else {
 			timer_tear.reset();

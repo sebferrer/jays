@@ -35,4 +35,15 @@ export class Settings {
 		}
 		key_mapper.current_keyboard_type = KeyboardType[type.toUpperCase()];
 	}
+
+	public static enable_audio = false;
+	public static toggleAudio() {
+		if (this.enable_audio) {
+			this.enable_audio = false;
+			gameState.current_floor.base_music.stop();
+		} else {
+			this.enable_audio = true;
+			gameState.current_floor.base_music.play();
+		}
+	}
 }

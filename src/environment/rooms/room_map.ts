@@ -1,8 +1,7 @@
-import { Warp } from "../../warp";
-import { Tile, TILE_TYPES, TILE_REF } from "../tile";
 import { IDrawable } from "../../idrawable";
-import { RoomWalls } from "../walls/room_walls";
 import { IRawMap } from "../irawmap";
+import { Tile, TILE_REF, TILE_TYPES } from "../tile";
+import { RoomWalls } from "../walls/room_walls";
 
 export abstract class RoomMap implements IDrawable {
 
@@ -20,8 +19,6 @@ export abstract class RoomMap implements IDrawable {
 
 	public get tile_height(): number { return this._tiles[0][0].height; }
 	public get tile_width(): number { return this._tiles[0][0].width; }
-
-	public warps: Warp[];
 
 	private _has_been_visited: boolean = false;
 	public get has_been_visited(): boolean { return this._has_been_visited; }
@@ -57,7 +54,6 @@ export abstract class RoomMap implements IDrawable {
 
 		this._raw_map = raw_map;
 		this._room_walls = wall;
-		this.warps = new Array<Warp>();
 		this._tiles = this.get_tiles(this.raw_map, this._room_walls);
 	}
 

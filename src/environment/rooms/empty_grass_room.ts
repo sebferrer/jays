@@ -12,7 +12,7 @@ import { IRawMap } from "../irawmap";
 
 export class EmptyGrassRoom extends RoomMap {
 
-	constructor(door_placement: Direction[]) {
+	constructor(door_placement: Direction[] = null) {
 		const raw_map = <IRawMap>{
 			width: 27, height: 18, tiles:
 				[
@@ -57,7 +57,7 @@ export class EmptyGrassRoom extends RoomMap {
 			new RoomCornerWall(Direction.BOTTOM_RIGHT, corner_sprite),
 		];
 
-		const doors = door_placement.map(placement => new Door(placement, open_door_sprite, closed_door_sprite));
+		const doors = (door_placement || []).map(placement => new Door(placement, open_door_sprite, closed_door_sprite));
 
 		const custom_elements = [
 			new CustomWallElement(Direction.UP, cracks, new Point(60, 0)),

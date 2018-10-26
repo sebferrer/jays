@@ -9,12 +9,12 @@ import { Door } from "../walls/door";
 import { canvas_W } from "../../main";
 import { CustomWallElement } from "../walls/custom_wall_element";
 import { IRawMap } from "../irawmap";
-import { IMiniMapColorConfig } from "../iminimap_configuration";
+import { IMiniMapRoomColorsConfig } from "../iminimap_configuration";
 import { ICustomRoom } from "../iicon_room";
 
 export class TreasureRoom extends RoomMap implements ICustomRoom {
 
-	public color_configuration: IMiniMapColorConfig;
+	public color_configuration: IMiniMapRoomColorsConfig;
 	public icon: WallSprite;
 
 	constructor(door_placement: Direction[]) {
@@ -74,7 +74,7 @@ export class TreasureRoom extends RoomMap implements ICustomRoom {
 
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
 
-		this.color_configuration = <IMiniMapColorConfig>{
+		this.color_configuration = <IMiniMapRoomColorsConfig>{
 			visited_border: "#feda00",
 			visited_fill: "#feda00aa",
 			glimpsed_border: "#feda00"

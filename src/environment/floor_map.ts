@@ -2,40 +2,41 @@ import { Direction } from "../enum";
 import { IDrawable } from "../idrawable";
 import { IMAGE_BANK, renderer } from "../main";
 import { Point } from "../point";
+import { Floor } from "./floors/floor";
 import { ICustomRoom, isCustomRoom } from "./iicon_room";
-import { IMiniMapColorConfig, IMiniMapConfiguration, IMiniMapSizeConfig } from "./iminimap_configuration";
-import { BossRoom } from "./rooms/boss_room";
-import { EmptyGrassRoom } from "./rooms/empty_grass_room";
-import { FourFireRoom } from "./rooms/four_fire_room";
+import { IMiniMapConfiguration, IMiniMapRoomColorsConfig, IMiniMapSizeConfig } from "./iminimap_configuration";
+import { MapGenerator } from "./map_generator";
 import { RoomMap } from "./rooms/room_map";
-import { TreasureRoom } from "./rooms/treasure_room";
-import { WaterLeftRightRoom } from "./rooms/water_left_right_room";
 
 const MINIMAP_CONFIG: IMiniMapConfiguration = {
-	colors: <IMiniMapColorConfig>{
+	colors: <IMiniMapRoomColorsConfig>{
 		visited_border: "#000000aa",
-		visited_fill: "#ffffff77",
+		visited_fill: "#ffffff",
 
-		not_visited_border: "transparent",
-		not_visited_fill: "transparent",
+		not_visited_border: "#aaaaaa",
+		not_visited_fill: "#00000099",
 
 		glimpsed_border: "#aaaaaa",
 		glimpsed_fill: "#00000099",
 
-		active_border: "#ffffff",
-		active_fill: "#ffffff"
+		active_border: "#00DDFD",
+		active_fill: "#001D5A"
 	},
 	sizes: <IMiniMapSizeConfig>{
 		room_width: 30,
 		room_height: 30,
 		room_margin: 4
-	}
+	},
+	background: "#00000000"
 };
 
 export class FloorMap implements IDrawable {
 	public maps_grid: Array<RoomMap[]>;
 
 	public get current_room(): RoomMap { return this.maps_grid[this.current_position.y][this.current_position.x]; }
+
+	private _floor: Floor;
+	public get floor(): Floor { return this._floor; }
 
 	public get room_to_top(): RoomMap {
 		if (this.current_position.y < (this.max_floor_map_height - 1) && this.maps_grid[this.current_position.y + 1][this.current_position.x] != null) {
@@ -70,32 +71,23 @@ export class FloorMap implements IDrawable {
 	/** Position on the current map */
 	public current_position: Point;
 
-	private max_floor_map_height = 5;
-	private max_floor_map_width = 5;
+	private max_floor_map_height = 10;
+	private max_floor_map_width = 10;
 
-	constructor() {
-		// Generate a static map, for now
-
-		this.maps_grid = new Array<RoomMap[]>(this.max_floor_map_height);
-		for (let i = 0; i < this.max_floor_map_height; ++i) {
-			this.maps_grid[i] = new Array<RoomMap>(this.max_floor_map_width);
+	constructor(
+		floor: Floor
+	) {
+		if (floor == null) {
+			throw new Error("Parameter 'floor' cannot be null");
 		}
+		this._floor = floor;
 
-		this.current_position = new Point(2, 2);
-
-		this.maps_grid[2][2] = new FourFireRoom([Direction.LEFT, Direction.DOWN, Direction.RIGHT]);
-		this.maps_grid[2][3] = new EmptyGrassRoom([Direction.LEFT, Direction.RIGHT]);
-		this.maps_grid[2][3].room_walls.doors.find(d => d.direction === Direction.RIGHT).is_open = false;
-
-		this.maps_grid[2][4] = new BossRoom([Direction.LEFT]);
-
-		this.maps_grid[3][2] = new WaterLeftRightRoom([Direction.UP, Direction.DOWN]);
-		this.maps_grid[4][2] = new TreasureRoom([Direction.UP]);
-		this.maps_grid[2][1] = new EmptyGrassRoom([Direction.RIGHT, Direction.UP, Direction.LEFT]);
-		this.maps_grid[2][0] = new TreasureRoom([Direction.RIGHT]);
-		this.maps_grid[1][1] = new WaterLeftRightRoom([Direction.DOWN, Direction.UP]);
-		this.maps_grid[1][1].room_walls.doors.find(d => d.direction === Direction.UP).is_open = false;
-		this.maps_grid[0][1] = new TreasureRoom([Direction.DOWN]);
+		const map_generator = new MapGenerator();
+		const grid_generation_result = map_generator.generate_grid(this.max_floor_map_width, this.max_floor_map_height);
+		this.max_floor_map_height = grid_generation_result.grid.length;
+		this.max_floor_map_width = grid_generation_result.grid[0].length;
+		this.maps_grid = map_generator.generate_rooms(grid_generation_result.grid, this.floor);
+		this.current_position = grid_generation_result.init_point;
 	}
 
 	public next_room(direction: Direction = null): RoomMap {
@@ -119,14 +111,26 @@ export class FloorMap implements IDrawable {
 	}
 
 	public draw(context: CanvasRenderingContext2D, config: IMiniMapConfiguration = MINIMAP_CONFIG): void {
-		for (let x = 0; x < this.maps_grid.length; ++x) {
-			for (let y = 0; y < this.maps_grid[x].length; ++y) {
+		// Draw minimap background
+		context.fillStyle = config.background;
+		renderer.fill_round_rect(context,
+			context.canvas.width - ((this.max_floor_map_width + 1) * (config.sizes.room_width + config.sizes.room_margin)),
+			0,
+			(this.max_floor_map_width + 1) * (config.sizes.room_width + config.sizes.room_margin),
+			(this.max_floor_map_height + 1) * (config.sizes.room_height + config.sizes.room_margin),
+			6
+		);
+
+		for (let y = 0; y < this.maps_grid.length; ++y) {
+			for (let x = 0; x < this.maps_grid[y].length; ++x) {
 				const room = this.maps_grid[y][x];
 				if (room == null) {
 					continue;
 				}
 
+				// TODO: check why the coordinates must be inverted for this to work...
 				const position = new Point(x, y);
+
 				if (isCustomRoom(room)) {
 					this.draw_custom_room(context, room, config, position);
 				} else {
@@ -184,7 +188,7 @@ export class FloorMap implements IDrawable {
 
 		this.draw_standard_room(context, room, config, position);
 
-		if (room.has_been_visited || room.has_been_glimpsed) {
+		if (/*room.has_been_visited || room.has_been_glimpsed*/ true) {
 			const icon_room = room as ICustomRoom;
 			context.drawImage(
 				IMAGE_BANK.pictures[icon_room.icon.sprite_sheet_path],
@@ -199,7 +203,7 @@ export class FloorMap implements IDrawable {
 
 	private merge_color_config(
 		base_config: IMiniMapConfiguration,
-		color_configuration: IMiniMapColorConfig
+		color_configuration: IMiniMapRoomColorsConfig
 	): IMiniMapConfiguration {
 		const result = <IMiniMapConfiguration>{ sizes: {}, colors: {} };
 		Object.keys(base_config.sizes).forEach(object_key => result.sizes[object_key] = base_config.sizes[object_key]);

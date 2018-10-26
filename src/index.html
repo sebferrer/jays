@@ -17,7 +17,8 @@
         </div>
         <div class="settings-line">
             <label for="keyboard-azerty">Azerty</label>
-            <input type="radio" id="keyboard-azerty" name="keyboard-type" value="azerty" onclick="settings.set_keyboard('azerty')" checked />
+            <input type="radio" id="keyboard-azerty" name="keyboard-type" value="azerty" onclick="settings.set_keyboard('azerty')"
+                checked />
             <label for="set-keyboard-type">Qwerty</label>
             <input type="radio" id="keyboard-azerty" name="keyboard-type" value="qwerty" onclick="settings.set_keyboard('qwerty')" />
         </div>
@@ -27,18 +28,20 @@
         </div>
         <div class="settings-line">
             <label for="jays-teardelay">Jays tear delay</label>
-            <input type="text" id="jays-teardelay" class="settings-input-text" onchange="settings.set_jays('tear_delay', this.value)"
-            />
+            <input type="text" id="jays-teardelay" class="settings-input-text" onchange="settings.set_jays('tear_delay', this.value)" />
         </div>
         <div class="settings-line">
             <label for="jays-range">Jays range</label>
             <input type="text" id="jays-range" class="settings-input-text" onchange="settings.set_jays('range', this.value)" />
         </div>
+        <div class="settings-line">
+            <button onclick="settings.toggleAudio()">Toggle audio</button>
+        </div>
     </div>
 
     <canvas id="canvas" width="660" height="480"></canvas>
 
-    <canvas id="minimap-canvas" width="300" height="480"></canvas>
+    <canvas id="minimap-canvas" width="1200" height="1200"></canvas>
 
     <script src="bundle.js"></script>
 </body>
