@@ -86,7 +86,7 @@ export class FloorMap implements IDrawable {
 		const grid_generation_result = map_generator.generate_grid(this.max_floor_map_width, this.max_floor_map_height);
 		this.max_floor_map_height = grid_generation_result.grid.length;
 		this.max_floor_map_width = grid_generation_result.grid[0].length;
-		this.maps_grid = map_generator.generate_rooms(grid_generation_result.grid, this.floor);
+		this.maps_grid = map_generator.generate_rooms(grid_generation_result,  this.floor);
 		this.current_position = grid_generation_result.init_point;
 	}
 

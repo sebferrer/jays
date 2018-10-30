@@ -11,7 +11,10 @@ import { WallSprite } from "../walls/wall_sprite";
 import { RoomMap } from "./room_map";
 import { Definition } from "./room_map_definition.decorator";
 
-@Definition([Direction.RIGHT])
+@Definition({
+	can_spawn: false,
+	possible_door_positions: [Direction.RIGHT]
+})
 export class DeadEndRightRoom extends RoomMap {
 
 	constructor(door_placement: Direction[]) {
