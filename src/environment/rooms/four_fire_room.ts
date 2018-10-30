@@ -9,7 +9,9 @@ import { Door } from "../walls/door";
 import { canvas_H } from "../../main";
 import { CustomWallElement } from "../walls/custom_wall_element";
 import { IRawMap } from "../irawmap";
+import { Definition } from "./room_map_definition.decorator";
 
+@Definition([Direction.UP, Direction.LEFT, Direction.RIGHT, Direction.LEFT])
 export class FourFireRoom extends RoomMap {
 
 	constructor(door_placement: Direction[]) {

@@ -9,7 +9,9 @@ import { Door } from "../walls/door";
 import { canvas_H, canvas_W } from "../../main";
 import { CustomWallElement } from "../walls/custom_wall_element";
 import { IRawMap } from "../irawmap";
+import { Definition } from "./room_map_definition.decorator";
 
+@Definition([Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT])
 export class EmptyGrassRoom extends RoomMap {
 
 	constructor(door_placement: Direction[] = null) {

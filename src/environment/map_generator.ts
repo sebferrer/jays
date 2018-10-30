@@ -5,6 +5,7 @@ import { RoomMap } from "./rooms/room_map";
 import { Point } from "../point";
 import { ArrayUtil, MathUtil } from "../util";
 import { FourFireRoom } from "./rooms/four_fire_room";
+import { get_room_map_definitions } from "./rooms/room_map_definition.decorator";
 
 export class GridGenerationResult {
 	constructor(public grid: boolean[][], public init_point: Point) { }
@@ -94,19 +95,22 @@ export class MapGenerator {
 
 	public generate_rooms(grid: boolean[][], floor: Floor): RoomMap[][] {
 		const result = new Array<RoomMap[]>(grid.length);
+
+		const available_rooms = floor.available_rooms;
+
 		for (let y = 0; y < grid.length; ++y) {
 			result[y] = new Array<RoomMap>(grid[y].length);
 			for (let x = 0; x < grid[y].length; ++x) {
 				if (grid[y][x]) {
 					const doors_directions = this.get_possible_directions(new Point(x, y), grid, true);
 
-					// TODO: instanciate a room in the rooms available for the given floor which can have doors with these positions
-					const rand = MathUtil.get_random_int(2);
-					if (rand === 0) {
-						result[y][x] = new EmptyGrassRoom(doors_directions);
-					} else if (rand === 1) {
-						result[y][x] = new FourFireRoom(doors_directions);
-					}
+					// Get the rooms which can have doors there
+					const possible_rooms = available_rooms.filter(definition => {
+						return doors_directions.filter(direction => definition.possible_door_positions.has(direction)).length === doors_directions.length;
+					});
+
+					const rand = MathUtil.get_random_int(possible_rooms.length);
+					result[y][x] = possible_rooms[rand].get_room_map(doors_directions);
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 import { IDrawable } from "./idrawable";
-import { canvas_H, canvas_W, main_layers, minimap_ctx } from "./main";
+import { canvas_H, canvas_W, main_layers, minimap_ctx, static_ctx } from "./main";
 
 export class Renderer {
 	public zoomScale: number;
@@ -32,9 +32,18 @@ export class Renderer {
 		this.scale(Math.round(window.innerHeight / canvas_H * 100) / 100);
 	}
 
-	public update_minimap(drawable: IDrawable): void {
+	public update_minimap(mini_map: IDrawable): void {
+		minimap_ctx.save();
 		minimap_ctx.clearRect(0, 0, minimap_ctx.canvas.width, minimap_ctx.canvas.height);
-		drawable.draw(minimap_ctx);
+		mini_map.draw(minimap_ctx);
+		minimap_ctx.restore();
+	}
+
+	public update_current_room(current_room: IDrawable): void {
+		static_ctx.save();
+		static_ctx.clearRect(0, 0, canvas_W, canvas_H);
+		current_room.draw(static_ctx);
+		static_ctx.restore();
 	}
 
 	/** Draws a rectangle with a border radius */

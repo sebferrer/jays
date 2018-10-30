@@ -17,7 +17,7 @@ import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
 
 export class GameState {
-	public current_map: RoomMap;
+	public current_room: RoomMap;
 	public current_floor: Floor;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
@@ -30,7 +30,8 @@ export class GameState {
 	constructor() {
 		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
-		this.current_map = this.current_floor.floor_map.current_room;
+		this.current_room = this.current_floor.floor_map.current_room;
+		renderer.update_current_room(this.current_room);
 
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Set<Direction>();
@@ -217,15 +218,10 @@ export class GameState {
 	}
 
 	public update(): void {
-		static_ctx.save();
-		static_ctx.clearRect(0, 0, canvas_W, canvas_H);
-
 		dynamic_ctx.save();
 		dynamic_ctx.clearRect(0, 0, canvas_W, canvas_H);
 
 		TIMERS.forEach(timer => timer.run());
-
-		this.current_map.draw(static_ctx);
 
 		this.tears.forEach(tear => {
 			tear.draw(dynamic_ctx);
@@ -237,9 +233,6 @@ export class GameState {
 		this.jays.draw(dynamic_ctx);
 
 		this.touch_move();
-
-		static_ctx.restore();
-		dynamic_ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
