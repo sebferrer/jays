@@ -3,8 +3,8 @@ import { Direction } from "../../enum";
 import { canvas_H, canvas_W, gameState, renderer } from "../../main";
 import { Point } from "../../point";
 import { FloorMap } from "../floor_map";
-import { Door } from "../walls/door";
 import { get_room_map_definitions, RoomMapDefinition } from "../rooms/room_map_definition.decorator";
+import { Door } from "../walls/door";
 
 export abstract class Floor {
 	public abstract get level(): number;
@@ -37,8 +37,9 @@ export abstract class Floor {
 		gameState.tears.splice(0, gameState.tears.length);
 
 		gameState.current_room = this.floor_map.next_room(door.direction);
+		console.log(gameState.current_room.requires_update);
 		renderer.update_current_room(gameState.current_room);
-
+		console.log(gameState.current_room.requires_update);
 		switch (door.direction) {
 			case Direction.LEFT:
 				gameState.jays.position = new Point(canvas_W - gameState.current_room.room_walls.wall_height - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));

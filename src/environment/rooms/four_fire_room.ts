@@ -1,14 +1,14 @@
-import { RoomMap } from "./room_map";
 import { Direction } from "../../enum";
-import { RoomWalls } from "../walls/room_walls";
-import { RoomCornerWall } from "../walls/corner_wall";
-import { WallSprite } from "../walls/wall_sprite";
-import { Point } from "../../point";
-import { SideWall } from "../walls/side_wall";
-import { Door } from "../walls/door";
 import { canvas_H } from "../../main";
-import { CustomWallElement } from "../walls/custom_wall_element";
+import { Point } from "../../point";
 import { IRawMap } from "../irawmap";
+import { RoomCornerWall } from "../walls/corner_wall";
+import { CustomWallElement } from "../walls/custom_wall_element";
+import { Door } from "../walls/door";
+import { RoomWalls } from "../walls/room_walls";
+import { SideWall } from "../walls/side_wall";
+import { WallSprite } from "../walls/wall_sprite";
+import { RoomMap } from "./room_map";
 import { Definition } from "./room_map_definition.decorator";
 
 @Definition({

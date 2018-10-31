@@ -1,21 +1,22 @@
-import { IDrawable } from "../../idrawable";
-import { RoomCornerWall } from "./corner_wall";
-import { SideWall } from "./side_wall";
-import { Door } from "./door";
-import { WallElement } from "./wall_element";
 import { Rectangle } from "../../collision";
 import { Direction } from "../../enum";
+import { IUpdatableDrawable } from "../../idrawable";
 import { PositionAccessor } from "../positions_accessor";
+import { RoomCornerWall } from "./corner_wall";
+import { Door } from "./door";
+import { SideWall } from "./side_wall";
+import { WallElement } from "./wall_element";
 
-export class RoomWalls implements IDrawable {
+export class RoomWalls implements IUpdatableDrawable {
+
+	protected _doors: Door[];
+	public get doors(): Door[] { return this._doors; }
+
 	protected _corner_walls: RoomCornerWall[];
 	public get corner_walls(): RoomCornerWall[] { return this._corner_walls; }
 
 	protected _side_walls: SideWall[];
 	public get side_walls(): SideWall[] { return this._side_walls; }
-
-	protected _doors: Door[];
-	public get doors(): Door[] { return this._doors; }
 
 	protected _misc_elements: WallElement[];
 	public get misc_elements(): WallElement[] { return this._misc_elements; }
@@ -26,6 +27,10 @@ export class RoomWalls implements IDrawable {
 
 	public get wall_height(): number {
 		return this.side_walls != null && this.side_walls.length > 0 ? this.side_walls[0].sprite.height : 0;
+	}
+
+	public get requires_update(): boolean {
+		return [...this.doors, ...this.corner_walls, ...this.side_walls, ...this._misc_elements].find(element => element.requires_update) != null;
 	}
 
 	constructor(

@@ -1,10 +1,9 @@
-import { Floor } from "../floor";
 import { AudioFile } from "../../../audio_file";
-import { Direction } from "../../../enum";
-import { FourFireRoom } from "../../rooms/four_fire_room";
-import { EmptyGrassRoom } from "../../rooms/empty_grass_room";
-import { WaterLeftRightRoom } from "../../rooms/water_left_right_room";
 import { DeadEndRightRoom } from "../../rooms/dead_end_right_room";
+import { EmptyGrassRoom } from "../../rooms/empty_grass_room";
+import { FourFireRoom } from "../../rooms/four_fire_room";
+import { WaterLeftRightRoom } from "../../rooms/water_left_right_room";
+import { Floor } from "../floor";
 
 export class TempleFloor extends Floor {
 	public get level(): number { return 1; }

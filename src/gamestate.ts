@@ -1,5 +1,4 @@
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { AudioFile } from "./audio_file";
 import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
@@ -9,7 +8,7 @@ import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
 import { Joysticks } from "./joysticks";
-import { canvas_H, canvas_W, static_ctx, key_mapper, renderer, dynamic_ctx } from "./main";
+import { canvas_H, canvas_W, dynamic_ctx, key_mapper, renderer } from "./main";
 import { Point } from "./point";
 import { Timer } from "./timer";
 import { TIMERS } from "./timers";

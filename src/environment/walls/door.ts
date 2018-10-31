@@ -16,6 +16,7 @@ export class Door extends WallElement {
 	protected _is_open: boolean;
 	public get is_open(): boolean { return this._is_open; }
 	public set is_open(value: boolean) {
+		this._requires_update = this.is_open === value;
 		this._is_open = value;
 		this._sprite = value ? this._open_sprite : this._closed_sprite;
 		this._exit_rectangle = null;

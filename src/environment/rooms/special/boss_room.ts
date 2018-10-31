@@ -1,18 +1,18 @@
-import { RoomMap } from "./room_map";
-import { Direction } from "../../enum";
-import { RoomWalls } from "../walls/room_walls";
-import { RoomCornerWall } from "../walls/corner_wall";
-import { WallSprite } from "../walls/wall_sprite";
-import { Point } from "../../point";
-import { SideWall } from "../walls/side_wall";
-import { Door } from "../walls/door";
-import { canvas_W } from "../../main";
-import { CustomWallElement } from "../walls/custom_wall_element";
-import { IRawMap } from "../irawmap";
-import { IMiniMapRoomColorsConfig } from "../iminimap_configuration";
-import { ICustomRoom } from "../iicon_room";
+import { Direction } from "../../../enum";
+import { canvas_W } from "../../../main";
+import { Point } from "../../../point";
+import { ICustomRoom } from "../../iicon_room";
+import { IMiniMapRoomColorsConfig } from "../../iminimap_configuration";
+import { IRawMap } from "../../irawmap";
+import { RoomCornerWall } from "../../walls/corner_wall";
+import { CustomWallElement } from "../../walls/custom_wall_element";
+import { Door } from "../../walls/door";
+import { RoomWalls } from "../../walls/room_walls";
+import { SideWall } from "../../walls/side_wall";
+import { WallSprite } from "../../walls/wall_sprite";
+import { RoomMap } from "../room_map";
 
-export class TreasureRoom extends RoomMap implements ICustomRoom {
+export class BossRoom extends RoomMap implements ICustomRoom {
 
 	public color_configuration: IMiniMapRoomColorsConfig;
 	public icon: WallSprite;
@@ -75,12 +75,12 @@ export class TreasureRoom extends RoomMap implements ICustomRoom {
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
 
 		this.color_configuration = <IMiniMapRoomColorsConfig>{
-			visited_border: "#feda00",
-			visited_fill: "#feda00aa",
-			glimpsed_border: "#feda00"
+			visited_border: "#ff0000",
+			visited_fill: "#ff0000aa",
+			glimpsed_border: "#ff0000"
 		};
 
-		this.icon = new WallSprite(new Point(22, 0), new Point(44, 22), "assets/img/minimap_icons.png");
+		this.icon = new WallSprite(new Point(0, 0), new Point(22, 22), "assets/img/minimap_icons.png");
 	}
 
 }
