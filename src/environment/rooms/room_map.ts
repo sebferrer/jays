@@ -1,9 +1,9 @@
-import { IDrawable } from "../../idrawable";
+import { IUpdatableDrawable } from "../../idrawable";
 import { IRawMap } from "../irawmap";
 import { Tile, TILE_REF, TILE_TYPES } from "../tile";
 import { RoomWalls } from "../walls/room_walls";
 
-export abstract class RoomMap implements IDrawable {
+export abstract class RoomMap implements IUpdatableDrawable {
 
 	protected _raw_map: IRawMap;
 	public get raw_map(): IRawMap { return this._raw_map; }
@@ -22,6 +22,9 @@ export abstract class RoomMap implements IDrawable {
 
 	private _has_been_visited: boolean = false;
 	public get has_been_visited(): boolean { return this._has_been_visited; }
+
+	public get requires_update(): boolean { return this.room_walls.requires_update; }
+
 	public set has_been_visited(value: boolean) {
 		if (value == null) {
 			throw new Error("Property 'has_been_visited' can not be null");

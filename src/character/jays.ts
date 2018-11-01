@@ -45,7 +45,7 @@ export class Jays extends Entity implements IDrawable {
 		super.move_direction(direction);
 
 		// Warp with doors ?
-		const collided_door = gameState.current_map.room_walls.doors
+		const collided_door = gameState.current_room.room_walls.doors
 			.find(door => Collision.is_collision_rectangle(this, door.get_exit_rectangle()));
 		if (collided_door != null) {
 			gameState.current_floor.on_collision_warp(collided_door);

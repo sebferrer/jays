@@ -39,8 +39,14 @@
         </div>
     </div>
 
-    <canvas id="canvas" width="660" height="480"></canvas>
+    <div id="main-layers">
+        <!-- Pseudo static elements -->
+        <canvas id="static-canvas" width="660" height="480"></canvas>
+        <!-- Dynamic elements -->
+        <canvas id="dynamic-canvas" width="660" height="480"></canvas>
+    </div>
 
+    <!-- Minimap -->
     <canvas id="minimap-canvas" width="1200" height="1200"></canvas>
 
     <script src="bundle.js"></script>

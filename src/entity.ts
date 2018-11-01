@@ -61,7 +61,7 @@ export abstract class Entity implements IPositionable {
 	public collision_map(direction: Direction, position: Point): CollisionDelta {
 
 		// Collision with walls
-		const collision_rectangle = gameState.current_map.room_walls
+		const collision_rectangle = gameState.current_room.room_walls
 			.get_walls_collisions_rectangles()
 			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position));
 		if (collision_rectangle != null) {
@@ -69,9 +69,9 @@ export abstract class Entity implements IPositionable {
 		}
 
 		// Collision with tiles
-		for (let i = 0; i < gameState.current_map.height; i++) {
-			for (let j = 0; j < gameState.current_map.width; j++) {
-				const current_tile = gameState.current_map.tiles[i][j];
+		for (let i = 0; i < gameState.current_room.height; i++) {
+			for (let j = 0; j < gameState.current_room.width; j++) {
+				const current_tile = gameState.current_room.tiles[i][j];
 				if (!current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile)) {
 					continue;
 				}

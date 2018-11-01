@@ -3,6 +3,7 @@
 		"src/**/*.ts"
 	],
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"noImplicitAny": false,
 		"target": "es6",
 		"rootDir": ".",

@@ -1,10 +1,8 @@
 import { Direction } from "../enum";
-import { Floor } from "./floors/floor";
-import { EmptyGrassRoom } from "./rooms/empty_grass_room";
-import { RoomMap } from "./rooms/room_map";
 import { Point } from "../point";
 import { ArrayUtil, MathUtil } from "../util";
-import { FourFireRoom } from "./rooms/four_fire_room";
+import { Floor } from "./floors/floor";
+import { RoomMap } from "./rooms/room_map";
 
 export class GridGenerationResult {
 	constructor(public grid: boolean[][], public init_point: Point) { }
@@ -92,22 +90,29 @@ export class MapGenerator {
 		return new GridGenerationResult(grid, init_point);
 	}
 
-	public generate_rooms(grid: boolean[][], floor: Floor): RoomMap[][] {
+	public generate_rooms(generation_result: GridGenerationResult, floor: Floor): RoomMap[][] {
+		const grid = generation_result.grid;
 		const result = new Array<RoomMap[]>(grid.length);
+		const available_rooms = floor.available_rooms;
+
 		for (let y = 0; y < grid.length; ++y) {
 			result[y] = new Array<RoomMap>(grid[y].length);
 			for (let x = 0; x < grid[y].length; ++x) {
-				if (grid[y][x]) {
-					const doors_directions = this.get_possible_directions(new Point(x, y), grid, true);
-
-					// TODO: instanciate a room in the rooms available for the given floor which can have doors with these positions
-					const rand = MathUtil.get_random_int(2);
-					if (rand === 0) {
-						result[y][x] = new EmptyGrassRoom(doors_directions);
-					} else if (rand === 1) {
-						result[y][x] = new FourFireRoom(doors_directions);
-					}
+				if (!grid[y][x] || result[y][x] != null) {
+					continue;
 				}
+				const current_point = new Point(x, y);
+				const doors_directions = this.get_possible_directions(current_point, grid, true);
+				const is_init_point = generation_result.init_point.equals(current_point);
+
+				// Get the rooms which can have doors there
+				const possible_rooms = available_rooms.filter(definition => {
+					return (!is_init_point || definition.can_spawn) &&
+						doors_directions.filter(direction => definition.possible_door_positions.has(direction)).length === doors_directions.length;
+				});
+
+				const rand = MathUtil.get_random_int(possible_rooms.length);
+				result[y][x] = possible_rooms[rand].get_room_map(doors_directions);
 			}
 		}
 		return result;

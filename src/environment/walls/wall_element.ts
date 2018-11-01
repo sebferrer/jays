@@ -1,12 +1,12 @@
 
 import { Direction } from "../../enum";
-import { IDrawable } from "../../idrawable";
+import { IUpdatableDrawable } from "../../idrawable";
 import { IMAGE_BANK } from "../../main";
 import { Point } from "../../point";
 import { IPositionable } from "../positions_accessor";
 import { WallSprite } from "./wall_sprite";
 
-export abstract class WallElement implements IDrawable, IPositionable {
+export abstract class WallElement implements IUpdatableDrawable, IPositionable {
 	protected _direction: Direction;
 	public get direction(): Direction { return this._direction; }
 
@@ -22,6 +22,9 @@ export abstract class WallElement implements IDrawable, IPositionable {
 
 	protected _height: number;
 	public get height(): number { return this._height; }
+
+	protected _requires_update: boolean = true;
+	public get requires_update(): boolean { return this._requires_update; }
 
 	protected _rotation_angle: number;
 
@@ -61,7 +64,7 @@ export abstract class WallElement implements IDrawable, IPositionable {
 	}
 
 	public draw(ctx: CanvasRenderingContext2D): void {
-
+		this._requires_update = false;
 		const picture = IMAGE_BANK.pictures[this.sprite.sprite_sheet_path];
 
 		// If the width/height of the element is different than the sprite's,

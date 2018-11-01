@@ -38,16 +38,35 @@ canvas {
     pointer-events: none;
 }
 
-#canvas {
-    background-color: white;       
+#main-layers {
+    position: fixed;
+    left: 50%;
+    outline: 1px solid red;
+}
+#main-layers canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, 0);
+    -ms-transform: translate(-50%, 0);
+    background: transparent;
+}
+
+#static-canvas {
+    z-index: 0;
+
+    background-color: white;
+}
+#dynamic-canvas {
     z-index: 1;
 }
 
 #minimap-canvas {
+    z-index: 2;
+
     position: absolute;
     top: 0;
     right: 0;
-    z-index: 2;
 }
 
 body {

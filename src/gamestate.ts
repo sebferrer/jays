@@ -1,5 +1,4 @@
 import { AttackDirectionEvent } from "./attack_direction_event";
-import { AudioFile } from "./audio_file";
 import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
@@ -9,7 +8,7 @@ import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
 import { Joystick } from "./joystick";
 import { Joysticks } from "./joysticks";
-import { canvas_H, canvas_W, ctx, key_mapper, renderer } from "./main";
+import { canvas_H, canvas_W, dynamic_ctx, key_mapper, renderer } from "./main";
 import { Point } from "./point";
 import { Timer } from "./timer";
 import { TIMERS } from "./timers";
@@ -17,7 +16,7 @@ import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
 
 export class GameState {
-	public current_map: RoomMap;
+	public current_room: RoomMap;
 	public current_floor: Floor;
 	public jays: Jays;
 	public direction_event: DirectionEvent;
@@ -30,7 +29,8 @@ export class GameState {
 	constructor() {
 		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
-		this.current_map = this.current_floor.floor_map.current_room;
+		this.current_room = this.current_floor.floor_map.current_room;
+		renderer.update_current_room(this.current_room);
 
 		this.direction_event = new DirectionEvent();
 		this.directions_keyDown = new Set<Direction>();
@@ -217,25 +217,21 @@ export class GameState {
 	}
 
 	public update(): void {
-		ctx.save();
-		ctx.clearRect(0, 0, canvas_W, canvas_H);
+		dynamic_ctx.save();
+		dynamic_ctx.clearRect(0, 0, canvas_W, canvas_H);
 
 		TIMERS.forEach(timer => timer.run());
 
-		this.current_map.draw(ctx);
-
 		this.tears.forEach(tear => {
-			tear.draw(ctx);
+			tear.draw(dynamic_ctx);
 		});
 
 		this.jays.update();
 		this.tears_update();
 
-		this.jays.draw(ctx);
+		this.jays.draw(dynamic_ctx);
 
 		this.touch_move();
-
-		ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
