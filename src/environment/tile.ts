@@ -52,5 +52,16 @@ export const TILE_TYPES: { [key: number]: Tile } = {
 	9: new Tile(9, "Grass light", new Point(3, 1), false),
 	10: new Tile(10, "Grass textured", new Point(4, 1), false),
 	12: new Tile(12, "Iron", new Point(1, 2), true),
-	13: new Tile(13, "better water", new Point(1, 1), true)
+	13: new Tile(13, "better water", new Point(1, 1), true),
+
+	// Rocky texture
+	14: new Tile(14, "Rocky Top left", new Point(0, 4), false),
+	15: new Tile(15, "Rocky Top", new Point(1, 4), false),
+	16: new Tile(16, "Rocky Top right", new Point(2, 4), false),
+	17: new Tile(17, "Rocky Left", new Point(0, 5), false),
+	18: new Tile(18, "Rocky Center", new Point(1, 5), false),
+	19: new Tile(19, "Rocky Right", new Point(2, 5), false),
+	20: new Tile(20, "Rocky Bottom left", new Point(0, 6), false),
+	21: new Tile(21, "Rocky Bottom", new Point(1, 6), false),
+	22: new Tile(22, "Rocky Bottom right", new Point(2, 6), false),
 };
