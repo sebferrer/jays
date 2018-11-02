@@ -41,7 +41,6 @@ canvas {
 #main-layers {
     position: fixed;
     left: 50%;
-    outline: 1px solid red;
 }
 #main-layers canvas {
     position: absolute;
@@ -77,4 +76,9 @@ body {
 
 .no-pointer-events {
     pointer-events: none;
+}
+
+.messageBox {
+    z-index: 2;
+    border-radius: 1rem;
 }

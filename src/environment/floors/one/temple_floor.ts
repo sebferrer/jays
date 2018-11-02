@@ -24,7 +24,7 @@ export class TempleFloor extends Floor {
 
 	constructor() {
 		super();
-		this._base_music = new AudioFile("assets/sounds/dungeon.mp3");
+		this._base_music = new AudioFile("assets/sounds/musics/dungeon.mp3");
 		this.base_music.loop = true;
 	}
 }

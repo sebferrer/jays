@@ -12,10 +12,14 @@ export class Renderer {
 
 	public disableSmoothing(): void {
 		main_layers.forEach(layer => {
-			layer.ctx["webkitImageSmoothingEnabled"] = false;
-			layer.ctx["mozImageSmoothingEnabled"] = false;
-			layer.ctx.imageSmoothingEnabled = false;
+			this.disableCanvasSmoothing(layer.ctx);
 		});
+	}
+
+	public disableCanvasSmoothing(context: CanvasRenderingContext2D): void {
+		context["webkitImageSmoothingEnabled"] = false;
+		context["mozImageSmoothingEnabled"] = false;
+		context.imageSmoothingEnabled = false;
 	}
 
 	public scale(zoomScale?: number): void {
