@@ -1,5 +1,5 @@
 import { AudioFile } from "./audio_file";
-import { static_canvas, renderer } from "./main";
+import { static_canvas, renderer, gameState } from "./main";
 
 /**
  * TODO: Triggers, Next messages, Stop, Text scrolling, Storage
@@ -19,6 +19,9 @@ export class MessageBox {
 	public top: number;
 	public width: number;
 	public height: number;
+	public scrolling_index: number;
+	public scrolling_text: string;
+	public scrolling_line_index: number;
 
 	constructor(content: Array<string>, character?: string, characterFont?: string,
 		sound?: AudioFile, font?: string, fontColor?: string,
@@ -34,6 +37,9 @@ export class MessageBox {
 		this.height = static_canvas.height / 5;
 		this.top = static_canvas.offsetTop + static_canvas.height - this.height - (static_canvas.height / 20);
 		this.font = font == null ? (this.height / 6) + "px 'Comic Sans MS'" : font;
+		this.scrolling_index = 0;
+		this.scrolling_text = "";
+		this.scrolling_line_index = 0;
 	}
 
 	public start() {
@@ -49,28 +55,56 @@ export class MessageBox {
 		this.context.font = this.font;
 		this.context.fillStyle = this.fontColor;
 
-		this.display_text(this.content[0]);
-
 		document.getElementById("main-layers").appendChild(this.canvas);
+		gameState.current_message = this;
 	}
 
-	public display_text(text) {
+	public draw() {
+		const text = this.content[0];
 		const text_x = this.width / 60;
-		let text_y = this.height / 4;
+		const text_y = (1 + this.scrolling_line_index) * this.height / 4;
 		const text_width = this.context.measureText(text).width + text_x;
 		if (text_width > this.canvas.width) {
 			const lines = this.split_text_canvas(text, this.context, text_x, this.canvas.width);
-			for (let i = 0; i < lines.length; i++) {
-				this.context.fillText(lines[i], text_x, text_y);
-				text_y += (this.height / 4);
+			if (this.scrolling_line_index < lines.length) {
+				if(this.fill_scrolling_text(lines, text_x, text_y)) {
+					++this.scrolling_line_index;
+				}
 			}
 		}
 		else {
-			this.context.fillText(text, text_x, text_y);
+			if(this.fill_scrolling_text(new Array<string>(text), text_x, text_y)) {
+				++this.scrolling_line_index;
+			}
 		}
 	}
 
-	public split_text_canvas(text, context, text_x, canvas_width): Array<string> {
+	public fill_scrolling_text(lines: Array<string>, x: number, y: number): boolean {
+		const timer = gameState.get_timer("textbox");
+		timer.enable();
+		if(this.scrolling_index < lines[this.scrolling_line_index].length) {
+			if(timer.next_tick()) {
+				this.context.save();
+				this.context.clearRect(0, 0, this.width, this.height);
+				for(let i = 0; i < this.scrolling_line_index; i++) {
+					this.context.fillText(lines[i], x, (1 + i) * this.height / 4);
+				}
+				this.scrolling_text += lines[this.scrolling_line_index][this.scrolling_index];
+				this.context.fillText(this.scrolling_text, x, y);
+				this.sound.play();
+				++this.scrolling_index;
+				this.context.restore();
+			}
+		}
+		else if(this.scrolling_index > 0) {
+			this.scrolling_index = 0;
+			this.scrolling_text = "";
+			return true;
+		}
+		return false;
+	}
+
+	public split_text_canvas(text: string, context: CanvasRenderingContext2D, text_x: number, canvas_width: number): Array<string> {
 		const words = text.split(" ");
 		const lines = new Array<string>();
 		let line = "";

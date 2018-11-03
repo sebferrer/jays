@@ -14,6 +14,7 @@ import { Timer } from "./timer";
 import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
+import { MessageBox } from "./message_box";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -25,6 +26,7 @@ export class GameState {
 	public tears: Tear[];
 	public joysticks: Joysticks;
 	public touches: TouchList;
+	public current_message: MessageBox;
 
 	constructor() {
 		this.current_floor = new TempleFloor();
@@ -231,7 +233,13 @@ export class GameState {
 
 		this.jays.draw(dynamic_ctx);
 
+		if(this.current_message != null) {
+			this.current_message.draw();
+		}
+
 		this.touch_move();
+
+		dynamic_ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());

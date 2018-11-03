@@ -36,7 +36,7 @@ window.onload = () => {
 		Settings.init();
 
 		const msg = new MessageBox(new Array<string>(
-			"Twilight is shining through the barrier. It seems jour journey is finally over. You're filled with DETERMINATION.",
+			"Twilight is shining through the barrier. It seems your journey is finally over. You're filled with DETERMINATION.",
 			"Welcome to The Blunder of JayS",
 			"This is the first test message",
 			"We're awesomes!"));
