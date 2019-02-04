@@ -1,5 +1,6 @@
 import { AudioFile } from "./audio_file";
 import { static_canvas, renderer, gameState } from "./main";
+import { IMessageBoxSettings, buildMessageBoxSettings } from "./imessage_box_configuration";
 
 /**
  * TODO: Triggers, Next messages, Stop, Text scrolling, Storage
@@ -7,36 +8,32 @@ import { static_canvas, renderer, gameState } from "./main";
 export class MessageBox {
 	public canvas: HTMLCanvasElement;
 	public context: CanvasRenderingContext2D;
-	public character: string | null;
-	public characterFont: string;
+
 	public content: Array<string>;
-	public sound: AudioFile;
-	public font: string;
-	public fontColor: string;
-	public backgroundColor: string;
-	public borderColor: string;
+
+	private settings: IMessageBoxSettings;
+
 	public left: number;
 	public top: number;
 	public width: number;
 	public height: number;
+
 	public scrolling_index: number;
 	public scrolling_text: string;
 	public scrolling_line_index: number;
 
-	constructor(content: Array<string>, character?: string, characterFont?: string,
-		sound?: AudioFile, font?: string, fontColor?: string,
-		backgroundColor?: string, borderColor?: string) {
+	constructor(
+		content: Array<string>,
+		boxSettings?: IMessageBoxSettings,
+	) {
 		this.content = content;
-		this.character = character;
-		this.characterFont = characterFont == null ? "5px 'Arial'" : characterFont;
-		this.sound = sound == null ? new AudioFile("assets/sounds/sfx/msg_1.wav") : sound;
-		this.fontColor = fontColor == null ? "white" : fontColor;
-		this.backgroundColor = backgroundColor == null ? "black" : backgroundColor;
-		this.borderColor = borderColor == null ? "black" : backgroundColor;
+
+		this.settings = buildMessageBoxSettings(boxSettings);
+
 		this.width = static_canvas.width / 2;
 		this.height = static_canvas.height / 5;
 		this.top = static_canvas.offsetTop + static_canvas.height - this.height - (static_canvas.height / 20);
-		this.font = font == null ? (this.height / 6) + "px 'Comic Sans MS'" : font;
+
 		this.scrolling_index = 0;
 		this.scrolling_text = "";
 		this.scrolling_line_index = 0;
@@ -47,13 +44,20 @@ export class MessageBox {
 		this.context = this.canvas.getContext("2d", { alpha: true });
 		renderer.disableCanvasSmoothing(this.context);
 		this.canvas.classList.add("messageBox");
-		this.canvas.style.backgroundColor = this.backgroundColor;
+
+		// Background
+		this.canvas.style.background = this.settings.background;
+		this.canvas.style.border =this.settings.border;
+
+		// Position
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
 		this.canvas.style.position = "absolute";
 		this.canvas.style.top = this.top + "px";
-		this.context.font = this.font;
-		this.context.fillStyle = this.fontColor;
+		
+		// Font
+		this.context.fillStyle = this.settings.fontColor;
+		this.context.font = `${this.height / 6}px ${this.settings.fontFamily}`;
 
 		document.getElementById("main-layers").appendChild(this.canvas);
 		gameState.current_message = this;
@@ -67,13 +71,13 @@ export class MessageBox {
 		if (text_width > this.canvas.width) {
 			const lines = this.split_text_canvas(text, this.context, text_x, this.canvas.width);
 			if (this.scrolling_line_index < lines.length) {
-				if(this.fill_scrolling_text(lines, text_x, text_y)) {
+				if (this.fill_scrolling_text(lines, text_x, text_y)) {
 					++this.scrolling_line_index;
 				}
 			}
 		}
 		else {
-			if(this.fill_scrolling_text(new Array<string>(text), text_x, text_y)) {
+			if (this.fill_scrolling_text(new Array<string>(text), text_x, text_y)) {
 				++this.scrolling_line_index;
 			}
 		}
@@ -82,21 +86,21 @@ export class MessageBox {
 	public fill_scrolling_text(lines: Array<string>, x: number, y: number): boolean {
 		const timer = gameState.get_timer("textbox");
 		timer.enable();
-		if(this.scrolling_index < lines[this.scrolling_line_index].length) {
-			if(timer.next_tick()) {
+		if (this.scrolling_index < lines[this.scrolling_line_index].length) {
+			if (timer.next_tick()) {
 				this.context.save();
 				this.context.clearRect(0, 0, this.width, this.height);
-				for(let i = 0; i < this.scrolling_line_index; i++) {
+				for (let i = 0; i < this.scrolling_line_index; i++) {
 					this.context.fillText(lines[i], x, (1 + i) * this.height / 4);
 				}
 				this.scrolling_text += lines[this.scrolling_line_index][this.scrolling_index];
 				this.context.fillText(this.scrolling_text, x, y);
-				this.sound.play();
+				new AudioFile(this.settings.soundPath).play();
 				++this.scrolling_index;
 				this.context.restore();
 			}
 		}
-		else if(this.scrolling_index > 0) {
+		else if (this.scrolling_index > 0) {
 			this.scrolling_index = 0;
 			this.scrolling_text = "";
 			return true;
