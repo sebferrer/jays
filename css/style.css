@@ -1,84 +1,96 @@
 body {
-    background-color: black;
+	background-color: black;
 	margin: 0;
-    padding: 0;
-    text-align: center;
-    overflow: hidden;
+	padding: 0;
+	text-align: center;
+	overflow: hidden;
 }
 
 #settings {
-    width: 15em;
-    text-align: left;
-    font-family: 'Courier New', Courier, monospace;
-    box-sizing: border-box;
-    position: fixed;   
-    border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
-    padding: .25em;
-    color: #fff;
+	width: 15em;
+	text-align: left;
+	font-family: 'Courier New', Courier, monospace;
+	box-sizing: border-box;
+	position: fixed;
+	border-right: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+	padding: .25em;
+	color: #fff;
 }
 
 .settings-line {
-    height: 1.5em;
+	height: 1.5em;
 }
 
 .settings-label {
-    width: 15em;
+	width: 15em;
 }
 
 .settings-input-text {
-    width: 3em;
-    float: right;
+	width: 3em;
+	float: right;
 }
 
 canvas {
-    image-rendering: -moz-crisp-edges;    /* Firefox */
-    image-rendering: -webkit-crisp-edges; /* Webkit (Safari) */
-    image-rendering: pixelated;           /* Chrome */
-    pointer-events: none;
+	image-rendering: -moz-crisp-edges;
+	/* Firefox */
+	image-rendering: -webkit-crisp-edges;
+	/* Webkit (Safari) */
+	image-rendering: pixelated;
+	/* Chrome */
+	pointer-events: none;
 }
 
 #main-layers {
-    position: fixed;
-    left: 50%;
+	position: fixed;
+	left: 50%;
 }
-#main-layers canvas {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform: translate(-50%, 0);
-    -ms-transform: translate(-50%, 0);
-    background: transparent;
+
+#static-canvas, #dynamic-canvas, #minimap-canvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+	transform: translate(-50%, 0);
+	-ms-transform: translate(-50%, 0);
+	background: transparent;
 }
 
 #static-canvas {
-    z-index: 0;
+	z-index: 0;
 
-    background-color: white;
+	background-color: white;
 }
+
 #dynamic-canvas {
-    z-index: 1;
+	z-index: 1;
 }
 
 #minimap-canvas {
-    z-index: 2;
+	z-index: 2;
 
-    position: absolute;
-    top: 0;
-    right: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
 body {
 	margin: 0;
-    padding: 0;
-    overflow: hidden;
+	padding: 0;
+	overflow: hidden;
 }
 
 .no-pointer-events {
-    pointer-events: none;
+	pointer-events: none;
 }
 
-.messageBox {
-    z-index: 2;
-    border-radius: 1rem;
+.message-box {
+	z-index: 2;
+	border-radius: 6px;
+	padding-left: 1rem;
+	padding-right: 1rem;
+
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
 }

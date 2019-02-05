@@ -1,9 +1,10 @@
 import { GameState } from "./gamestate";
 import { ImageBank } from "./image_bank";
+import { DialogGraph, sample_dialog } from "./messages/dialog_graph";
+import { MessageBox } from "./messages/message_box";
 import { Renderer } from "./renderer";
 import { KeyMapper } from "./settings/keymapper";
 import { Settings } from "./settings/settings";
-import { MessageBox } from "./message_box";
 
 export const canvas_W = 660;
 export const canvas_H = 480;
@@ -35,11 +36,7 @@ window.onload = () => {
 		gameState = new GameState();
 		Settings.init();
 
-		const msg = new MessageBox(new Array<string>(
-			"Twilight is shining through the barrier. It seems your journey is finally over. You're filled with DETERMINATION.",
-			"Welcome to The Blunder of JayS",
-			"This is the first test message",
-			"We're awesomes!"));
+		const msg = new MessageBox(new DialogGraph("San", sample_dialog));
 
 		msg.start();
 

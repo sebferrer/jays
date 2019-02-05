@@ -14,7 +14,7 @@ import { Timer } from "./timer";
 import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
-import { MessageBox } from "./message_box";
+import { MessageBox } from "./messages/message_box";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -207,6 +207,12 @@ export class GameState {
 			case "f":
 				renderer.scale();
 				break;
+			// Spacebar
+			case " ":
+				if (this.current_message != null) {
+					this.current_message.timer.interval /= 100;
+				}
+				break;
 		}
 	}
 
@@ -233,7 +239,7 @@ export class GameState {
 
 		this.jays.draw(dynamic_ctx);
 
-		if(this.current_message != null) {
+		if (this.current_message != null) {
 			this.current_message.draw();
 		}
 

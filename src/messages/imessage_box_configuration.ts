@@ -7,7 +7,7 @@ export interface IMessageBoxSettings {
 }
 
 export const DEFAULT_MESSAGE_BOX_SETTINGS: IMessageBoxSettings = {
-	fontFamily: "Comic Sans MS",
+	fontFamily: "Monospace",
 	fontColor: "white",
 	background: "black",
 	border: "1px solid white",
