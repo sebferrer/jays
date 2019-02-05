@@ -11,8 +11,14 @@ export class DialogGraph {
 	}
 }
 
+export enum DialogAnimation {
+	None = 0,
+	Shaky = 1
+}
+
 export interface IDialogNode {
 	message: string;
+	animation?: DialogAnimation;
 	next_node?: IDialogNode;
 	action?: () => void;
 }

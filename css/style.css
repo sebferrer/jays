@@ -46,7 +46,8 @@ canvas {
 	left: 50%;
 }
 
-#static-canvas, #dynamic-canvas, #minimap-canvas {
+#static-canvas,
+#dynamic-canvas {
 	position: absolute;
 	left: 0;
 	top: 0;

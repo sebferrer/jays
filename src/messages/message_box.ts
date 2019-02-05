@@ -1,8 +1,9 @@
 import { AudioFile } from "../audio_file";
 import { gameState, renderer, static_canvas } from "../main";
 import { Timer } from "../timer";
-import { DialogGraph, IDialogNode } from "./dialog_graph";
+import { DialogGraph, IDialogNode, DialogAnimation } from "./dialog_graph";
 import { buildMessageBoxSettings, IMessageBoxSettings } from "./imessage_box_configuration";
+import { MathUtil } from "../util";
 
 /**
  * TODO: Triggers, Next messages, Stop, Text scrolling, Storage
@@ -26,6 +27,7 @@ export class MessageBox {
 	protected _lines: string[];
 	protected _current_character_index: number;
 	protected _current_line_index: number;
+
 	protected get _current_line(): string { return this._lines[this._current_line_index]; }
 	protected get _current_char(): string { return this._current_line[this._current_character_index]; }
 
@@ -72,6 +74,7 @@ export class MessageBox {
 		// Lines
 		this._current_node = this._content.first_node;
 		this._lines = this.split_text_canvas(this._current_node.message);
+
 		this._current_line_index = 0;
 		this._current_character_index = 0;
 
@@ -84,10 +87,44 @@ export class MessageBox {
 	}
 
 	public draw() {
-		if (this._current_line_index >= this._lines.length) {
+		if (this._current_line_index >= this._lines.length || !this.timer.next_tick()) {
 			return;
 		}
-		this.draw_next_char();
+
+		switch ((this._current_node.animation || DialogAnimation.Shaky) as DialogAnimation) {
+			case DialogAnimation.None:
+				// Draw current character
+				this._context.fillText(this._current_char, this.get_character_x_offset(this._current_character_index), this.get_character_y_offset(this._current_line_index));
+				break;
+			case DialogAnimation.Shaky:
+				this._context.save();
+				this._context.clearRect(0, 0, this._width, this._height + 25);
+
+				for (let line_index = 0; line_index <= this._current_line_index; ++line_index) {
+					for (
+						let character_index = 0;
+						character_index < (line_index === this._current_line_index ? this._current_character_index : this._lines[line_index].length);
+						++character_index
+					) {
+						const char = this._lines[line_index][character_index];
+						this._context.fillText(
+							char,
+							this.get_character_x_offset(character_index) + MathUtil.get_random_int(5),
+							this.get_character_y_offset(line_index) + MathUtil.get_random_int(5)
+						);
+					}
+				}
+
+				this._context.restore();
+				break;
+		}
+
+		// Only play sound if character is not silent
+		if (!MessageBox._silentCharacters.has(this._current_char)) {
+			this._audio.play();
+		}
+
+		++this._current_character_index;
 
 		// If line has ended, start drawing the next one
 		if (this._current_character_index >= this._current_line.length) {
@@ -99,22 +136,6 @@ export class MessageBox {
 	protected get_character_x_offset = (character_index: number): number => character_index * (this._width / MessageBox._line_width_in_characters);
 
 	protected get_character_y_offset = (line_index: number): number => (1 + line_index) * this._height / 4;
-
-	protected draw_next_char() {
-		if (!this._timer.next_tick()) {
-			return;
-		}
-
-		// Draw current character
-		this._context.fillText(this._current_char, this.get_character_x_offset(this._current_character_index), this.get_character_y_offset(this._current_line_index));
-
-		// Only play sound if character is not silent
-		if (!MessageBox._silentCharacters.has(this._current_char)) {
-			this._audio.play();
-		}
-
-		++this._current_character_index;
-	}
 
 	protected split_text_canvas(text: string): Array<string> {
 		const words = text.split(" ");
