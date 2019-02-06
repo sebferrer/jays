@@ -35,7 +35,7 @@
             <input type="text" id="jays-range" class="settings-input-text" onchange="settings.set_jays('range', this.value)" />
         </div>
         <div class="settings-line">
-            <button onclick="settings.toggleAudio()">Toggle audio</button>
+            <button onclick="settings.toggleAudio(); this.blur();">Toggle audio</button>
         </div>
     </div>
 

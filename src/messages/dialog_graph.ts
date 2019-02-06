@@ -77,7 +77,7 @@ export const angry_dialog = <IDialogNode>{
 			message: "Please stop ignoring me...",
 			animation: <IDialogAnimation>{ type: DialogAnimation.Shaky, factor: 4},
 			next_node: <IDialogNode>{
-				message: "Don't you think I've already suffered enough? Do you even know what I've been throught until now?",
+				message: "Don't you think I've already suffered enough? Do you even know what I've been through until now?",
 				animation: <IDialogAnimation>{ type: DialogAnimation.Shaky, factor: 6},
 				next_node: <IDialogNode>{
 					message: "Oh sure! Keep not answering! After all, you're smarter than everyone! You're above EVERYTHING",
