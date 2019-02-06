@@ -92,7 +92,7 @@ export const angry_dialog = <IDialogNode>{
 								message: "But after all, you're right... In this world. it's kill or to be killed.",
 								animation: <IDialogAnimation>{ type: DialogAnimation.Shaky, factor: 20},
 								next_node: <IDialogNode>{
-									message: "Anyway, stop playing Cloud at Smash Bros, you're fucking noob!",
+									message: "Anyway, stop playing Cloud at Smash Bros, you fucking noob!",
 									animation: <IDialogAnimation>{ type: DialogAnimation.Shaky, factor: 100}
 								}
 							}
