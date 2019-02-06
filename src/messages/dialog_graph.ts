@@ -23,29 +23,34 @@ export interface IDialogNode {
 	action?: () => void;
 }
 
-export interface IChoiceNode extends IDialogNode {
-	choices: IDialogNode[];
+export interface IQuestionNode extends IDialogNode {
+	answers: IDialogNode[];
 }
 
-// I like to get up early to smell the morning fresh air. This is a long ass message just to check how the message box reacts to it, don't mind me. Bla bla bla bla, lorem ipsum lol. I like to get up early to smell the morning fresh air. This is a long ass message just to check how the message box reacts to it, don't mind me. Bla bla bla bla, lorem ipsum lol.
+export function get_animation(node: IDialogNode): DialogAnimation {
+	return node.animation || DialogAnimation.None;
+}
 
 export const sample_dialog = <IDialogNode>{
-	message: "I like to get up early to smell the morning fresh air. This is a long ass message just to check how the message box reacts to it, don't mind me. Bla bla bla bla, lorem ipsum lol. I like to get up early to smell the morning fresh air. This is a long ass message just to check how the message box reacts to it, don't mind me. Bla bla bla bla, lorem ipsum lol.",
+	message: "Shrubberies are my trade. I am a shrubber.",
 	next_node: <IDialogNode>{
-		message: "I like the smell of grass in the early morning.",
-		next_node: <IChoiceNode>{
-			message: "Wouldn't you like to hear my tale, kind sir?",
-			choices: [
+		message: "My name is Roger the Shrubber. I arrange, design, and sell shrubberies.",
+		animation: DialogAnimation.Shaky,
+		next_node: <IQuestionNode>{
+			message: "Are you saying Ni to that old woman?",
+			answers: [
 				{
-					message: "Yes mate",
+					message: "Um, yes.",
+					animation: DialogAnimation.None,
 					next_node: <IDialogNode>{
-						message: "Oh look at the time, I've got to go feed my ducks. A fine day to you sir!"
+						message: "Oh, what sad times are these when passing ruffians can say Ni at will to old ladies."
 					}
 				},
 				{
-					message: "Back off you weirdo",
+					message: "Ni!",
+					animation: DialogAnimation.Shaky,
 					next_node: <IDialogNode>{
-						message: "Well, a fine day to you sir."
+						message: "There is a pestilence upon this land, nothing is sacred. Even those who arrange and design shrubberies are under considerable economic stress in this period in history."
 					}
 				}
 			]

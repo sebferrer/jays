@@ -210,7 +210,17 @@ export class GameState {
 			// Spacebar
 			case " ":
 				if (this.current_message != null) {
-					this.current_message.timer.interval /= 100;
+					this.current_message.on_action_button();
+				}
+				break;
+			case "ArrowDown":
+				if (this.current_message != null) {
+					this.current_message.on_choice_button(Direction.DOWN);
+				}
+				break;
+			case "ArrowUp":
+				if (this.current_message != null) {
+					this.current_message.on_choice_button(Direction.UP);
 				}
 				break;
 		}

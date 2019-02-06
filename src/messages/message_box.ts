@@ -1,43 +1,47 @@
 import { AudioFile } from "../audio_file";
 import { gameState, renderer, static_canvas } from "../main";
 import { Timer } from "../timer";
-import { DialogGraph, IDialogNode, DialogAnimation } from "./dialog_graph";
+import { DialogGraph, IDialogNode, DialogAnimation, IQuestionNode as IQuestionNode, get_animation } from "./dialog_graph";
 import { buildMessageBoxSettings, IMessageBoxSettings } from "./imessage_box_configuration";
 import { MathUtil } from "../util";
+import { Direction } from "../enum";
 
 /**
  * TODO: Triggers, Next messages, Stop, Text scrolling, Storage
  */
 export class MessageBox {
-	protected _canvas: HTMLCanvasElement;
-	protected _context: CanvasRenderingContext2D;
-
-	protected _audio: AudioFile;
-
-	protected _settings: IMessageBoxSettings;
-
-	protected _timer: Timer;
-	public get timer(): Timer { return this._timer; }
-
-	protected _width: number;
-	protected _height: number;
-
-	protected _content: DialogGraph;
-	protected _current_node: IDialogNode;
-	protected _lines: string[];
-	protected _current_character_index: number;
-	protected _current_line_index: number;
-
-	protected get _current_line(): string { return this._lines[this._current_line_index]; }
-	protected get _current_char(): string { return this._current_line[this._current_character_index]; }
 
 	/** Number of characters per line */
-	protected static readonly _line_width_in_characters = 50;
+	private static readonly _line_width_in_characters = 50;
+	/** Bottom margin, so that the text is not stuck to the bottom of the message box */
+	private static readonly _bottom_margin = 25;
+	private static readonly DOM_ID = "message-box";
+	private static readonly _shake_factor = 4;
+
+	private _canvas: HTMLCanvasElement;
+	private _context: CanvasRenderingContext2D;
+
+	private _audio: AudioFile;
+
+	private _settings: IMessageBoxSettings;
+
+	private _timer: Timer;
+
+	private _width: number;
+	private _height: number;
+
+	private _content: DialogGraph;
+	private _current_node: IDialogNode;
+	private _lines: string[];
+	private _current_character_index: number;
+	private _current_line_index: number;
+	private _selected_choice_index: number;
+
+	private get _current_line(): string { return this._lines[this._current_line_index]; }
+	private get _current_char(): string { return this._current_line[this._current_character_index]; }
 
 	/** Characters which shouldn't make any sound */
-	protected static readonly _silentCharacters = new Set([
-		" ", ".", ",", ";"
-	]);
+	private static readonly _silentCharacters = new Set([" ", ".", ",", ";"]);
 
 	constructor(content: DialogGraph, boxSettings?: IMessageBoxSettings) {
 		this._content = content;
@@ -55,7 +59,7 @@ export class MessageBox {
 		this._canvas = document.createElement("canvas");
 		this._context = this._canvas.getContext("2d", { alpha: true });
 		renderer.disableCanvasSmoothing(this._context);
-		this._canvas.classList.add("message-box");
+		this._canvas.id = MessageBox.DOM_ID;
 
 		this._audio = new AudioFile(this._settings.soundPath);
 
@@ -65,52 +69,47 @@ export class MessageBox {
 
 		// Position
 		this._canvas.width = this._width;
-		this._canvas.height = this._height + 25;
+		this._canvas.height = this._height + MessageBox._bottom_margin;
 
 		// Font
 		this._context.fillStyle = this._settings.fontColor;
 		this._context.font = `${this._height / 6}px ${this._settings.fontFamily}`;
 
-		// Lines
-		this._current_node = this._content.first_node;
-		this._lines = this.split_text_canvas(this._current_node.message);
-
-		this._current_line_index = 0;
-		this._current_character_index = 0;
-
-		// Timer
+		// Timer (important: init timer before loading the node)
 		this._timer = gameState.get_timer("textbox");
 		this._timer.enable();
+
+		this.load_node(this._content.first_node);
 
 		document.getElementById("main-layers").appendChild(this._canvas);
 		gameState.current_message = this;
 	}
 
 	public draw() {
-		if (this._current_line_index >= this._lines.length || !this.timer.next_tick()) {
+		if (!this._timer.next_tick()) {
 			return;
 		}
 
-		switch ((this._current_node.animation || DialogAnimation.Shaky) as DialogAnimation) {
+		switch (get_animation(this._current_node)) {
 			case DialogAnimation.None:
 				// Draw current character
 				this._context.fillText(this._current_char, this.get_character_x_offset(this._current_character_index), this.get_character_y_offset(this._current_line_index));
 				break;
 			case DialogAnimation.Shaky:
 				this._context.save();
-				this._context.clearRect(0, 0, this._width, this._height + 25);
+				this._context.clearRect(0, 0, this._width, this._height + MessageBox._bottom_margin);
 
 				for (let line_index = 0; line_index <= this._current_line_index; ++line_index) {
 					for (
 						let character_index = 0;
-						character_index < (line_index === this._current_line_index ? this._current_character_index : this._lines[line_index].length);
+						character_index < (line_index === this._current_line_index ? this._current_character_index + 1 : this._lines[line_index].length);
 						++character_index
 					) {
 						const char = this._lines[line_index][character_index];
 						this._context.fillText(
 							char,
-							this.get_character_x_offset(character_index) + MathUtil.get_random_int(5),
-							this.get_character_y_offset(line_index) + MathUtil.get_random_int(5)
+							this.get_character_x_offset(character_index) + MathUtil.get_random_int(MessageBox._shake_factor),
+							this.get_character_y_offset(line_index) + MathUtil.get_random_int(MessageBox._shake_factor)
 						);
 					}
 				}
@@ -124,20 +123,131 @@ export class MessageBox {
 			this._audio.play();
 		}
 
-		++this._current_character_index;
-
-		// If line has ended, start drawing the next one
-		if (this._current_character_index >= this._current_line.length) {
-			++this._current_line_index;
-			this._current_character_index = 0;
+		if (this._current_character_index + 1 < this._current_line.length) {
+			++this._current_character_index;
+		} else {
+			this.handle_choices();
+			if (this._current_line_index < this._lines.length - 1) {
+				this._current_character_index = 0;
+				++this._current_line_index;
+			}
 		}
 	}
 
-	protected get_character_x_offset = (character_index: number): number => character_index * (this._width / MessageBox._line_width_in_characters);
+	private get _message_has_ended(): boolean { return this._current_line_index === this._lines.length - 1 && this._current_character_index === this._current_line.length - 1; }
 
-	protected get_character_y_offset = (line_index: number): number => (1 + line_index) * this._height / 4;
+	/** Returns the current node if it is a choice node, null otherwise */
+	private get _current_question_node(): IQuestionNode {
+		return (<IQuestionNode>this._current_node).answers != null && (<IQuestionNode>this._current_node).answers.length > 0 ? <IQuestionNode>this._current_node : null
+	}
 
-	protected split_text_canvas(text: string): Array<string> {
+	/**
+	 * Handle the case where the current node is a question node (displays the choices).
+	 */
+	private handle_choices(): void {
+		// Not a question node, do nothing
+		if (this._current_question_node == null) {
+			return;
+		}
+
+		this._context.save();
+		this._context.clearRect(0, this.get_character_y_offset(this._current_line_index + .5), this._width, this._height + MessageBox._bottom_margin);
+		this._context.restore();
+
+		if (this._selected_choice_index == null) {
+			this._selected_choice_index = 0;
+		}
+
+		for (let i = 0; i < this._current_question_node.answers.length; ++i) {
+			const current_choice = this._current_question_node.answers[i];
+			const text = i === this._selected_choice_index ? `> ${current_choice.message}` : current_choice.message;
+
+			switch (get_animation(current_choice)) {
+				case DialogAnimation.None:
+					this._context.fillText(text, this.get_character_x_offset(0), this.get_character_y_offset(i + 1 + this._current_line_index));
+					break;
+				case DialogAnimation.Shaky:
+					for (let character_index = 0; character_index < text.length; ++character_index) {
+						this._context.fillText(
+							text[character_index],
+							this.get_character_x_offset(character_index) + MathUtil.get_random_int(MessageBox._shake_factor),
+							this.get_character_y_offset(i + 1 + this._current_line_index) + MathUtil.get_random_int(MessageBox._shake_factor)
+						);
+					}
+					break;
+			}
+		}
+	}
+
+	/** 
+	 * Prepares the MessageBox to display the given node
+	 */
+	private load_node(node: IDialogNode) {
+		this._current_node = node;
+		this._lines = this.split_text_canvas(this._current_node.message);
+		this._current_line_index = 0;
+		this._current_character_index = 0;
+		this._timer.interval = 50;
+		this._selected_choice_index = null;
+
+		this._context.save();
+		this._context.clearRect(0, 0, this._width, this._height + MessageBox._bottom_margin);
+		this._context.restore();
+	}
+
+	/**
+	 * Called when the action button is pressed (SpaceBar).
+	 */
+	public on_action_button(): void {
+
+		if (this._message_has_ended) {
+			if (this._current_question_node != null) {
+				// Load choice
+				this.load_node(this._current_question_node.answers[this._selected_choice_index].next_node);
+			} else if (this._current_node.next_node == null) {
+				// Close message box
+				document.getElementById(MessageBox.DOM_ID).remove();
+				gameState.current_message = null;
+			} else {
+				// Load next node
+				this.load_node(this._current_node.next_node);
+			}
+		} else {
+			// Speed up the message
+			this._timer.interval = 5;
+		}
+	}
+
+	/**
+	 * Called when a choice button is pressed (ArrowUp, ArrowDown).
+	 * @param direction the direction of the choice button
+	 */
+	public on_choice_button(direction: Direction): void {
+		const choiceDialog = <IQuestionNode>this._current_node;
+		if (choiceDialog.answers == null || choiceDialog.answers.length <= 0) {
+			return;
+		}
+
+		switch (direction) {
+			case Direction.UP:
+				if (this._selected_choice_index > 0) {
+					--this._selected_choice_index;
+				}
+				break;
+			case Direction.DOWN:
+				if (this._selected_choice_index < choiceDialog.answers.length - 1) {
+					++this._selected_choice_index;
+				}
+				break;
+		}
+	}
+
+
+	private get_character_x_offset = (character_index: number): number => character_index * (this._width / MessageBox._line_width_in_characters);
+
+	private get_character_y_offset = (line_index: number): number => (1 + line_index) * this._height / 4;
+
+	private split_text_canvas(text: string): Array<string> {
 		const words = text.split(" ");
 		const lines = new Array<string>();
 		let line = words[0];

@@ -84,7 +84,7 @@ body {
 	pointer-events: none;
 }
 
-.message-box {
+#message-box {
 	z-index: 2;
 	border-radius: 6px;
 	padding-left: 1rem;
