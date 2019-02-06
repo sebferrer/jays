@@ -37,6 +37,8 @@ export class MessageBox {
 	private _current_line_index: number;
 	private _selected_choice_index: number;
 
+	private _choice_sound: AudioFile;
+
 	private get _current_line(): string { return this._lines[this._current_line_index]; }
 	private get _current_char(): string { return this._current_line[this._current_character_index]; }
 
@@ -62,6 +64,7 @@ export class MessageBox {
 		this._canvas.id = MessageBox.DOM_ID;
 
 		this._audio = new AudioFile(this._settings.soundPath);
+		this._choice_sound = new AudioFile("assets/sounds/sfx/pop.wav");
 
 		// Background
 		this._canvas.style.background = this._settings.background;
@@ -118,13 +121,12 @@ export class MessageBox {
 				break;
 		}
 
-		// Only play sound if character is not silent
-		if (!MessageBox._silentCharacters.has(this._current_char)) {
-			this._audio.play();
-		}
-
 		if (this._current_character_index + 1 < this._current_line.length) {
 			++this._current_character_index;
+			// Only play sound if character is not silent, and if there are new characters to display
+			if (!MessageBox._silentCharacters.has(this._current_char)) {
+				this._audio.play();
+			}
 		} else {
 			this.handle_choices();
 			if (this._current_line_index < this._lines.length - 1) {
@@ -219,7 +221,7 @@ export class MessageBox {
 	}
 
 	/**
-	 * Called when a choice button is pressed (ArrowUp, ArrowDown).
+	 * Called when a choice button is pressed.
 	 * @param direction the direction of the choice button
 	 */
 	public on_choice_button(direction: Direction): void {
@@ -232,11 +234,13 @@ export class MessageBox {
 			case Direction.UP:
 				if (this._selected_choice_index > 0) {
 					--this._selected_choice_index;
+					this._choice_sound.play();
 				}
 				break;
 			case Direction.DOWN:
 				if (this._selected_choice_index < choiceDialog.answers.length - 1) {
 					++this._selected_choice_index;
+					this._choice_sound.play();
 				}
 				break;
 		}
