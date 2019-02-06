@@ -56,4 +56,4 @@ export const sample_dialog = <IDialogNode>{
 			]
 		}
 	}
-}
+};

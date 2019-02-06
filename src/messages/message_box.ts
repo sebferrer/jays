@@ -12,11 +12,14 @@ import { Direction } from "../enum";
 export class MessageBox {
 
 	/** Number of characters per line */
-	private static readonly _line_width_in_characters = 50;
+	private static readonly _line_width_in_characters = 49;
 	/** Bottom margin, so that the text is not stuck to the bottom of the message box */
-	private static readonly _bottom_margin = 25;
+	private static readonly _bottom_margin = 20;
 	private static readonly DOM_ID = "message-box";
 	private static readonly _shake_factor = 4;
+
+	/** Characters which shouldn't make any sound */
+	private static readonly _silentCharacters = new Set([" ", ".", ",", ";"]);
 
 	private _canvas: HTMLCanvasElement;
 	private _context: CanvasRenderingContext2D;
@@ -39,11 +42,22 @@ export class MessageBox {
 
 	private _choice_sound: AudioFile;
 
+	// Helpers
+
 	private get _current_line(): string { return this._lines[this._current_line_index]; }
 	private get _current_char(): string { return this._current_line[this._current_character_index]; }
 
-	/** Characters which shouldn't make any sound */
-	private static readonly _silentCharacters = new Set([" ", ".", ",", ";"]);
+	/** Returns true if the current message has been displayed entirely, false otherwise */
+	private get _message_has_ended(): boolean { return this._current_line_index === this._lines.length - 1 && this._current_character_index === this._current_line.length - 1; }
+
+	/** Returns the current node if it is a choice node, null otherwise */
+	private get _current_question_node(): IQuestionNode {
+		return (<IQuestionNode>this._current_node).answers != null && (<IQuestionNode>this._current_node).answers.length > 0 ? <IQuestionNode>this._current_node : null;
+	}
+
+	private get_character_x_offset = (character_index: number): number => character_index * (this._width / MessageBox._line_width_in_characters);
+
+	private get_character_y_offset = (line_index: number): number => (1 + line_index) * this._height / 4;
 
 	constructor(content: DialogGraph, boxSettings?: IMessageBoxSettings) {
 		this._content = content;
@@ -136,13 +150,6 @@ export class MessageBox {
 		}
 	}
 
-	private get _message_has_ended(): boolean { return this._current_line_index === this._lines.length - 1 && this._current_character_index === this._current_line.length - 1; }
-
-	/** Returns the current node if it is a choice node, null otherwise */
-	private get _current_question_node(): IQuestionNode {
-		return (<IQuestionNode>this._current_node).answers != null && (<IQuestionNode>this._current_node).answers.length > 0 ? <IQuestionNode>this._current_node : null
-	}
-
 	/**
 	 * Handle the case where the current node is a question node (displays the choices).
 	 */
@@ -203,6 +210,12 @@ export class MessageBox {
 	public on_action_button(): void {
 
 		if (this._message_has_ended) {
+
+			// Execute action linked to the node if any
+			if (this._current_node.action != null) {
+				this._current_node.action();
+			}
+
 			if (this._current_question_node != null) {
 				// Load choice
 				this.load_node(this._current_question_node.answers[this._selected_choice_index].next_node);
@@ -225,8 +238,7 @@ export class MessageBox {
 	 * @param direction the direction of the choice button
 	 */
 	public on_choice_button(direction: Direction): void {
-		const choiceDialog = <IQuestionNode>this._current_node;
-		if (choiceDialog.answers == null || choiceDialog.answers.length <= 0) {
+		if (this._current_question_node == null) {
 			return;
 		}
 
@@ -238,18 +250,13 @@ export class MessageBox {
 				}
 				break;
 			case Direction.DOWN:
-				if (this._selected_choice_index < choiceDialog.answers.length - 1) {
+				if (this._selected_choice_index < this._current_question_node.answers.length - 1) {
 					++this._selected_choice_index;
 					this._choice_sound.play();
 				}
 				break;
 		}
 	}
-
-
-	private get_character_x_offset = (character_index: number): number => character_index * (this._width / MessageBox._line_width_in_characters);
-
-	private get_character_y_offset = (line_index: number): number => (1 + line_index) * this._height / 4;
 
 	private split_text_canvas(text: string): Array<string> {
 		const words = text.split(" ");

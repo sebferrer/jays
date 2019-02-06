@@ -13,7 +13,6 @@ export abstract class Floor {
 	// NB: music can't be played if the user hasn't interacted with the page. Otherwise: 
 	// DOMException: play() failed because the user didn’t interact with the document first
 	public abstract get base_music(): AudioFile;
-	// public abstract get available_rooms(): RoomMap[];
 
 	protected _floor_map: FloorMap;
 	public get floor_map(): FloorMap { return this._floor_map; }
@@ -37,9 +36,7 @@ export abstract class Floor {
 		gameState.tears.splice(0, gameState.tears.length);
 
 		gameState.current_room = this.floor_map.next_room(door.direction);
-		console.log(gameState.current_room.requires_update);
 		renderer.update_current_room(gameState.current_room);
-		console.log(gameState.current_room.requires_update);
 		switch (door.direction) {
 			case Direction.LEFT:
 				gameState.jays.position = new Point(canvas_W - gameState.current_room.room_walls.wall_height - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
@@ -58,8 +55,4 @@ export abstract class Floor {
 		// Re-draw minimap
 		renderer.update_minimap(this.floor_map);
 	}
-
-	// public get_available_rooms(): RoomMapDefinition[] {
-	// 	const a = typeof(RoomMap);
-	// }
 }
