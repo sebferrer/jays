@@ -1,7 +1,7 @@
 import { AudioFile } from "../audio_file";
 import { gameState, renderer, static_canvas } from "../main";
 import { Timer } from "../timer";
-import { DialogGraph, IDialogNode, DialogAnimation, IQuestionNode as IQuestionNode, get_animation } from "./dialog_graph";
+import { DialogGraph, IDialogNode, DialogAnimation, IQuestionNode as IQuestionNode, get_animation, get_animation_factor } from "./dialog_graph";
 import { buildMessageBoxSettings, IMessageBoxSettings } from "./imessage_box_configuration";
 import { MathUtil } from "../util";
 import { Direction } from "../enum";
@@ -16,7 +16,6 @@ export class MessageBox {
 	/** Bottom margin, so that the text is not stuck to the bottom of the message box */
 	private static readonly _bottom_margin = 20;
 	private static readonly DOM_ID = "message-box";
-	private static readonly _shake_factor = 4;
 
 	/** Characters which shouldn't make any sound */
 	private static readonly _silentCharacters = new Set([" ", ".", ",", ";"]);
@@ -125,8 +124,8 @@ export class MessageBox {
 						const char = this._lines[line_index][character_index];
 						this._context.fillText(
 							char,
-							this.get_character_x_offset(character_index) + MathUtil.get_random_int(MessageBox._shake_factor),
-							this.get_character_y_offset(line_index) + MathUtil.get_random_int(MessageBox._shake_factor)
+							this.get_character_x_offset(character_index) + MathUtil.get_random_int(get_animation_factor(this._current_node)),
+							this.get_character_y_offset(line_index) + MathUtil.get_random_int(get_animation_factor(this._current_node))
 						);
 					}
 				}
@@ -179,8 +178,8 @@ export class MessageBox {
 					for (let character_index = 0; character_index < text.length; ++character_index) {
 						this._context.fillText(
 							text[character_index],
-							this.get_character_x_offset(character_index) + MathUtil.get_random_int(MessageBox._shake_factor),
-							this.get_character_y_offset(i + 1 + this._current_line_index) + MathUtil.get_random_int(MessageBox._shake_factor)
+							this.get_character_x_offset(character_index) + MathUtil.get_random_int(get_animation_factor(this._current_node)),
+							this.get_character_y_offset(i + 1 + this._current_line_index) + MathUtil.get_random_int(get_animation_factor(this._current_node))
 						);
 					}
 					break;

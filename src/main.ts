@@ -1,6 +1,6 @@
 import { GameState } from "./gamestate";
 import { ImageBank } from "./image_bank";
-import { DialogGraph, sample_dialog } from "./messages/dialog_graph";
+import { DialogGraph, sample_dialog, angry_dialog } from "./messages/dialog_graph";
 import { MessageBox } from "./messages/message_box";
 import { Renderer } from "./renderer";
 import { KeyMapper } from "./settings/keymapper";
