@@ -12,7 +12,7 @@ import { Direction } from "../enum";
 export class MessageBox {
 
 	/** Number of characters per line */
-	private static readonly _line_width_in_characters = 49;
+	private static readonly _line_width_in_characters = 48;
 	/** Bottom margin, so that the text is not stuck to the bottom of the message box */
 	private static readonly _bottom_margin = 20;
 	private static readonly DOM_ID = "message-box";
@@ -178,8 +178,8 @@ export class MessageBox {
 					for (let character_index = 0; character_index < text.length; ++character_index) {
 						this._context.fillText(
 							text[character_index],
-							this.get_character_x_offset(character_index) + MathUtil.get_random_int(get_animation_factor(this._current_node)),
-							this.get_character_y_offset(i + 1 + this._current_line_index) + MathUtil.get_random_int(get_animation_factor(this._current_node))
+							this.get_character_x_offset(character_index) + MathUtil.get_random_int(get_animation_factor(current_choice)),
+							this.get_character_y_offset(i + 1 + this._current_line_index) + MathUtil.get_random_int(get_animation_factor(current_choice))
 						);
 					}
 					break;
@@ -187,7 +187,7 @@ export class MessageBox {
 		}
 	}
 
-	/** 
+	/**
 	 * Prepares the MessageBox to display the given node
 	 */
 	private load_node(node: IDialogNode) {
