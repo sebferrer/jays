@@ -2,7 +2,7 @@ import { AttackDirectionEvent } from "./attack_direction_event";
 import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
-import { Arrow_Direction, Direction } from "./enum";
+import { Arrow_Direction, Direction, Direction_Int } from "./enum";
 import { Floor } from "./environment/floors/floor";
 import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
@@ -27,6 +27,7 @@ export class GameState {
 	public joysticks: Joysticks;
 	public touches: TouchList;
 	public current_message: MessageBox;
+	public paused: boolean;
 
 	constructor() {
 		this.current_floor = new TempleFloor();
@@ -40,6 +41,8 @@ export class GameState {
 		this.tears = new Array<Tear>();
 
 		this.joysticks = new Joysticks();
+
+		this.paused = false;
 
 		this.jays = new Jays();
 		document.onkeyup = event => this.key_up(event.key);
@@ -173,7 +176,9 @@ export class GameState {
 	public remove_direction_event(direction: Direction): void {
 		if (direction != null && SetUtil.remove_from_array(this.directions_keyDown, direction)) {
 			this.direction_event.setDirection(direction, false);
-			this.jays.direction_key_up(direction);
+			if (!this.paused) {
+				this.jays.direction_key_up(direction);
+			}
 		}
 	}
 
@@ -213,6 +218,9 @@ export class GameState {
 					this.current_message.on_action_button();
 				}
 				break;
+			case "p":
+				this.toggle_pause();
+				break;
 			case "ArrowDown":
 				if (this.current_message != null) {
 					this.current_message.on_choice_button(Direction.DOWN);
@@ -244,8 +252,10 @@ export class GameState {
 			tear.draw(dynamic_ctx);
 		});
 
-		this.jays.update();
-		this.tears_update();
+		if (!this.paused) {
+			this.jays.update();
+			this.tears_update();
+		}
 
 		this.jays.draw(dynamic_ctx);
 
@@ -290,5 +300,23 @@ export class GameState {
 
 	public get_timer(id: string): Timer {
 		return TIMERS.find(item => item.id === id);
+	}
+
+	public pause(): void {
+		this.paused = true;
+		this.jays.current_sprite = this.jays.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(this.direction_event.getCurrentDirectionToDraw())];
+	}
+
+	public resume(): void {
+		this.paused = false;
+	}
+
+	public toggle_pause(): void {
+		if(this.paused) {
+			this.resume();
+		}
+		else {
+			this.pause();
+		}
 	}
 }

@@ -99,6 +99,7 @@ export class MessageBox {
 
 		document.getElementById("main-layers").appendChild(this._canvas);
 		gameState.current_message = this;
+		gameState.pause();
 	}
 
 	public draw() {
@@ -222,6 +223,7 @@ export class MessageBox {
 				// Close message box
 				document.getElementById(MessageBox.DOM_ID).remove();
 				gameState.current_message = null;
+				gameState.resume();
 			} else {
 				// Load next node
 				this.load_node(this._current_node.next_node);
