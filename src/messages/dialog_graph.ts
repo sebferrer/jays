@@ -13,7 +13,10 @@ export class DialogGraph {
 
 export enum DialogAnimation {
 	None = 0,
-	Shaky = 1
+	Shaky = 1,
+	Glitchy_Spinny = 2,
+	Glitchy_Splitted = 3,
+	Glitchy_Uppercase = 4
 }
 
 export interface IDialogAnimation {
@@ -99,6 +102,19 @@ export const angry_dialog = <IDialogNode>{
 					}
 				}
 			}
+		}
+	}
+};
+
+export const glitchy_dialog = <IDialogNode>{
+	message: "[GLITCHY_SPINNY] Hi There. I'm an Hey-Aye the AI. I'm not a bad guy. But I'm not nice either. To be honest, I don't care. Die.",
+	animation: <IDialogAnimation>{ type: DialogAnimation.Glitchy_Spinny },
+	next_node: <IDialogNode>{
+		message: "[GLITCHY_SPLITTED] Hi There. I'm an Hey-Aye the AI. I'm not a bad guy. But I'm not nice either. To be honest, I don't care. Die.",
+		animation: <IDialogAnimation>{ type: DialogAnimation.Glitchy_Splitted, factor: 25 },
+		next_node: <IDialogNode>{
+			message: "[GLITCHY_UPPERCASE] Hi There. I'm an Hey-Aye the AI. I'm not a bad guy. But I'm not nice either. To be honest, I don't care. Die.",
+			animation: <IDialogAnimation>{ type: DialogAnimation.Glitchy_Uppercase },
 		}
 	}
 };

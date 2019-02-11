@@ -57,7 +57,6 @@ export class MessageBox {
 
 	private get_character_y_offset = (line_index: number): number => (1 + line_index) * parseInt(this._context.font) * (1 + this._line_spacing);
 
-
 	constructor(content: DialogGraph, boxSettings?: IMessageBoxSettings) {
 		this._content = content;
 
@@ -133,7 +132,95 @@ export class MessageBox {
 						);
 					}
 				}
+				this._context.restore();
+				break;
+			case DialogAnimation.Glitchy_Spinny:
+				this._context.save();
+				this._context.clearRect(0, 0, this._width, this._height + MessageBox._bottom_margin);
 
+				for (let line_index = 0; line_index <= this._current_line_index; ++line_index) {
+					const rng_character_index = MathUtil.get_random_int(this._lines[line_index].length - 1);
+					for (
+						let character_index = 0;
+						character_index < (line_index === this._current_line_index ? this._current_character_index + 1 : this._lines[line_index].length);
+						++character_index
+					) {
+						const char = this._lines[line_index][character_index];
+						if (character_index === rng_character_index) {
+							const letter_width = this._context.measureText(char).width;
+							const letter_height = parseInt(this._context.font);
+
+							this._context.translate(this.get_character_x_offset(this._lines[line_index], character_index) + letter_width / 2,
+								this.get_character_y_offset(line_index) - letter_height / 2);
+							this._context.rotate(MathUtil.get_random_int(Math.PI * 100) / 100);
+							this._context.fillText(char, -letter_width / 2, letter_height / 2);
+							this._context.setTransform(1, 0, 0, 1, 0, 0);
+						}
+						else {
+							this._context.fillText(
+								char,
+								this.get_character_x_offset(this._lines[line_index], character_index),
+								this.get_character_y_offset(line_index)
+							);
+						}
+					}
+				}
+				this._context.restore();
+				break;
+			case DialogAnimation.Glitchy_Splitted:
+				this._context.save();
+				this._context.clearRect(0, 0, this._width, this._height + MessageBox._bottom_margin);
+
+				for (let line_index = 0; line_index <= this._current_line_index; ++line_index) {
+					const rng_character_index = MathUtil.get_random_int(this._lines[line_index].length - 1);
+					for (
+						let character_index = 0;
+						character_index < (line_index === this._current_line_index ? this._current_character_index + 1 : this._lines[line_index].length);
+						++character_index
+					) {
+						const char = this._lines[line_index][character_index];
+						if (character_index === rng_character_index) {
+							for (let i = 0; i < MathUtil.get_random_int(2) + 1; i++) {
+								this._context.fillText(
+									char,
+									this.get_character_x_offset(this._lines[line_index], character_index) + MathUtil.get_random_int(get_animation_factor(this._current_node)),
+									this.get_character_y_offset(line_index) + MathUtil.get_random_int(get_animation_factor(this._current_node))
+								);
+							}
+						}
+						else {
+							this._context.fillText(
+								char,
+								this.get_character_x_offset(this._lines[line_index], character_index),
+								this.get_character_y_offset(line_index)
+							);
+						}
+					}
+				}
+				this._context.restore();
+				break;
+			case DialogAnimation.Glitchy_Uppercase:
+				this._context.save();
+				this._context.clearRect(0, 0, this._width, this._height + MessageBox._bottom_margin);
+
+				for (let line_index = 0; line_index <= this._current_line_index; ++line_index) {
+					const rng_character_index = MathUtil.get_random_int(this._lines[line_index].length - 1);
+					for (
+						let character_index = 0;
+						character_index < (line_index === this._current_line_index ? this._current_character_index + 1 : this._lines[line_index].length);
+						++character_index
+					) {
+						let char = this._lines[line_index][character_index];
+						if (character_index === rng_character_index) {
+							char = char.toUpperCase();
+						}
+						this._context.fillText(
+							char,
+							this.get_character_x_offset(this._lines[line_index], character_index),
+							this.get_character_y_offset(line_index)
+						);
+					}
+				}
 				this._context.restore();
 				break;
 		}
