@@ -10,9 +10,6 @@ import { Direction } from "../enum";
  * TODO: Triggers, Next messages, Stop, Text scrolling, Storage
  */
 export class MessageBox {
-
-	/** Number of characters per line */
-	private static readonly _line_width_in_characters = 48;
 	/** Bottom margin, so that the text is not stuck to the bottom of the message box */
 	private static readonly _bottom_margin = 20;
 	private static readonly DOM_ID = "message-box";
@@ -39,10 +36,12 @@ export class MessageBox {
 	private _current_line_index: number;
 	private _selected_choice_index: number;
 
+	private _line_spacing: number;
+	private _character_spacing: number;
+
 	private _choice_sound: AudioFile;
 
 	// Helpers
-
 	private get _current_line(): string { return this._lines[this._current_line_index]; }
 	private get _current_char(): string { return this._current_line[this._current_character_index]; }
 
@@ -54,9 +53,10 @@ export class MessageBox {
 		return (<IQuestionNode>this._current_node).answers != null && (<IQuestionNode>this._current_node).answers.length > 0 ? <IQuestionNode>this._current_node : null;
 	}
 
-	private get_character_x_offset = (character_index: number): number => character_index * (this._width / MessageBox._line_width_in_characters);
+	private get_character_x_offset = (line: string, character_index: number): number => this._context.measureText(line.substring(0, character_index)).width * (1 + this._character_spacing);
 
-	private get_character_y_offset = (line_index: number): number => (1 + line_index) * this._height / 4;
+	private get_character_y_offset = (line_index: number): number => (1 + line_index) * parseInt(this._context.font) * (1 + this._line_spacing);
+
 
 	constructor(content: DialogGraph, boxSettings?: IMessageBoxSettings) {
 		this._content = content;
@@ -65,6 +65,9 @@ export class MessageBox {
 
 		this._width = static_canvas.width;
 		this._height = static_canvas.height / 4;
+
+		this._line_spacing = 0.4;
+		this._character_spacing = 0;
 
 		this._current_character_index = 0;
 		this._current_line_index = 0;
@@ -110,7 +113,7 @@ export class MessageBox {
 		switch (get_animation(this._current_node)) {
 			case DialogAnimation.None:
 				// Draw current character
-				this._context.fillText(this._current_char, this.get_character_x_offset(this._current_character_index), this.get_character_y_offset(this._current_line_index));
+				this._context.fillText(this._current_char, this.get_character_x_offset(this._current_line, this._current_character_index), this.get_character_y_offset(this._current_line_index));
 				break;
 			case DialogAnimation.Shaky:
 				this._context.save();
@@ -125,7 +128,7 @@ export class MessageBox {
 						const char = this._lines[line_index][character_index];
 						this._context.fillText(
 							char,
-							this.get_character_x_offset(character_index) + MathUtil.get_random_int(get_animation_factor(this._current_node)),
+							this.get_character_x_offset(this._lines[line_index], character_index) + MathUtil.get_random_int(get_animation_factor(this._current_node)),
 							this.get_character_y_offset(line_index) + MathUtil.get_random_int(get_animation_factor(this._current_node))
 						);
 					}
@@ -160,7 +163,7 @@ export class MessageBox {
 		}
 
 		this._context.save();
-		this._context.clearRect(0, this.get_character_y_offset(this._current_line_index + .5), this._width, this._height + MessageBox._bottom_margin);
+		this._context.clearRect(0, this.get_character_y_offset(this._current_line_index) * 1.2, this._width, this._height + MessageBox._bottom_margin);
 		this._context.restore();
 
 		if (this._selected_choice_index == null) {
@@ -173,13 +176,13 @@ export class MessageBox {
 
 			switch (get_animation(current_choice)) {
 				case DialogAnimation.None:
-					this._context.fillText(text, this.get_character_x_offset(0), this.get_character_y_offset(i + 1 + this._current_line_index));
+					this._context.fillText(text, this.get_character_x_offset(text, 0), this.get_character_y_offset(i + 1 + this._current_line_index));
 					break;
 				case DialogAnimation.Shaky:
 					for (let character_index = 0; character_index < text.length; ++character_index) {
 						this._context.fillText(
 							text[character_index],
-							this.get_character_x_offset(character_index) + MathUtil.get_random_int(get_animation_factor(current_choice)),
+							this.get_character_x_offset(text, character_index) + MathUtil.get_random_int(get_animation_factor(current_choice)),
 							this.get_character_y_offset(i + 1 + this._current_line_index) + MathUtil.get_random_int(get_animation_factor(current_choice))
 						);
 					}
@@ -264,7 +267,9 @@ export class MessageBox {
 		const lines = new Array<string>();
 		let line = words[0];
 		for (let i = 1; i < words.length; i++) {
-			if (line.length + words[i].length <= MessageBox._line_width_in_characters) {
+			const space = line === "" ? "" : " ";
+			const next_length = this._context.measureText(line + space + words[i]).width * (1 + this._character_spacing);
+			if (next_length <= this._width) {
 				line += ` ${words[i]}`;
 			} else {
 				lines.push(line);

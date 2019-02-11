@@ -312,7 +312,7 @@ export class GameState {
 	}
 
 	public toggle_pause(): void {
-		if(this.paused) {
+		if (this.paused) {
 			this.resume();
 		}
 		else {

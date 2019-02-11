@@ -50,7 +50,7 @@ export const sample_dialog = <IDialogNode>{
 			answers: [
 				{
 					message: "Um, yes.",
-					animation: { type: DialogAnimation.None },
+					animation: <IDialogAnimation>{ type: DialogAnimation.None },
 					next_node: <IDialogNode>{
 						message: "Oh, what sad times are these when passing ruffians can say Ni at will to old ladies."
 					}
