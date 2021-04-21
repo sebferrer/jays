@@ -12,7 +12,8 @@ export class ImageBank {
 		"assets/img/jays.png",
 		"assets/img/tear.png",
 		"assets/img/walls/floor_one.png",
-		"assets/img/minimap_icons.png"
+		"assets/img/minimap_icons.png",
+		"assets/img/object.png"
 	];
 
 	constructor() {

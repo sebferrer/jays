@@ -15,6 +15,8 @@ import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
 import { MessageBox } from "./messages/message_box";
+import { Sprite } from "./sprite";
+import { ActionableEntity } from "./actionable_entity";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -28,6 +30,8 @@ export class GameState {
 	public touches: TouchList;
 	public current_message: MessageBox;
 	public paused: boolean;
+	////
+	public sign: ActionableEntity;
 
 	constructor() {
 		this.current_floor = new TempleFloor();
@@ -51,6 +55,9 @@ export class GameState {
 		document.ontouchstart = event => this.touch_start(event.touches);
 		document.ontouchend = event => this.touch_end(event.touches);
 		document.ontouchmove = event => { this.touches = event.touches; };
+
+		////
+		this.sign = new ActionableEntity('sign-1', new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31);
 	}
 
 	public touch_start(touches: TouchList): void {
@@ -256,6 +263,10 @@ export class GameState {
 			this.jays.update();
 			this.tears_update();
 		}
+
+		////
+		this.sign.draw(dynamic_ctx);
+		////
 
 		this.jays.draw(dynamic_ctx);
 

@@ -21,7 +21,8 @@ export class Rectangle implements IPositionable {
 export class Collision {
 	private constructor() { }
 
-	public static is_collision_rectangle(entity: Entity, object: Rectangle, next_position: Point = null): boolean {
+	public static is_collision_rectangle(entity: Entity, object: Rectangle, next_position: Point = null, height_perspective?: number): boolean {
+		height_perspective = height_perspective == null ? 0 : height_perspective;
 		if (object == null) {
 			return false;
 		}
@@ -31,7 +32,7 @@ export class Collision {
 
 		return Collision.is_collision(
 			next_position.x, next_position.y, next_position.x + entity.width, next_position.y + entity.height,
-			object.top_left.x, object.top_left.y, object.bottom_right.x, object.bottom_right.y
+			object.top_left.x, object.top_left.y, object.bottom_right.x, object.bottom_right.y - height_perspective
 		);
 	}
 
@@ -46,9 +47,16 @@ export class Collision {
 			tile.position.x, tile.position.y, tile.position.x + tile.width, tile.position.y + tile.height);
 	}
 
-	public static is_collision_nextpos_entity_tile(next_position: Point, entity: Entity, tile: Tile): boolean {
+	public static is_collision_nextpos_entity_tile(next_position: Point, entity: Entity, tile: Tile, height_perspective?: number): boolean {
+		height_perspective = height_perspective == null ? 0 : height_perspective;
 		return Collision.is_collision(next_position.x, next_position.y, next_position.x + entity.width, next_position.y + entity.height,
-			tile.position.x, tile.position.y, tile.position.x + tile.width, tile.position.y + tile.height);
+			tile.position.x, tile.position.y, tile.position.x + tile.width, tile.position.y + tile.height - height_perspective);
+	}
+
+	public static is_collision_nextpos_entity(next_position: Point, entity1: Entity, entity2: Entity, height_perspective?: number): boolean {
+		height_perspective = height_perspective == null ? 0 : height_perspective;
+		return Collision.is_collision(next_position.x, next_position.y, next_position.x + entity1.width, next_position.y + entity1.height,
+			entity2.position.x, entity2.position.y, entity2.position.x + entity2.width, entity2.position.y + entity2.height - height_perspective);
 	}
 
 	/**

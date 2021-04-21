@@ -36,9 +36,8 @@ window.onload = () => {
 		gameState = new GameState();
 		Settings.init();
 
-		const msg = new MessageBox(new DialogGraph("San", glitchy_dialog));
-
-		msg.start();
+		// const msg = new MessageBox(new DialogGraph("San", sample_dialog));
+		// msg.start();
 
 		gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 		gameState.update();
