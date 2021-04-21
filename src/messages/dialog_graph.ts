@@ -70,6 +70,14 @@ export const sample_dialog = <IDialogNode>{
 	}
 };
 
+export const first_sign = <IDialogNode>{
+	message: "after 2 years of abandonment, Jays development is back.",
+	next_node: <IDialogNode>{
+		message: "Brace yourself.",
+		animation: <IDialogAnimation>{ type: DialogAnimation.Shaky, factor: 4 },
+	}
+};
+
 export const angry_dialog = <IDialogNode>{
 	message: "Hello there! How are you? ^_^",
 	next_node: <IDialogNode>{

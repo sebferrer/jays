@@ -85,40 +85,19 @@ export abstract class Entity implements IPositionable {
 			}
 		}
 
-		////
-		if (Collision.is_collision_nextpos_entity(position, this, gameState.sign, this.height_perspective)) {
-			return this.get_collision_delta(direction, gameState.sign);
-		}
-		////
-
-		return new CollisionDelta(false);
-	}
-
-	public collision_objects(direction: Direction, position: Point): CollisionDelta {
-		// Collision with walls
-		const collision_rectangle = gameState.current_room.room_walls
-			.get_walls_collisions_rectangles()
-			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position, this.height_perspective));
-		if (collision_rectangle != null) {
-			return this.get_collision_delta(direction, collision_rectangle);
-		}
-
-		// Collision with tiles
-		for (let i = 0; i < gameState.current_room.height; i++) {
-			for (let j = 0; j < gameState.current_room.width; j++) {
-				const current_tile = gameState.current_room.tiles[i][j];
-				if (!this.has_collision_objects || !current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile, this.height_perspective)) {
-					continue;
+		// Collision with actionable entities
+		for (let i = 0; i < gameState.actionable_entities.length; i++) {
+			if (gameState.current_floor.level === gameState.actionable_entities[i].floor_level) {
+				if (Collision.is_collision_nextpos_entity(position, this, gameState.actionable_entities[i].action_hitbox, this.height_perspective)) {
+					gameState.actionable_entities[i].actionable = true;
+				} else {
+					gameState.actionable_entities[i].actionable = false;
 				}
-				return this.get_collision_delta(direction, current_tile);
+				if (Collision.is_collision_nextpos_entity(position, this, gameState.actionable_entities[i], this.height_perspective)) {
+					return this.get_collision_delta(direction, gameState.actionable_entities[i]);
+				}
 			}
 		}
-
-		////
-		if (Collision.is_collision_nextpos_entity(position, this, gameState.sign, this.height_perspective)) {
-			return this.get_collision_delta(direction, gameState.sign);
-		}
-		////
 
 		return new CollisionDelta(false);
 	}

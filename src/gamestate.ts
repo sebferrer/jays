@@ -15,8 +15,10 @@ import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
 import { MessageBox } from "./messages/message_box";
-import { Sprite } from "./sprite";
 import { ActionableEntity } from "./actionable_entity";
+import { Sign } from "./sign";
+import { Sprite } from "./sprite";
+import { first_sign } from "./messages/dialog_graph";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -30,8 +32,7 @@ export class GameState {
 	public touches: TouchList;
 	public current_message: MessageBox;
 	public paused: boolean;
-	////
-	public sign: ActionableEntity;
+	public actionable_entities: ActionableEntity[];
 
 	constructor() {
 		this.current_floor = new TempleFloor();
@@ -49,15 +50,18 @@ export class GameState {
 		this.paused = false;
 
 		this.jays = new Jays();
+
+		this.actionable_entities = [
+			new Sign('sign-1', new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, 1, 0.5, first_sign)
+		];
+
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
 
 		document.ontouchstart = event => this.touch_start(event.touches);
 		document.ontouchend = event => this.touch_end(event.touches);
 		document.ontouchmove = event => { this.touches = event.touches; };
-
-		////
-		this.sign = new ActionableEntity('sign-1', new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31);
+		console.log(this.current_floor);
 	}
 
 	public touch_start(touches: TouchList): void {
@@ -228,6 +232,9 @@ export class GameState {
 			case "p":
 				this.toggle_pause();
 				break;
+			case "a":
+				this.action();
+				break;
 			case "ArrowDown":
 				if (this.current_message != null) {
 					this.current_message.on_choice_button(Direction.DOWN);
@@ -264,9 +271,11 @@ export class GameState {
 			this.tears_update();
 		}
 
-		////
-		this.sign.draw(dynamic_ctx);
-		////
+		this.actionable_entities.forEach(actionable_entity => {
+			if (this.current_floor.level === actionable_entity.floor_level) {
+				actionable_entity.draw(dynamic_ctx);
+			}
+		});
 
 		this.jays.draw(dynamic_ctx);
 
@@ -329,5 +338,16 @@ export class GameState {
 		else {
 			this.pause();
 		}
+	}
+
+	public action(): void {
+		this.actionable_entities.forEach(actionable_entity => {
+			if (this.current_floor.level === actionable_entity.floor_level) {
+				if (actionable_entity.actionable) {
+					actionable_entity.action();
+					return;
+				}
+			}
+		});
 	}
 }
