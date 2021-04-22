@@ -33,11 +33,13 @@ export class GameState {
 	public current_message: MessageBox;
 	public paused: boolean;
 	public actionable_entities: ActionableEntity[];
+	public first_room_id: number;
 
 	constructor() {
 		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
 		this.current_room = this.current_floor.floor_map.current_room;
+		this.first_room_id = this.current_room.id;
 		renderer.update_current_room(this.current_room);
 
 		this.direction_event = new DirectionEvent();
@@ -52,7 +54,7 @@ export class GameState {
 		this.jays = new Jays();
 
 		this.actionable_entities = [
-			new Sign('sign-1', new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, 1, 0.5, first_sign)
+			new Sign('sign-1', new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, this.first_room_id, 0.5, first_sign)
 		];
 
 		document.onkeyup = event => this.key_up(event.key);
@@ -272,7 +274,8 @@ export class GameState {
 		}
 
 		this.actionable_entities.forEach(actionable_entity => {
-			if (this.current_floor.level === actionable_entity.floor_level) {
+			if (this.current_floor.level === actionable_entity.floor_level &&
+				this.current_room.id === actionable_entity.room_number) {
 				actionable_entity.draw(dynamic_ctx);
 			}
 		});
@@ -342,7 +345,8 @@ export class GameState {
 
 	public action(): void {
 		this.actionable_entities.forEach(actionable_entity => {
-			if (this.current_floor.level === actionable_entity.floor_level) {
+			if (this.current_floor.level === actionable_entity.floor_level &&
+				this.current_room.id === actionable_entity.room_number) {
 				if (actionable_entity.actionable) {
 					actionable_entity.action();
 					return;

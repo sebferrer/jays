@@ -87,7 +87,8 @@ export abstract class Entity implements IPositionable {
 
 		// Collision with actionable entities
 		for (let i = 0; i < gameState.actionable_entities.length; i++) {
-			if (gameState.current_floor.level === gameState.actionable_entities[i].floor_level) {
+			if (gameState.current_floor.level === gameState.actionable_entities[i].floor_level &&
+				gameState.current_room.id === gameState.actionable_entities[i].room_number) {
 				if (Collision.is_collision_nextpos_entity(position, this, gameState.actionable_entities[i].action_hitbox, this.height_perspective)) {
 					gameState.actionable_entities[i].actionable = true;
 				} else {

@@ -4,6 +4,14 @@ import { Tile, TILE_REF, TILE_TYPES } from "../tile";
 import { RoomWalls } from "../walls/room_walls";
 
 export abstract class RoomMap implements IUpdatableDrawable {
+	protected _id: number;
+	public get id(): number { return this._id; }
+	public set id(id: number) {
+		if (this._id != null) {
+			throw new Error("Cannot set a room id twice");
+		}
+		this._id = id;
+	}
 
 	protected _raw_map: IRawMap;
 	public get raw_map(): IRawMap { return this._raw_map; }

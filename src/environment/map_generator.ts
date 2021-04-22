@@ -94,6 +94,7 @@ export class MapGenerator {
 		const grid = generation_result.grid;
 		const result = new Array<RoomMap[]>(grid.length);
 		const available_rooms = floor.available_rooms;
+		let i = 1;
 		for (let y = 0; y < grid.length; ++y) {
 			result[y] = new Array<RoomMap>(grid[y].length);
 			for (let x = 0; x < grid[y].length; ++x) {
@@ -112,6 +113,8 @@ export class MapGenerator {
 
 				const rand = MathUtil.get_random_int(possible_rooms.length);
 				result[y][x] = possible_rooms[rand].get_room_map(doors_directions);
+				result[y][x].id = i;
+				i++;
 			}
 		}
 		return result;
