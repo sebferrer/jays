@@ -40,6 +40,15 @@ export class ArrayUtil {
 		return array1.filter(item => array2.indexOf(item) < 0);
 	}
 
+	public static shuffle<T>(array: Array<T>) {
+		const shufled_array = [...array];
+		for (let i = shufled_array.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shufled_array[i], shufled_array[j]] = [shufled_array[j], shufled_array[i]];
+		}
+		return shufled_array;
+	}
+
 	public static find_nb_connected(x: number, y: number, array: Array<Array<number>>): number {
 		const canUp = (x - 1 >= 0);
 		const canDown = (x + 1 < array.length);

@@ -43,7 +43,7 @@ export function get_animation_factor(node: IDialogNode): number {
 	return node.animation != null && node.animation.factor != null ? node.animation.factor : 0;
 }
 
-export const sample_dialog = <IDialogNode>{
+export const sample_dialog = <IDialogNode> {
 	message: "Shrubberies are my trade. I am a shrubber.",
 	next_node: <IDialogNode>{
 		message: "My name is Roger the Shrubber. I arrange, design, and sell shrubberies.",
@@ -70,7 +70,7 @@ export const sample_dialog = <IDialogNode>{
 	}
 };
 
-export const first_sign = <IDialogNode>{
+export const first_sign = <IDialogNode> {
 	message: "after 2 years of abandonment, Jays development is back.",
 	next_node: <IDialogNode>{
 		message: "Brace yourself.",
@@ -78,7 +78,7 @@ export const first_sign = <IDialogNode>{
 	}
 };
 
-export const angry_dialog = <IDialogNode>{
+export const angry_dialog = <IDialogNode> {
 	message: "Hello there! How are you? ^_^",
 	next_node: <IDialogNode>{
 		message: "Why don't you answer me...?",
@@ -114,7 +114,7 @@ export const angry_dialog = <IDialogNode>{
 	}
 };
 
-export const glitchy_dialog = <IDialogNode>{
+export const glitchy_dialog = <IDialogNode> {
 	message: "[GLITCHY_SPINNY] Hi There. I'm an Hey-Aye the AI. I'm not a bad guy. But I'm not nice either. To be honest, I don't care. Die.",
 	animation: <IDialogAnimation>{ type: DialogAnimation.Glitchy_Spinny },
 	next_node: <IDialogNode>{

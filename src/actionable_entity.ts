@@ -9,8 +9,17 @@ export abstract class ActionableEntity extends Entity implements IDrawable, IAct
     public action_hitbox_ratio: number;
     public action_hitbox: ActionableEntityHitbox;
     public actionable: boolean;
+    public occuring: boolean;
     public floor_level: number;
-    public room_number: number;
+    
+    public _room_number: number;
+	public get room_number(): number { return this._room_number; }
+	public set room_number(room_number: number) {
+		if (this._room_number != null) {
+			throw new Error("Cannot set a room number twice");
+		}
+		this._room_number = room_number;
+	}
 
     constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number, floor_level: number, room_number: number, action_hitbox_ratio?: number) {
         super(id, current_sprite, Point.copy(position), width, height);
@@ -20,6 +29,7 @@ export abstract class ActionableEntity extends Entity implements IDrawable, IAct
             new Point(position.x - width * this.action_hitbox_ratio, position.y - height * this.action_hitbox_ratio),
             width + width * this.action_hitbox_ratio * 2, height + height * this.action_hitbox_ratio * 2);
         this.actionable = false;
+        this.occuring = false;
         this.floor_level = floor_level;
         this.room_number = room_number;
     }

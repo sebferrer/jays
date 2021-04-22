@@ -15,6 +15,7 @@ export class Sign extends ActionableEntity {
 
     public action() {
         const msg = new MessageBox(new DialogGraph("San", this.message));
+        this.occuring = true;
         msg.start();
     }
 }

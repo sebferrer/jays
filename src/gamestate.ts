@@ -18,7 +18,7 @@ import { MessageBox } from "./messages/message_box";
 import { ActionableEntity } from "./actionable_entity";
 import { Sign } from "./sign";
 import { Sprite } from "./sprite";
-import { first_sign } from "./messages/dialog_graph";
+import { first_sign, angry_dialog, sample_dialog, glitchy_dialog } from "./messages/dialog_graph";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -54,8 +54,12 @@ export class GameState {
 		this.jays = new Jays();
 
 		this.actionable_entities = [
-			new Sign('sign-1', new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, this.first_room_id, 0.5, first_sign)
+			new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, this.first_room_id, 0.5, first_sign),
+			new Sign("angry_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, null, 0.5, angry_dialog),
+			new Sign("sample_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, null, 0.5, sample_dialog),
+			new Sign("glitchy_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, null, 0.5, glitchy_dialog)
 		];
+		this.spread_entities(["angry_dialog", "sample_dialog", "glitchy_dialog"], ArrayUtil.diff(this.current_floor.rooms_ids, [this.first_room_id]));
 
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
@@ -63,7 +67,6 @@ export class GameState {
 		document.ontouchstart = event => this.touch_start(event.touches);
 		document.ontouchend = event => this.touch_end(event.touches);
 		document.ontouchmove = event => { this.touches = event.touches; };
-		console.log(this.current_floor);
 	}
 
 	public touch_start(touches: TouchList): void {
@@ -347,11 +350,23 @@ export class GameState {
 		this.actionable_entities.forEach(actionable_entity => {
 			if (this.current_floor.level === actionable_entity.floor_level &&
 				this.current_room.id === actionable_entity.room_number) {
-				if (actionable_entity.actionable) {
+				if (actionable_entity.actionable && !actionable_entity.occuring) {
 					actionable_entity.action();
 					return;
 				}
 			}
+		});
+	}
+
+	public spread_entities(entities_ids: string[], rooms_ids: number[]): void {
+		if (entities_ids.length > rooms_ids.length) {
+			throw new Error("Cannot spread entities when there are more entities than rooms");
+		}
+		let i = 0;
+		const shuffled_rooms_ids = ArrayUtil.shuffle(rooms_ids);
+		entities_ids.forEach(entity_id => {
+			this.actionable_entities.find(entity => entity.id === entity_id).room_number = shuffled_rooms_ids[i];
+			i++;
 		});
 	}
 }

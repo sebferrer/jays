@@ -20,9 +20,12 @@ export abstract class Floor {
 	protected abstract _available_rooms: any[];
 	public get available_rooms(): RoomMapDefinition[] { return get_room_map_definitions(this._available_rooms); }
 
+	public rooms_ids: number[];
+
 	constructor() { }
 
 	public initialize(): void {
+		this.rooms_ids = new Array<number>();
 		this._floor_map = new FloorMap(this);
 		// Draw minimap
 		this.floor_map.next_room();

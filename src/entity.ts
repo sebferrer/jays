@@ -93,6 +93,7 @@ export abstract class Entity implements IPositionable {
 					gameState.actionable_entities[i].actionable = true;
 				} else {
 					gameState.actionable_entities[i].actionable = false;
+					gameState.actionable_entities[i].occuring = false; // bof
 				}
 				if (Collision.is_collision_nextpos_entity(position, this, gameState.actionable_entities[i], this.height_perspective)) {
 					return this.get_collision_delta(direction, gameState.actionable_entities[i]);
