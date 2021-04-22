@@ -10,19 +10,13 @@ export abstract class ActionableEntity extends Entity implements IDrawable, IAct
     public action_hitbox: ActionableEntityHitbox;
     public actionable: boolean;
     public occuring: boolean;
-    public floor_level: number;
-    
-    public _room_number: number;
-	public get room_number(): number { return this._room_number; }
-	public set room_number(room_number: number) {
-		if (this._room_number != null) {
-			throw new Error("Cannot set a room number twice");
-		}
-		this._room_number = room_number;
-	}
 
-    constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number, floor_level: number, room_number: number, action_hitbox_ratio?: number) {
-        super(id, current_sprite, Point.copy(position), width, height);
+    constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number,
+        has_collision_objects?: boolean, height_perspective?: number,
+        floor_level?: number, room_number?: number, action_hitbox_ratio?: number) {
+
+        super(id, current_sprite, Point.copy(position), width, height,
+            has_collision_objects, height_perspective, floor_level, room_number);
         this.action_hitbox_ratio = action_hitbox_ratio == null ? 0 : action_hitbox_ratio;
         this.sprite_filename = "assets/img/object.png";
         this.action_hitbox = new ActionableEntityHitbox(this.id + "-hitbox", null,
@@ -30,8 +24,6 @@ export abstract class ActionableEntity extends Entity implements IDrawable, IAct
             width + width * this.action_hitbox_ratio * 2, height + height * this.action_hitbox_ratio * 2);
         this.actionable = false;
         this.occuring = false;
-        this.floor_level = floor_level;
-        this.room_number = room_number;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {

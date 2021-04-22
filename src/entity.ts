@@ -28,8 +28,19 @@ export abstract class Entity implements IPositionable {
 	public has_collision_objects: boolean;
 	public height_perspective: number;
 
+	public floor_level: number;
+
+	public _room_number: number;
+	public get room_number(): number { return this._room_number; }
+	public set room_number(room_number: number) {
+		if (this._room_number != null) {
+			throw new Error("Cannot set a room number twice");
+		}
+		this._room_number = room_number;
+	}
+
 	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number,
-		has_collision_objects?: boolean, height_perspective?: number) {
+		has_collision_objects?: boolean, height_perspective?: number, floor_level?: number, room_number?: number) {
 
 		this._id = id;
 		this.current_sprite = current_sprite;
@@ -39,6 +50,8 @@ export abstract class Entity implements IPositionable {
 		this.sprite_collecs = SpriteHelper.get_collecs(this.id);
 		this.has_collision_objects = has_collision_objects == null ? true : has_collision_objects;
 		this.height_perspective = height_perspective == null ? 0 : height_perspective;
+		this.floor_level = floor_level;
+        this.room_number = room_number;
 	}
 
 	public next_position(direction: Direction): Point {

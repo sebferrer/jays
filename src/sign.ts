@@ -8,8 +8,10 @@ import { MessageBox } from "./messages/message_box";
 export class Sign extends ActionableEntity {
     public message: IDialogNode;
 
-    constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number, floor_level: number, room_number: number, action_hitbox_ratio?: number, message?: IDialogNode) {
-        super(id, current_sprite, position, width, height, floor_level, room_number, action_hitbox_ratio);
+    constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number,
+        has_collision_objects?: boolean, height_perspective?: number,
+        floor_level?: number, room_number?: number, action_hitbox_ratio?: number, message?: IDialogNode) {
+        super(id, current_sprite, position, width, height, has_collision_objects, height_perspective, floor_level, room_number, action_hitbox_ratio);
         this.message = message;
     }
 

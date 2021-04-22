@@ -54,10 +54,10 @@ export class GameState {
 		this.jays = new Jays();
 
 		this.actionable_entities = [
-			new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, this.first_room_id, 0.5, first_sign),
-			new Sign("angry_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, null, 0.5, angry_dialog),
-			new Sign("sample_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, null, 0.5, sample_dialog),
-			new Sign("glitchy_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, 1, null, 0.5, glitchy_dialog)
+			new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, this.first_room_id, 0.5, first_sign),
+			new Sign("angry_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, null, 0.5, angry_dialog),
+			new Sign("sample_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, null, 0.5, sample_dialog),
+			new Sign("glitchy_dialog", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, null, 0.5, glitchy_dialog)
 		];
 		this.spread_entities(["angry_dialog", "sample_dialog", "glitchy_dialog"], ArrayUtil.diff(this.current_floor.rooms_ids, [this.first_room_id]));
 
