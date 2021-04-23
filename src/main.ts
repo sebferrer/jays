@@ -1,7 +1,5 @@
 import { GameState } from "./gamestate";
 import { ImageBank } from "./image_bank";
-import { DialogGraph, sample_dialog, angry_dialog, glitchy_dialog } from "./messages/dialog_graph";
-import { MessageBox } from "./messages/message_box";
 import { Renderer } from "./renderer";
 import { KeyMapper } from "./settings/keymapper";
 import { Settings } from "./settings/settings";
@@ -27,7 +25,8 @@ export const IMAGE_BANK = new ImageBank();
 export const renderer = new Renderer();
 export let gameState: GameState;
 
-//TODO: add a localstorage service to retrieve the value the user wants to use
+// TODO: add a localstorage service to retrieve the value the user wants to use
+// --> PouchDB?
 export const key_mapper = new KeyMapper();
 
 window.onload = () => {
@@ -35,9 +34,6 @@ window.onload = () => {
 		renderer.autoScale();
 		gameState = new GameState();
 		Settings.init();
-
-		// const msg = new MessageBox(new DialogGraph("San", sample_dialog));
-		// msg.start();
 
 		gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 		gameState.update();
