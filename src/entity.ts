@@ -114,6 +114,16 @@ export abstract class Entity implements IPositionable {
 			}
 		}
 
+		// Collision with drawable entities
+		for (let i = 0; i < gameState.drawable_entities.length; i++) {
+			if (gameState.current_floor.level === gameState.drawable_entities[i].floor_level &&
+				gameState.current_room.id === gameState.drawable_entities[i].room_number) {
+				if (Collision.is_collision_nextpos_entity(position, this, gameState.drawable_entities[i], this.height_perspective)) {
+					return this.get_collision_delta(direction, gameState.drawable_entities[i]);
+				}
+			}
+		}
+
 		return new CollisionDelta(false);
 	}
 

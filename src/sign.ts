@@ -12,6 +12,7 @@ export class Sign extends ActionableEntity {
         has_collision_objects?: boolean, height_perspective?: number,
         floor_level?: number, room_number?: number, action_hitbox_ratio?: number, message?: IDialogNode) {
         super(id, current_sprite, position, width, height, has_collision_objects, height_perspective, floor_level, room_number, action_hitbox_ratio);
+        this.sprite_filename = "assets/img/objects.png";
         this.message = message;
     }
 
@@ -19,13 +20,5 @@ export class Sign extends ActionableEntity {
         const msg = new MessageBox(new DialogGraph("San", this.message));
         this.occuring = true;
         msg.start();
-    }
-}
-
-export class ActionableEntityHitbox extends Entity {
-    public action_hitbox: Entity;
-
-    constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number) {
-        super(id, current_sprite, Point.copy(position), width, height, false);
     }
 }

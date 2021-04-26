@@ -18,7 +18,6 @@ export abstract class ActionableEntity extends Entity implements IDrawable, IAct
         super(id, current_sprite, Point.copy(position), width, height,
             has_collision_objects, height_perspective, floor_level, room_number);
         this.action_hitbox_ratio = action_hitbox_ratio == null ? 0 : action_hitbox_ratio;
-        this.sprite_filename = "assets/img/object.png";
         this.action_hitbox = new ActionableEntityHitbox(this.id + "-hitbox", null,
             new Point(position.x - width * this.action_hitbox_ratio, position.y - height * this.action_hitbox_ratio),
             width + width * this.action_hitbox_ratio * 2, height + height * this.action_hitbox_ratio * 2);

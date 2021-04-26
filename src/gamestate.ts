@@ -20,6 +20,8 @@ import { Sign } from "./sign";
 import { Sprite } from "./sprite";
 import { first_sign } from "./messages/dialog_graph";
 import { get_actionable_entities } from "./actionable_entities";
+import { get_drawable_entities } from "./drawable_entities";
+import { DrawableEntity } from "./drawable_entity";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -33,7 +35,8 @@ export class GameState {
 	public touches: TouchList;
 	public current_message: MessageBox;
 	public paused: boolean;
-	public actionable_entities: ActionableEntity[];
+	public actionable_entities: ActionableEntity[]; // move to floor
+	public drawable_entities: DrawableEntity[]; // move to floor
 	public first_room_id: number;
 
 	constructor() {
@@ -57,6 +60,9 @@ export class GameState {
 		this.actionable_entities = get_actionable_entities(canvas_W, canvas_H);
 		this.actionable_entities.push(new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, this.first_room_id, 0.5, first_sign));
 		this.spread_entities(["angry_dialog", "sample_dialog", "glitchy_dialog"], ArrayUtil.diff(this.current_floor.rooms_ids, [this.first_room_id]));
+
+		this.drawable_entities = new Array<DrawableEntity>();
+		// this.drawable_entities = get_drawable_entities(canvas_W, canvas_H);
 
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
@@ -230,12 +236,10 @@ export class GameState {
 				if (this.current_message != null) {
 					this.current_message.on_action_button();
 				}
+				this.action();
 				break;
 			case "p":
 				this.toggle_pause();
-				break;
-			case "a":
-				this.action();
 				break;
 			case "ArrowDown":
 				if (this.current_message != null) {
@@ -277,6 +281,12 @@ export class GameState {
 			if (this.current_floor.level === actionable_entity.floor_level &&
 				this.current_room.id === actionable_entity.room_number) {
 				actionable_entity.draw(dynamic_ctx);
+			}
+		});
+		this.drawable_entities.forEach(drawable_entity => {
+			if (this.current_floor.level === drawable_entity.floor_level &&
+				this.current_room.id === drawable_entity.room_number) {
+					drawable_entity.draw(dynamic_ctx);
 			}
 		});
 
