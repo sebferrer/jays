@@ -114,6 +114,7 @@ export class MapGenerator {
 				const rand = MathUtil.get_random_int(possible_rooms.length);
 				result[y][x] = possible_rooms[rand].get_room_map(doors_directions);
 				result[y][x].id = i;
+				floor.rooms.push(result[y][x]);
 				floor.rooms_ids.push(i);
 				i++;
 			}

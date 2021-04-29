@@ -86,7 +86,7 @@ export class FloorMap implements IDrawable {
 		const grid_generation_result = map_generator.generate_grid(this.max_floor_map_width, this.max_floor_map_height);
 		this.max_floor_map_height = grid_generation_result.grid.length;
 		this.max_floor_map_width = grid_generation_result.grid[0].length;
-		this.maps_grid = map_generator.generate_rooms(grid_generation_result,  this.floor);
+		this.maps_grid = map_generator.generate_rooms(grid_generation_result, this.floor);
 		this.current_position = grid_generation_result.init_point;
 	}
 
@@ -171,6 +171,12 @@ export class FloorMap implements IDrawable {
 
 		renderer.fill_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
 		renderer.stroke_round_rect(context, destination.x, destination.y, config.sizes.room_width, config.sizes.room_height, 3);
+
+		context.fillStyle = "black";
+		context.font = "30px";
+		context.strokeText("" + room.id, destination.x + config.sizes.room_width / 2, destination.y + config.sizes.room_height / 2);
+		context.fillStyle = "white";
+		context.fillText("" + room.id, destination.x + config.sizes.room_width / 2, destination.y + config.sizes.room_height / 2);
 	}
 
 	private draw_custom_room(

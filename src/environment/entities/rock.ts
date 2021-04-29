@@ -3,7 +3,7 @@ import { Sprite } from "../../sprite";
 import { Point } from "../../point";
 
 export class Rock extends DrawableEntity {
-    constructor(type: number, position: Point, floor_level?: number, room_number?: number) {
+    constructor(type: number, position?: Point, floor_level?: number, room_number?: number) {
         let id: string;
         let sprite: Sprite;
         let width: number;
@@ -20,3 +20,5 @@ export class Rock extends DrawableEntity {
         this.sprite_filename = "assets/img/environment.png";
     }
 }
+
+export const ROCK_2 = new Rock(2);

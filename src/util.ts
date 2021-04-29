@@ -173,7 +173,10 @@ export class MathUtil {
 		return Math.abs(v1 - v2) < epsilon;
 	}
 
-	public static get_random_int(max) {
-		return Math.floor(Math.random() * Math.floor(max));
+	public static get_random_int(max: number, max2?: number): number {
+		if (max2 == null) {
+			return Math.floor(Math.random() * Math.floor(max));
+		}
+		return max + Math.floor(Math.random() * Math.floor(max2 - max));
 	}
 }

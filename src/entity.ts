@@ -44,14 +44,14 @@ export abstract class Entity implements IPositionable {
 
 		this._id = id;
 		this.current_sprite = current_sprite;
-		this.position = new Point(pos.x, pos.y);
+		this.position = pos == null ? null : new Point(pos.x, pos.y);
 		this._width = width;
 		this._height = height;
 		this.sprite_collecs = SpriteHelper.get_collecs(this.id);
 		this.has_collision_objects = has_collision_objects == null ? true : has_collision_objects;
 		this.height_perspective = height_perspective == null ? 0 : height_perspective;
 		this.floor_level = floor_level;
-        this.room_number = room_number;
+		this.room_number = room_number;
 	}
 
 	public next_position(direction: Direction): Point {
@@ -99,28 +99,22 @@ export abstract class Entity implements IPositionable {
 		}
 
 		// Collision with actionable entities
-		for (let i = 0; i < gameState.actionable_entities.length; i++) {
-			if (gameState.current_floor.level === gameState.actionable_entities[i].floor_level &&
-				gameState.current_room.id === gameState.actionable_entities[i].room_number) {
-				if (Collision.is_collision_nextpos_entity(position, this, gameState.actionable_entities[i].action_hitbox, this.height_perspective)) {
-					gameState.actionable_entities[i].actionable = true;
-				} else {
-					gameState.actionable_entities[i].actionable = false;
-					gameState.actionable_entities[i].occuring = false; // bof
-				}
-				if (Collision.is_collision_nextpos_entity(position, this, gameState.actionable_entities[i], this.height_perspective)) {
-					return this.get_collision_delta(direction, gameState.actionable_entities[i]);
-				}
+		for (let i = 0; i < gameState.current_room.actionable_entities.length; i++) {
+			if (Collision.is_collision_nextpos_entity(position, this, gameState.current_room.actionable_entities[i].action_hitbox, this.height_perspective)) {
+				gameState.current_room.actionable_entities[i].actionable = true;
+			} else {
+				gameState.current_room.actionable_entities[i].actionable = false;
+				gameState.current_room.actionable_entities[i].occuring = false; // bof
+			}
+			if (Collision.is_collision_nextpos_entity(position, this, gameState.current_room.actionable_entities[i], this.height_perspective)) {
+				return this.get_collision_delta(direction, gameState.current_room.actionable_entities[i]);
 			}
 		}
 
 		// Collision with drawable entities
-		for (let i = 0; i < gameState.drawable_entities.length; i++) {
-			if (gameState.current_floor.level === gameState.drawable_entities[i].floor_level &&
-				gameState.current_room.id === gameState.drawable_entities[i].room_number) {
-				if (Collision.is_collision_nextpos_entity(position, this, gameState.drawable_entities[i], this.height_perspective)) {
-					return this.get_collision_delta(direction, gameState.drawable_entities[i]);
-				}
+		for (let i = 0; i < gameState.current_room.drawable_entities.length; i++) {
+			if (Collision.is_collision_nextpos_entity(position, this, gameState.current_room.drawable_entities[i], this.height_perspective)) {
+				return this.get_collision_delta(direction, gameState.current_room.drawable_entities[i]);
 			}
 		}
 
