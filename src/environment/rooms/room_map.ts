@@ -7,9 +7,8 @@ import { Rect } from "../../rect";
 import { MathUtil } from "../../util";
 import { Rock, ROCK_2 } from "../entities/rock";
 import { Point } from "../../point";
-import { canvas_W, canvas_H, gameState } from "../../main";
+import { canvas_W, canvas_H } from "../../main";
 import { Collision } from "../../collision";
-import { get_actionable_entities } from "../../actionable_entities";
 import { ActionableEntity } from "../../actionable_entity";
 
 export abstract class RoomMap implements IUpdatableDrawable {
@@ -68,16 +67,16 @@ export abstract class RoomMap implements IUpdatableDrawable {
 		this._has_been_glimpsed = value;
 	}
 
-	constructor(raw_map: IRawMap, wall: RoomWalls, drawable_entities?: DrawableEntity[]) {
+	constructor(raw_map: IRawMap, walls: RoomWalls, drawable_entities?: DrawableEntity[]) {
 		if (raw_map == null) {
 			throw new Error("parameter `raw_map` cannot be null");
 		}
-		if (wall == null) {
+		if (walls == null) {
 			throw new Error("parameter `wall` cannot be null");
 		}
 
 		this._raw_map = raw_map;
-		this._room_walls = wall;
+		this._room_walls = walls;
 		this._tiles = this.get_tiles(this.raw_map, this._room_walls);
 		this.drawable_entities = drawable_entities == null ? new Array<DrawableEntity>() : drawable_entities;
 		this.actionable_entities = new Array<ActionableEntity>();
@@ -98,17 +97,17 @@ export abstract class RoomMap implements IUpdatableDrawable {
 				);
 			}
 		);
-		this.taken_spaces.push(new Rect(canvas_W / 2 - 10, canvas_H / 2 - 20, 20, 40)); // Jays
-		/*get_actionable_entities().forEach(
-			actionable_entity => {
-				console.log(actionable_entity);
-				if (actionable_entity.room_number === this.id && actionable_entity.floor_level === gameState.current_floor.level) {
-					this.taken_spaces.push(
-						new Rect(actionable_entity.position.x, actionable_entity.position.y, actionable_entity.width, actionable_entity.height));
-				}
+		this.taken_spaces.push(new Rect(canvas_W / 2 - 10, canvas_H / 2 - 20, 20, 40)); // Jays spawn
+		this.room_walls.doors.forEach(
+			door => {
+				this.taken_spaces.push(new Rect(
+					door.position.x - door.width,
+					door.position.y - door.height,
+					door.width * 3,
+					door.height * 3
+				));
 			}
 		);
-		this.taken_spaces.push(new Rect(gameState.jays.position.x, gameState.jays.position.y, gameState.jays.width, gameState.jays.height));*/
 	}
 
 	protected get_tiles(raw_map: IRawMap, room_walls: RoomWalls): Tile[][] {
@@ -143,7 +142,9 @@ export abstract class RoomMap implements IUpdatableDrawable {
 	public generate_drawable_entity_random_location(type: string) {
 		let good_location = false;
 		let drawable_entity: DrawableEntity;
-		while (!good_location) {
+		const nbTries = 20;
+		let i = 0;
+		while (!good_location && i < nbTries) {
 			switch (type) {
 				case "rock-2":
 					drawable_entity = new Rock(2, new Point(
@@ -156,12 +157,16 @@ export abstract class RoomMap implements IUpdatableDrawable {
 			good_location = !Collision.is_collision_rects(
 				new Rect(drawable_entity.position.x, drawable_entity.position.y, drawable_entity.width, drawable_entity.height),
 				this.taken_spaces);
+			i++;
 		}
-		this.drawable_entities.push(drawable_entity);
-		this.taken_spaces.push(new Rect(drawable_entity.position.x, drawable_entity.position.y, drawable_entity.width, drawable_entity.height));
+		if (i < nbTries) {
+			this.drawable_entities.push(drawable_entity);
+			this.taken_spaces.push(new Rect(drawable_entity.position.x, drawable_entity.position.y, drawable_entity.width, drawable_entity.height));
+		}
 	}
 
-	public generate_drawable_entities_random_location(type: string, nb: number) {
+	public generate_drawable_entities_random_location(type: string, nb: number, max?: number) {
+		nb = max == null ? nb : MathUtil.get_random_int(nb, max);
 		for (let i = 0; i < nb; i++) {
 			this.generate_drawable_entity_random_location(type);
 		}

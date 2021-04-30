@@ -15,9 +15,9 @@ export class TempleFloor extends Floor {
 	public get base_music(): AudioFile { return this._base_music; }
 
 	protected _available_rooms = [
-		FourFireRoom/*,
+		FourFireRoom,
 		EmptyGrassRoom,
-		RockyRoom,
+		RockyRoom/*,
 		WaterLeftRightRoom,
 		DeadEndRightRoom*/
 	];

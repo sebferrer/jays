@@ -71,17 +71,7 @@ export class FourFireRoom extends RoomMap {
 
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
 
-		// WIP
-		/**
-		 * TODO
-		 * take in account the walls properly
-		 * take in account jays
-		 * take in account entities
-		 * take in account actionable entities
-		 * take in account space to go through the doors (good luck)
-		 */
-
-		//this.generate_drawable_entities_random_location("rock-2", 5);
+		this.generate_drawable_entities_random_location("rock-2", 2, 5);
 	}
 
 }

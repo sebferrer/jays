@@ -39,8 +39,16 @@ export abstract class Floor {
 		this.rooms_ids = new Array<number>();
 		this._floor_map = new FloorMap(this);
 
+		this.spread_actionable_entities();
+
+		// Draw minimap
+		this.floor_map.next_room();
+
+		renderer.update_minimap(this.floor_map);
+	}
+
+	public spread_actionable_entities(): void {
 		this.actionable_entities = get_actionable_entities(canvas_W, canvas_H);
-		// this.actionable_entities.push(new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, this.first_room_id, 0.5, first_sign));
 		this.spread_entities(["angry_dialog", "sample_dialog", "glitchy_dialog"], /*ArrayUtil.diff(*/this.rooms_ids/*, [this.first_room_id])*/);
 		this.rooms.forEach(
 			room => {
@@ -59,11 +67,6 @@ export abstract class Floor {
 				});
 			}
 		);
-
-		// Draw minimap
-		this.floor_map.next_room();
-
-		renderer.update_minimap(this.floor_map);
 	}
 
 	public on_collision_warp(door: Door) {

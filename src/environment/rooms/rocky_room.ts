@@ -72,6 +72,8 @@ export class RockyRoom extends RoomMap {
 		];
 
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
+
+		this.generate_drawable_entities_random_location("rock-2", 8, 15);
 	}
 
 }
