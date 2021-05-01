@@ -1,5 +1,5 @@
 import { Direction } from "../../enum";
-import { canvas_H } from "../../main";
+import { canvas_H, canvas_W } from "../../main";
 import { Point } from "../../point";
 import { IRawMap } from "../irawmap";
 import { RoomCornerWall } from "../walls/corner_wall";
@@ -70,6 +70,8 @@ export class FourFireRoom extends RoomMap {
 		];
 
 		super(raw_map, new RoomWalls(side_walls, corner_walls, doors, custom_elements));
+
+		this.generate_drawable_entities_random_location("rock-2", 2, 5);
 	}
 
 }

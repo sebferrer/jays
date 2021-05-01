@@ -24,9 +24,9 @@
 	"devDependencies": {
 		"browserify": "^16.2.2",
 		"del": "^3.0.0",
-		"gulp": "^3.9.1",
+		"gulp": "^4.0.2",
 		"gulp-typescript": "^5.0.0-alpha.3",
-		"run-sequence": "^2.2.1",
+		"gulp4-run-sequence": "^1.0.0",
 		"tsify": "^4.0.0",
 		"tslint": "^5.11.0",
 		"typescript": "^3.0.1",

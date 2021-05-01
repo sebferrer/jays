@@ -25,13 +25,33 @@ export abstract class Entity implements IPositionable {
 
 	public position: Point;
 
-	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number) {
+	public has_collision_objects: boolean;
+	public height_perspective: number;
+
+	public floor_level: number;
+
+	public _room_number: number;
+	public get room_number(): number { return this._room_number; }
+	public set room_number(room_number: number) {
+		if (this._room_number != null) {
+			throw new Error("Cannot set a room number twice");
+		}
+		this._room_number = room_number;
+	}
+
+	constructor(id: string, current_sprite: Sprite, pos: Point, width: number, height: number,
+		has_collision_objects?: boolean, height_perspective?: number, floor_level?: number, room_number?: number) {
+
 		this._id = id;
 		this.current_sprite = current_sprite;
-		this.position = new Point(pos.x, pos.y);
+		this.position = pos == null ? null : new Point(pos.x, pos.y);
 		this._width = width;
 		this._height = height;
 		this.sprite_collecs = SpriteHelper.get_collecs(this.id);
+		this.has_collision_objects = has_collision_objects == null ? true : has_collision_objects;
+		this.height_perspective = height_perspective == null ? 0 : height_perspective;
+		this.floor_level = floor_level;
+		this.room_number = room_number;
 	}
 
 	public next_position(direction: Direction): Point {
@@ -59,11 +79,10 @@ export abstract class Entity implements IPositionable {
 	}
 
 	public collision_map(direction: Direction, position: Point): CollisionDelta {
-
 		// Collision with walls
 		const collision_rectangle = gameState.current_room.room_walls
 			.get_walls_collisions_rectangles()
-			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position));
+			.find(rectangle => Collision.is_collision_rectangle(this, rectangle, position, this.height_perspective));
 		if (collision_rectangle != null) {
 			return this.get_collision_delta(direction, collision_rectangle);
 		}
@@ -72,10 +91,30 @@ export abstract class Entity implements IPositionable {
 		for (let i = 0; i < gameState.current_room.height; i++) {
 			for (let j = 0; j < gameState.current_room.width; j++) {
 				const current_tile = gameState.current_room.tiles[i][j];
-				if (!current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile)) {
+				if (!this.has_collision_objects || !current_tile.has_collision || !Collision.is_collision_nextpos_entity_tile(position, this, current_tile, this.height_perspective)) {
 					continue;
 				}
 				return this.get_collision_delta(direction, current_tile);
+			}
+		}
+
+		// Collision with actionable entities
+		for (let i = 0; i < gameState.current_room.actionable_entities.length; i++) {
+			if (Collision.is_collision_nextpos_entity(position, this, gameState.current_room.actionable_entities[i].action_hitbox, this.height_perspective)) {
+				gameState.current_room.actionable_entities[i].actionable = true;
+			} else {
+				gameState.current_room.actionable_entities[i].actionable = false;
+				gameState.current_room.actionable_entities[i].occuring = false; // bof
+			}
+			if (Collision.is_collision_nextpos_entity(position, this, gameState.current_room.actionable_entities[i], this.height_perspective)) {
+				return this.get_collision_delta(direction, gameState.current_room.actionable_entities[i]);
+			}
+		}
+
+		// Collision with drawable entities
+		for (let i = 0; i < gameState.current_room.drawable_entities.length; i++) {
+			if (Collision.is_collision_nextpos_entity(position, this, gameState.current_room.drawable_entities[i], this.height_perspective)) {
+				return this.get_collision_delta(direction, gameState.current_room.drawable_entities[i]);
 			}
 		}
 
@@ -84,7 +123,7 @@ export abstract class Entity implements IPositionable {
 
 	private get_collision_delta(direction: Direction, obstacle: IPositionable) {
 		switch (direction) {
-			case Direction.UP: return new CollisionDelta(true, 0, PositionAccessor.bottom_y(obstacle) - PositionAccessor.top_y(this));
+			case Direction.UP: return new CollisionDelta(true, 0, PositionAccessor.bottom_y(obstacle) - PositionAccessor.top_y(this), this.height_perspective);
 			case Direction.DOWN: return new CollisionDelta(true, 0, PositionAccessor.top_y(obstacle) - PositionAccessor.bottom_y(this));
 			case Direction.LEFT: return new CollisionDelta(true, PositionAccessor.right_x(obstacle) - PositionAccessor.left_x(this), 0);
 			case Direction.RIGHT: return new CollisionDelta(true, PositionAccessor.left_x(obstacle) - PositionAccessor.right_x(this), 0);

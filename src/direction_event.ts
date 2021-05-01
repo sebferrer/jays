@@ -34,4 +34,17 @@ export class DirectionEvent {
 				break;
 		}
 	}
+
+	public getCurrentDirectionToDraw(): Direction {
+		if(this.move_right) {
+			return Direction.RIGHT;
+		}
+		else if(this.move_left) {
+			return Direction.LEFT;
+		}
+		else if(this.move_up) {
+			return Direction.UP;
+		}
+		return Direction.DOWN;
+	}
 }

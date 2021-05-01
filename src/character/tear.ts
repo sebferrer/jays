@@ -43,7 +43,7 @@ export class TearBasic extends Tear {
 	public speed: number;
 	public range: number;
 
-	private static _basic_tear_firing_sound = new AudioFile("assets/sounds/pew.mp3");
+	private static _basic_tear_firing_sound = new AudioFile("assets/sounds/sfx/pew.mp3");
 	public get firing_sound(): AudioFile { return TearBasic._basic_tear_firing_sound; }
 
 	constructor(pos: Point, direction: Direction, id?: string, current_sprite?: Sprite, width?: number, height?: number) {

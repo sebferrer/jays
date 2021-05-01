@@ -2,7 +2,7 @@ import { AttackDirectionEvent } from "./attack_direction_event";
 import { Jays } from "./character/jays";
 import { Tear, TearBasic } from "./character/tear";
 import { DirectionEvent } from "./direction_event";
-import { Arrow_Direction, Direction } from "./enum";
+import { Arrow_Direction, Direction, Direction_Int } from "./enum";
 import { Floor } from "./environment/floors/floor";
 import { TempleFloor } from "./environment/floors/one/temple_floor";
 import { RoomMap } from "./environment/rooms/room_map";
@@ -14,6 +14,13 @@ import { Timer } from "./timer";
 import { TIMERS } from "./timers";
 import { TouchHelper } from "./touch_helper";
 import { ArrayUtil, SetUtil } from "./util";
+import { MessageBox } from "./messages/message_box";
+import { ActionableEntity } from "./actionable_entity";
+import { Sign } from "./sign";
+import { Sprite } from "./sprite";
+import { first_sign } from "./messages/dialog_graph";
+import { get_actionable_entities } from "./actionable_entities";
+import { DrawableEntity } from "./drawable_entity";
 
 export class GameState {
 	public current_room: RoomMap;
@@ -25,11 +32,16 @@ export class GameState {
 	public tears: Tear[];
 	public joysticks: Joysticks;
 	public touches: TouchList;
+	public current_message: MessageBox;
+	public paused: boolean;
+	// public actionable_entities: ActionableEntity[]; // move to floor
+	public first_room_id: number;
 
 	constructor() {
 		this.current_floor = new TempleFloor();
 		this.current_floor.initialize();
 		this.current_room = this.current_floor.floor_map.current_room;
+		this.first_room_id = this.current_room.id;
 		renderer.update_current_room(this.current_room);
 
 		this.direction_event = new DirectionEvent();
@@ -39,7 +51,15 @@ export class GameState {
 
 		this.joysticks = new Joysticks();
 
+		this.paused = false;
+
 		this.jays = new Jays();
+
+		// this.actionable_entities = get_actionable_entities(canvas_W, canvas_H);
+		// this.actionable_entities.push(new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, this.first_room_id, 0.5, first_sign));
+		// this.spread_entities(["angry_dialog", "sample_dialog", "glitchy_dialog"], ArrayUtil.diff(this.current_floor.rooms_ids, [this.first_room_id]));
+		// this.current_room.actionable_entities.push(new Sign("first_sign", new Sprite(0, 0, 29, 31), new Point(canvas_W / 2 - 15, canvas_H / 2 - 100), 29, 31, true, 0, 1, this.first_room_id, 0.5, first_sign));
+
 		document.onkeyup = event => this.key_up(event.key);
 		document.onkeydown = event => this.key_down(event.key);
 
@@ -171,7 +191,9 @@ export class GameState {
 	public remove_direction_event(direction: Direction): void {
 		if (direction != null && SetUtil.remove_from_array(this.directions_keyDown, direction)) {
 			this.direction_event.setDirection(direction, false);
-			this.jays.direction_key_up(direction);
+			if (!this.paused) {
+				this.jays.direction_key_up(direction);
+			}
 		}
 	}
 
@@ -205,6 +227,26 @@ export class GameState {
 			case "f":
 				renderer.scale();
 				break;
+			// Spacebar
+			case " ":
+				if (this.current_message != null) {
+					this.current_message.on_action_button();
+				}
+				this.action();
+				break;
+			case "p":
+				this.toggle_pause();
+				break;
+			case "ArrowDown":
+				if (this.current_message != null) {
+					this.current_message.on_choice_button(Direction.DOWN);
+				}
+				break;
+			case "ArrowUp":
+				if (this.current_message != null) {
+					this.current_message.on_choice_button(Direction.UP);
+				}
+				break;
 		}
 	}
 
@@ -226,12 +268,28 @@ export class GameState {
 			tear.draw(dynamic_ctx);
 		});
 
-		this.jays.update();
-		this.tears_update();
+		if (!this.paused) {
+			this.jays.update();
+			this.tears_update();
+		}
+
+		this.current_room.actionable_entities.forEach(actionable_entity => {
+			actionable_entity.draw(dynamic_ctx);
+		});
+
+		this.current_room.drawable_entities.forEach(drawable_entity => {
+			drawable_entity.draw(dynamic_ctx);
+		});
 
 		this.jays.draw(dynamic_ctx);
 
+		if (this.current_message != null) {
+			this.current_message.draw();
+		}
+
 		this.touch_move();
+
+		dynamic_ctx.restore();
 
 		const self = this;
 		window.requestAnimationFrame(() => self.update());
@@ -266,5 +324,32 @@ export class GameState {
 
 	public get_timer(id: string): Timer {
 		return TIMERS.find(item => item.id === id);
+	}
+
+	public pause(): void {
+		this.paused = true;
+		this.jays.current_sprite = this.jays.sprite_collecs.get("MOTIONLESS")[Direction_Int.get(this.direction_event.getCurrentDirectionToDraw())];
+	}
+
+	public resume(): void {
+		this.paused = false;
+	}
+
+	public toggle_pause(): void {
+		if (this.paused) {
+			this.resume();
+		}
+		else {
+			this.pause();
+		}
+	}
+
+	public action(): void {
+		this.current_room.actionable_entities.forEach(actionable_entity => {
+			if (actionable_entity.actionable && !actionable_entity.occuring) {
+				actionable_entity.action();
+				return;
+			}
+		});
 	}
 }

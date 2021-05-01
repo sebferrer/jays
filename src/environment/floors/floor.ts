@@ -5,6 +5,12 @@ import { Point } from "../../point";
 import { FloorMap } from "../floor_map";
 import { get_room_map_definitions, RoomMapDefinition } from "../rooms/room_map_definition.decorator";
 import { Door } from "../walls/door";
+import { RoomMap } from "../rooms/room_map";
+import { ActionableEntity } from "../../actionable_entity";
+import { ArrayUtil, MathUtil } from "../../util";
+import { get_actionable_entities } from "../../actionable_entities";
+import { Collision } from "../../collision";
+import { Rect } from "../../rect";
 
 export abstract class Floor {
 	public abstract get level(): number;
@@ -13,7 +19,6 @@ export abstract class Floor {
 	// NB: music can't be played if the user hasn't interacted with the page. Otherwise: 
 	// DOMException: play() failed because the user didn’t interact with the document first
 	public abstract get base_music(): AudioFile;
-	// public abstract get available_rooms(): RoomMap[];
 
 	protected _floor_map: FloorMap;
 	public get floor_map(): FloorMap { return this._floor_map; }
@@ -21,14 +26,47 @@ export abstract class Floor {
 	protected abstract _available_rooms: any[];
 	public get available_rooms(): RoomMapDefinition[] { return get_room_map_definitions(this._available_rooms); }
 
-	constructor() { }
+	public rooms: RoomMap[];
+	public rooms_ids: number[];
+
+	public actionable_entities: ActionableEntity[];
+
+	constructor() {
+		this.rooms = new Array<RoomMap>();
+	}
 
 	public initialize(): void {
+		this.rooms_ids = new Array<number>();
 		this._floor_map = new FloorMap(this);
+
+		this.spread_actionable_entities();
+
 		// Draw minimap
 		this.floor_map.next_room();
 
 		renderer.update_minimap(this.floor_map);
+	}
+
+	public spread_actionable_entities(): void {
+		this.actionable_entities = get_actionable_entities(canvas_W, canvas_H);
+		this.spread_entities(["angry_dialog", "sample_dialog", "glitchy_dialog"], /*ArrayUtil.diff(*/this.rooms_ids/*, [this.first_room_id])*/);
+		this.rooms.forEach(
+			room => {
+				room.actionable_entities.forEach(entity => {
+					let good_location = false;
+					while (!good_location) {
+						entity.set_position(new Point(
+							MathUtil.get_random_int(60, canvas_W - entity.width - 60),
+							MathUtil.get_random_int(60, canvas_H - entity.height - 60)
+						));
+						good_location = !Collision.is_collision_rects(
+							new Rect(entity.position.x, entity.position.y, entity.width, entity.height),
+							room.taken_spaces);
+					}
+					room.taken_spaces.push(new Rect(entity.position.x, entity.position.y, entity.width, entity.height));
+				});
+			}
+		);
 	}
 
 	public on_collision_warp(door: Door) {
@@ -37,9 +75,7 @@ export abstract class Floor {
 		gameState.tears.splice(0, gameState.tears.length);
 
 		gameState.current_room = this.floor_map.next_room(door.direction);
-		console.log(gameState.current_room.requires_update);
 		renderer.update_current_room(gameState.current_room);
-		console.log(gameState.current_room.requires_update);
 		switch (door.direction) {
 			case Direction.LEFT:
 				gameState.jays.position = new Point(canvas_W - gameState.current_room.room_walls.wall_height - gameState.jays.width, (canvas_H / 2) - (gameState.jays.height / 2));
@@ -59,7 +95,18 @@ export abstract class Floor {
 		renderer.update_minimap(this.floor_map);
 	}
 
-	// public get_available_rooms(): RoomMapDefinition[] {
-	// 	const a = typeof(RoomMap);
-	// }
+	public spread_entities(entities_ids: string[], rooms_ids: number[]): void {
+		if (entities_ids.length > rooms_ids.length) {
+			throw new Error("Cannot spread entities when there are more entities than rooms");
+		}
+
+		let i = 0;
+		const shuffled_rooms_ids = ArrayUtil.shuffle(rooms_ids);
+		entities_ids.forEach(entity_id => {
+			console.log("Attribute entity " + entities_ids[i] + " to room " + shuffled_rooms_ids[i]);
+			this.rooms.find(room => room.id === shuffled_rooms_ids[i]).actionable_entities
+				.push(this.actionable_entities.find(entity => entity.id === entity_id));
+			i++;
+		});
+	}
 }

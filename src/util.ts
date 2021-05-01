@@ -40,6 +40,15 @@ export class ArrayUtil {
 		return array1.filter(item => array2.indexOf(item) < 0);
 	}
 
+	public static shuffle<T>(array: Array<T>) {
+		const shufled_array = [...array];
+		for (let i = shufled_array.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shufled_array[i], shufled_array[j]] = [shufled_array[j], shufled_array[i]];
+		}
+		return shufled_array;
+	}
+
 	public static find_nb_connected(x: number, y: number, array: Array<Array<number>>): number {
 		const canUp = (x - 1 >= 0);
 		const canDown = (x + 1 < array.length);
@@ -164,7 +173,10 @@ export class MathUtil {
 		return Math.abs(v1 - v2) < epsilon;
 	}
 
-	public static get_random_int(max) {
-		return Math.floor(Math.random() * Math.floor(max));
+	public static get_random_int(max: number, max2?: number): number {
+		if (max2 == null) {
+			return Math.floor(Math.random() * Math.floor(max));
+		}
+		return max + Math.floor(Math.random() * Math.floor(max2 - max));
 	}
 }

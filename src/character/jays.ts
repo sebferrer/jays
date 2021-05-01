@@ -33,7 +33,7 @@ export class Jays extends Entity implements IDrawable {
 	constructor() {
 		// height is = body height + head height...
 		super("jays", new Sprite(0, 20, 20, 20), new Point(canvas_W / 2 - 10, canvas_H / 2 - 20),
-			Jays.body_width, Jays.body_height + Jays.head_height);
+			Jays.body_width, Jays.body_height + Jays.head_height, true, Jays.head_height);
 		this.sprite_filename = "assets/img/jays.png";
 		this.speed = 3;
 		this._tear_delay = 480;
@@ -102,7 +102,7 @@ export class Jays extends Entity implements IDrawable {
 
 class JaysHead extends Entity {
 	constructor(id: string, current_sprite: Sprite, position: Point, width: number, height: number) {
-		super(id, current_sprite, Point.copy(position), width, height);
+		super(id, current_sprite, Point.copy(position), width, height, false);
 		this.sprite_filename = "assets/img/jays.png";
 	}
 }

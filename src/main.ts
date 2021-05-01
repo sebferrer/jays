@@ -25,7 +25,8 @@ export const IMAGE_BANK = new ImageBank();
 export const renderer = new Renderer();
 export let gameState: GameState;
 
-//TODO: add a localstorage service to retrieve the value the user wants to use
+// TODO: add a localstorage service to retrieve the value the user wants to use
+// --> PouchDB?
 export const key_mapper = new KeyMapper();
 
 window.onload = () => {
@@ -33,6 +34,7 @@ window.onload = () => {
 		renderer.autoScale();
 		gameState = new GameState();
 		Settings.init();
+
 		gameState.get_timer("tear").interval = gameState.jays.tear_delay;
 		gameState.update();
 	});

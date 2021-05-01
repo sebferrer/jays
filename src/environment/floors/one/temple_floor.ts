@@ -17,14 +17,14 @@ export class TempleFloor extends Floor {
 	protected _available_rooms = [
 		FourFireRoom,
 		EmptyGrassRoom,
-		RockyRoom,
+		RockyRoom/*,
 		WaterLeftRightRoom,
-		DeadEndRightRoom
+		DeadEndRightRoom*/
 	];
 
 	constructor() {
 		super();
-		this._base_music = new AudioFile("assets/sounds/dungeon.mp3");
+		this._base_music = new AudioFile("assets/sounds/musics/dungeon.mp3");
 		this.base_music.loop = true;
 	}
 }
